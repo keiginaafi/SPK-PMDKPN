@@ -6,7 +6,7 @@
 	</h1>
 	<ol class="breadcrumb">
 		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>		
+		<li>Dashboard Admin</li>
 		<li class="active">Kelola Prodi</li>
 	</ol>
 @stop
@@ -20,12 +20,12 @@
 							<i class="fa fa-plus"></i>
 						</button>
 					</h3>
-				</div>				
+				</div>
 				<div class="box-body">
 					<table id="dataProdi" class="table table-bordered table-hover">
 						<thead>
-							<tr>								
-								<th>Kode Prodi</th>								
+							<tr>
+								<th>Kode Prodi</th>
 								<th>Nama Prodi</th>
 								<th>Kuota</th>
 								<th>Aksi</th>
@@ -36,7 +36,7 @@
 								<tr>
 									<td>{{ $item_prodi->kode_prodi }}</td>
 									<td>{{ $item_prodi->nama_prodi }}</td>
-									<td>{{ $item_prodi->kuota_max }}</td>									
+									<td>{{ $item_prodi->kuota_max }}</td>
 									<td>
 										<button id="ubahProdi" title="Edit" data-toggle="modal" data-target="#editProdi">
 											<span class="label label-info">
@@ -45,7 +45,7 @@
 										</button> |
 										<a href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
 										title="hapus"
-										onclick="return confirm('Apakah anda yakin akan menghapus program studi 
+										onclick="return confirm('Apakah anda yakin akan menghapus program studi
 										{{{ $item_prodi->nama_prodi }}} ?')">
 											<span class="label label-danger">
 												<i class="fa fa-trash"> Delete </i>
@@ -56,8 +56,8 @@
 							@endforeach
 						</tbody>
 						<tfoot>
-							<tr>								
-								<th>Kode Prodi</th>								
+							<tr>
+								<th>Kode Prodi</th>
 								<th>Nama Prodi</th>
 								<th>Kuota</th>
 								<th>Aksi</th>
@@ -79,12 +79,12 @@
 					<h4 class="modal-title" id="inputProdiLabel"> Program Studi - Tambah </h4>
 				</div>
 				<div class="modal-body">
-					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/prodi/tambah') }}">
-						{{ csrf_field() }}						
+					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/tambah') }}">
+						{{ csrf_field() }}
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kode Program Studi</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="kodeProdi" 
+								<input type="text" class="form-control" name="kodeProdi"
 								placeholder="Kode Program Studi" maxlength="20" required></input>
 								<small class="help-block"></small>
 							</div>
@@ -92,22 +92,22 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">Nama Program Studi</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="namaProdi" 
-								placeholder="Nama Program Studi" maxlength="40" required></input>
+								<input type="text" class="form-control" name="namaProdi"
+								placeholder="Nama Program Studi" maxlength="60" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kuota Program Studi</label>
 							<div class="col-md-6">
-								<input type="number" class="form-control" name="kuotaProdi" 
+								<input type="number" class="form-control" name="kuotaProdi"
 								placeholder="Kuota Program Studi" maxlength="60" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
-						<div class="form-group">					
+						<div class="form-group">
 							<div class="dol-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" id="button-reg">Simpan</button>						
+								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
 							</div>
 						</div>
 					</form>
@@ -127,10 +127,34 @@
 				$('input+small').text('');
 				$('input').parent().removeClass('has-error');
 				$('select').parent().removeClass('has-error');
-				
+
 				$('#inputProdi').modal('show');
 				//console.log('test');
 				return false;
+			});
+		});
+
+		$(document).on('submit', '#formTambahProdi', function(e){
+			$.ajax({
+				method: $(this).attr('method'),
+				url: $(this).attr('action'),
+				data: $(this).serialize(),
+				dataType: "json"
+			});
+		});
+
+		.done(function(data){
+			//console.log(data);
+			$('#inputProdi').modal('hide');
+			window.location.href = '/kelola_prodi';
+		});
+
+		.fail(function(data){
+			//console.log(data.responseJSON);
+			$.each(data.responseJSON, function(key, value){
+				var input = '#inputProdi input[name= '+ key+ ']';
+				$(input + '+small').text(value);
+				$(input).parent().addClass('has-error');
 			});
 		});
 	</script>

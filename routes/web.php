@@ -41,6 +41,8 @@ Route::get('/kelola_tabel', function () {
 
 Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiController@index'));
 
+Route::get('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
+
 Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
 });
@@ -52,13 +54,13 @@ Route::get('/home', 'HomeController@index')->name('home');
 /*Route::group(['middleware' => ['web', 'auth', 'level:1']], function(){
 	//index
 	Route::get('/jurusan', array('as' => 'jurusan', 'uses' => 'Jurusan\jurusanController@index'));
-	
+
 	//form tambah jurusan
 	Route::get('/jurusan/tambah', array('as' => 'jurusan.tambah', 'uses' => 'Jurusan\jurusanController@tambah'));
-	
+
 	//route menyimpan form jurusan
 	Route::post('/jurusan/tambahJurusan', array('as' => 'jurusan.tambah.simpan', 'uses' => 'Jurusan\jurusanController@tambahJurusan'));
-	
+
 	//menghapus jurusan
 	Route::get('jurusan/{id}/hapus', array('as' => 'jurusan.hapus', 'uses' => 'Jurusan\jurusanController@hapus'));
 });*/
