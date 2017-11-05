@@ -28,12 +28,13 @@ class ProdiController extends Controller
 	protected function validator(array $data){
 		$messages = [
 			'kode_prodi.required' => 'Kode Program Studi dibutuhkan',
-			'nama_prodi.unique' => 'Nama Program Studi telah digunakan',
+			'kode_prodi.unique' => 'Kode Program Studi telah digunakan',
+			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
 			'kuota_max.required' => 'Kuota Program Studi dibutuhkan',
 		];
 		return Validator::make($data, [
-			'kode_prodi' => 'required|unique:prodi',
-			'nama_prodi' => 'required|max:60',
+			'kode_prodi' => 'required|unique:prodi, kode_prodi',
+			'nama_prodi' => 'required|max:40',
 			'kuota_max' => 'required',
 		], $messages);
 	}
@@ -62,7 +63,7 @@ class ProdiController extends Controller
 	public function tambahProdi(Request $request){
 		$validator = $this->validator($request->all());
 		if($validator->fails()){
-			$this->throwValidatorException(
+			$this->throwValidationException(
 				$request, $validator
 			);
 		}

@@ -41,7 +41,7 @@ Route::get('/kelola_tabel', function () {
 
 Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiController@index'));
 
-Route::get('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
+Route::post('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
 
 Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');

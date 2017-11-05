@@ -13,6 +13,20 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
+			<div class="uk-alert uk-alert-success" data-uk-alert>
+          <a href="" class="uk-alert-close uk-close"></a>
+          <p>{{  isset($successMessage) ? $successMessage : '' }}</p>
+           @if (count($errors) > 0)
+              <div class="alert alert-danger">
+                  <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                  <ul>
+                      @foreach ($errors->all() as $error)
+                          <li>{{ $error }}</li>
+                      @endforeach
+                  </ul>
+              </div>
+          @endif
+      </div>
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Kelola Program Studi
@@ -93,7 +107,7 @@
 							<label class="col-md-4 control-label">Nama Program Studi</label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="namaProdi"
-								placeholder="Nama Program Studi" maxlength="60" required></input>
+								placeholder="Nama Program Studi" maxlength="40" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
@@ -101,7 +115,7 @@
 							<label class="col-md-4 control-label">Kuota Program Studi</label>
 							<div class="col-md-6">
 								<input type="number" class="form-control" name="kuotaProdi"
-								placeholder="Kuota Program Studi" maxlength="60" required></input>
+								placeholder="Kuota Program Studi" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
@@ -126,7 +140,6 @@
 			$('#tambahProdi').click(function(){
 				$('input+small').text('');
 				$('input').parent().removeClass('has-error');
-				$('select').parent().removeClass('has-error');
 
 				$('#inputProdi').modal('show');
 				//console.log('test');
@@ -134,38 +147,37 @@
 			});
 		});
 
-		$(document).on('submit', '#formTambahProdi', function(e){
-			$.ajax({
-				method: $(this).attr('method'),
-				url: $(this).attr('action'),
-				data: $(this).serialize(),
-				dataType: "json"
-			});
-		});
+		$(document).on('submit', '#formTambahProdi', function(e) {
+        e.preventDefault();
 
-		.done(function(data){
-			//console.log(data);
-			$('#inputProdi').modal('hide');
-			window.location.href = '/kelola_prodi';
-		});
+        $('input+small').text('');
+        $('input').parent().removeClass('has-error');
 
-		.fail(function(data){
-			//console.log(data.responseJSON);
-			$.each(data.responseJSON, function(key, value){
-				var input = '#inputProdi input[name= '+ key+ ']';
-				$(input + '+small').text(value);
-				$(input).parent().addClass('has-error');
-			});
-		});
+        $.ajax({
+            method: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            dataType: "json"
+        })
+
+        .done(function(data) {
+            console.log(data);
+
+            $('.alert-success').removeClass('hidden');
+            $('#myModal').modal('hide');
+
+            //window.location.href='/kelola_prodi';
+        })
+
+        .fail(function(data) {
+            console.log(data.responeJSON);
+            $.each(data.responseJSON, function (key, value) {
+                var input = '#formTambahProdi input[name=' + key + ']';
+
+                $(input + '+small').text(value);
+                $(input).parent().addClass('has-error');
+            });
+        });
+    });
 	</script>
 @endsection
-
-<!--@section('script')
-	<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
-	<script>
-		$(function(){
-			$('#dataMahasiswa').DataTable({"pagelength": 100});
-		});
-	</script>
-@endsection-->
