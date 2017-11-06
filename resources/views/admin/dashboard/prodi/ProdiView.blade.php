@@ -13,20 +13,16 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-			<div class="uk-alert uk-alert-success" data-uk-alert>
-          <a href="" class="uk-alert-close uk-close"></a>
-          <p>{{  isset($successMessage) ? $successMessage : '' }}</p>
-           @if (count($errors) > 0)
-              <div class="alert alert-danger">
-                  <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                  <ul>
-                      @foreach ($errors->all() as $error)
-                          <li>{{ $error }}</li>
-                      @endforeach
-                  </ul>
-              </div>
-          @endif
-      </div>
+       @if (count($errors) > 0)
+          <div class="alert alert-danger">
+              <strong>Whoops!</strong> There were some problems with your input.<br><br>
+              <ul>
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+          </div>
+      @endif
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Kelola Program Studi
@@ -36,6 +32,11 @@
 					</h3>
 				</div>
 				<div class="box-body">
+					@if (Session::has('successMessage'))
+					<div class="alert alert-success alert-dismissable">
+						<p>{{  Session::get('successMessage') }}</p>
+					</div>
+					@endif
 					<table id="dataProdi" class="table table-bordered table-hover">
 						<thead>
 							<tr>
@@ -57,7 +58,7 @@
 												<i class="fa fa-list"> Edit </i>
 											</span>
 										</button> |
-										<a href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
+										<a
 										title="hapus"
 										onclick="return confirm('Apakah anda yakin akan menghapus program studi
 										{{{ $item_prodi->nama_prodi }}} ?')">
@@ -98,7 +99,7 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kode Program Studi</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="kodeProdi"
+								<input type="text" class="form-control" name="kode_prodi"
 								placeholder="Kode Program Studi" maxlength="20" required></input>
 								<small class="help-block"></small>
 							</div>
@@ -106,7 +107,7 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">Nama Program Studi</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="namaProdi"
+								<input type="text" class="form-control" name="nama_prodi"
 								placeholder="Nama Program Studi" maxlength="40" required></input>
 								<small class="help-block"></small>
 							</div>
@@ -114,7 +115,7 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kuota Program Studi</label>
 							<div class="col-md-6">
-								<input type="number" class="form-control" name="kuotaProdi"
+								<input type="number" class="form-control" name="kuota_max"
 								placeholder="Kuota Program Studi" required></input>
 								<small class="help-block"></small>
 							</div>

@@ -33,7 +33,7 @@ class ProdiController extends Controller
 			'kuota_max.required' => 'Kuota Program Studi dibutuhkan',
 		];
 		return Validator::make($data, [
-			'kode_prodi' => 'required|unique:prodi, kode_prodi',
+			'kode_prodi' => 'required|unique:prodi',
 			'nama_prodi' => 'required|max:40',
 			'kuota_max' => 'required',
 		], $messages);
@@ -49,10 +49,10 @@ class ProdiController extends Controller
 		$prodi->kode_prodi = $data['kode_prodi'];
 		$prodi->nama_prodi = $data['nama_prodi'];
 		$prodi->kuota_max = $data['kuota_max'];
-		$prodi->kuota_penerimaan = $data['kuota_penerimaan'];
-		$prodi->kuota_sma = $data['kuota_sma'];
-		$prodi->kuota_smk = $data['kuota_smk'];
-		$prodi->kuota_cadangan = $data['kuota_cadangan'];
+		$prodi->kuota_penerimaan = $kuota_penerimaan;
+		$prodi->kuota_sma = $kuota_sma;
+		$prodi->kuota_smk = $kuota_smk;
+		$prodi->kuota_cadangan = $kuota_cadangan;
 
 		//save, jika gagal abort
 		if(!$prodi->save()){
@@ -68,10 +68,13 @@ class ProdiController extends Controller
 			);
 		}
 		$this->tambah($request->all());
-		return response()->json($request->all(), 200);
+		//return response()->json($request->all(), 200);
+		return Redirect::to('/kelola_prodi')->with('successMessage', 'Data Program Studi berhasil disimpan.');
 	}
 
-	/*public function hapus($id){
+	public function hapusProdi($id){
+		//Link Hapus Prodi, taruh di view
+		//href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
 		$prodiKode = prodi::where('prodiKode', '=', '$id')->first();
 		if($prodiKode == null){
 			App::abort(404);
@@ -80,7 +83,7 @@ class ProdiController extends Controller
 		return Redirect::action('Prodi\prodiController@index');
 	}
 
-	public function editProdi($id){
+	/*public function editProdi($id){
 		$data = prodi::find($id);
 		$jurusan = jurusan::orderBy('jurKode')->get();
 
