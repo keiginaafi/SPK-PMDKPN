@@ -56,7 +56,7 @@ class ProdiController extends Controller
 
 		//save, jika gagal abort
 		if(!$prodi->save()){
-			abort(500);
+			return Redirect::back()->withErrors('The server encountered an unexpected condition');
 		}
 	}
 
@@ -75,7 +75,7 @@ class ProdiController extends Controller
 	public function hapusProdi($id){
 		$kode_prodi = prodi::where('kode_prodi', '=', $id)->first();
 		if($kode_prodi == null){
-			return Redirect::back()->withErrors('Program Studi '.$kode_prodi.' does not exist');
+			return Redirect::back()->withErrors('Program Studi '.$id.' does not exist');
 		}
 		$kode_prodi->delete();
 		return Redirect::action('Prodi\ProdiController@index')->with('successMessage',
@@ -123,7 +123,7 @@ class ProdiController extends Controller
 
 
 		if(!$editProdi->save()){
-			App::abort(500);
+			return Redirect::back()->withErrors('The server encountered an unexpected condition');
 		}
 		return Redirect::action('Prodi\ProdiController@index')->with('successMessage',
 		'Data Program Studi "'.Input::get('nama_prodi').'" telah berhasil diubah');
