@@ -53,16 +53,14 @@
 									<td>{{ $item_prodi->nama_prodi }}</td>
 									<td>{{ $item_prodi->kuota_max }}</td>
 									<td>
-										<button class="btn btn-primary btn-flat btn-sm" id="ubahProdi" title="Edit" data-toggle="modal" data-target="#editProdi">
-												<i class="fa fa-list"> Edit </i>
-										</button> |
-										<a
+										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
+											<i class="fa fa-list"> Edit </i>
+										</a> |
+										<a class="btn btn-danger btn-flat btn-sm"
 										title="hapus"
 										onclick="return confirm('Apakah anda yakin akan menghapus program studi
 										{{{ $item_prodi->nama_prodi }}} ?')">
-											<span class="label label-danger">
-												<i class="fa fa-trash"> Delete </i>
-											</span>
+											<i class="fa fa-trash"> Delete </i>
 										</a>
 									</td>
 								</tr>
@@ -92,7 +90,7 @@
 					<h4 class="modal-title" id="inputProdiLabel"> Program Studi - Ubah </h4>
 				</div>
 				<div class="modal-body">
-					<form id="formEditProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/ubah') }}">
+					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/ubah') }}">
 						{{ csrf_field() }}
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kode Program Studi</label>
@@ -119,59 +117,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="dol-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- End of Modal -->
-
-	<!-- Modal Edit -->
-	<div class="modal fade" id="editProdi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title" id="inputProdiLabel"> Program Studi - Tambah </h4>
-				</div>
-				<div class="modal-body">
-					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/tambah') }}">
-						{{ csrf_field() }}
-						<div class="form-group">
-							<label class="col-md-4 control-label">Kode Program Studi</label>
-							<div class="col-md-6">
-								<input type="text" class="form-control" name="kode_prodi"
-								placeholder="Kode Program Studi" maxlength="20" value="{{ $item_prodi->kode_prodi }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-md-4 control-label">Nama Program Studi</label>
-							<div class="col-md-6">
-								<input type="text" class="form-control" name="nama_prodi"
-								placeholder="Nama Program Studi" maxlength="40" value="{{ $item_prodi->nama_prodi }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-md-4 control-label">Kuota Program Studi</label>
-							<div class="col-md-6">
-								<input type="number" class="form-control" name="kuota_max"
-								placeholder="Kuota Program Studi" value="{{ $item_prodi->kuota_max }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="dol-md-6 col-md-offset-4">
+							<div class="col-md-6 col-md-offset-4">
 								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
 							</div>
 						</div>

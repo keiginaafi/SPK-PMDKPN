@@ -75,6 +75,7 @@ class ProdiController extends Controller
 	public function hapusProdi($id){
 		//Link Hapus Prodi, taruh di view
 		//href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
+
 		$prodiKode = prodi::where('prodiKode', '=', '$id')->first();
 		if($prodiKode == null){
 			App::abort(404);
@@ -83,14 +84,14 @@ class ProdiController extends Controller
 		return Redirect::action('Prodi\prodiController@index');
 	}
 
-	/*public function editProdi($id){
+	public function editProdi($id){
 		$data = prodi::find($id);
-		$jurusan = jurusan::orderBy('jurKode')->get();
+		//$dataProdi = prodi::orderBy('kode_prodi')->get();
 
-		return view('admin.dashboard.prodi.editprodi' $data)->with('listjurusan', $jurusan);
+		return view('admin.dashboard.prodi.EditProdiView', $data);
 	}
 
-	public function simpanEdit($id){
+	/*public function simpanEdit($id){
 		$input = Input::all();
 		$messages = [
 			'prodiKode.required' => 'Kode Program Studi dibutuhkan',

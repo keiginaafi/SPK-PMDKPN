@@ -43,6 +43,12 @@ Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiControl
 
 Route::post('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
 
+Route::get('/kelola_prodi/{id}/edit', array('as' => 'prodi.edit', 'uses' => 'Prodi\ProdiController@editProdi'));
+
+/*Route::get('/kelola_prodi/edit', function () {
+    return view('admin.dashboard.prodi.EditView');
+});*/
+
 Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
 });
