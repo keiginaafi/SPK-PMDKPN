@@ -13,16 +13,21 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-       @if (count($errors) > 0)
-          <div class="alert alert-danger">
-              <strong>Whoops!</strong> There were some problems with your input.<br><br>
-              <ul>
-                  @foreach ($errors->all() as $error)
-                      <li>{{ $error }}</li>
-                  @endforeach
-              </ul>
-          </div>
+      @if (count($errors) > 0)
+        <div class="alert alert-danger">
+        	<strong>Whoops!</strong> There were some problems with your input.<br><br>
+          <ul>
+          	@foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+      	</div>
       @endif
+			@if (Session::has('successMessage'))
+			<div class="alert alert-success alert-dismissable">
+				<p>{{  Session::get('successMessage') }}</p>
+			</div>
+			@endif
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Kelola Program Studi
@@ -32,11 +37,6 @@
 					</h3>
 				</div>
 				<div class="box-body">
-					@if (Session::has('successMessage'))
-					<div class="alert alert-success alert-dismissable">
-						<p>{{  Session::get('successMessage') }}</p>
-					</div>
-					@endif
 					<table id="dataProdi" class="table table-bordered table-hover">
 						<thead>
 							<tr>
@@ -56,7 +56,7 @@
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
 											<i class="fa fa-list"> Edit </i>
 										</a> |
-										<a class="btn btn-danger btn-flat btn-sm"
+										<a class="btn btn-danger btn-flat btn-sm" href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
 										title="hapus"
 										onclick="return confirm('Apakah anda yakin akan menghapus program studi
 										{{{ $item_prodi->nama_prodi }}} ?')">
@@ -87,10 +87,10 @@
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title" id="inputProdiLabel"> Program Studi - Ubah </h4>
+					<h4 class="modal-title" id="inputProdiLabel"> Program Studi - Tambah </h4>
 				</div>
 				<div class="modal-body">
-					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/ubah') }}">
+					<form id="formTambahProdi" class="form-horizontal" role="form" method="POST" action="{{ url('/kelola_prodi/tambah') }}">
 						{{ csrf_field() }}
 						<div class="form-group">
 							<label class="col-md-4 control-label">Kode Program Studi</label>

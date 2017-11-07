@@ -56,7 +56,7 @@ class ProdiController extends Controller
 
 		//save, jika gagal abort
 		if(!$prodi->save()){
-			App::abort(500);
+			abort(500);
 		}
 	}
 
@@ -73,15 +73,13 @@ class ProdiController extends Controller
 	}
 
 	public function hapusProdi($id){
-		//Link Hapus Prodi, taruh di view
-		//href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
-
-		$prodiKode = prodi::where('prodiKode', '=', '$id')->first();
-		if($prodiKode == null){
-			App::abort(404);
+		$kode_prodi = prodi::where('kode_prodi', '=', $id)->first();
+		if($kode_prodi == null){
+			return Redirect::back()->withErrors('Program Studi '.$kode_prodi.' does not exist');
 		}
-		$prodiKode->delete();
-		return Redirect::action('Prodi\prodiController@index');
+		$kode_prodi->delete();
+		return Redirect::action('Prodi\ProdiController@index')->with('successMessage',
+		'Data Program Studi telah berhasil dihapus');
 	}
 
 	public function editProdi($id){
@@ -91,31 +89,43 @@ class ProdiController extends Controller
 		return view('admin.dashboard.prodi.EditProdiView', $data);
 	}
 
-	/*public function simpanEdit($id){
+	public function ubahProdi($id){
 		$input = Input::all();
 		$messages = [
-			'prodiKode.required' => 'Kode Program Studi dibutuhkan',
-			'prodiNama.required' => 'nama Program Studi dibutuhkan',
-			'prodiJurKode.required' => 'Kode Jurusan asal Program Studi dibutuhkan',
+			'kode_prodi.required' => 'Kode Program Studi dibutuhkan',
+			'kode_prodi.unique' => 'Kode Program Studi telah digunakan',
+			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
+			'kuota_max.required' => 'Kuota Program Studi dibutuhkan',
 		];
-		$validator = Validator:make($input, [
-			'prodiKode' => 'required',
-			'prodiNama' => 'required|max:60',
-			'prodiJurKode' => 'required',
+		$validator = Validator::make($input, [
+			'kode_prodi' => 'required|unique:prodi',
+			'nama_prodi' => 'required|max:40',
+			'kuota_max' => 'required',
 		], $messages);
 		if($validator->fails()){
 			//kembali ke halaman yg sama dengan pesan error
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 		//bila sukses
+		$kuota_penerimaan = $input['kuota_max'] * (90/100);
+		$kuota_sma = 0.5 * $kuota_penerimaan;
+		$kuota_smk = 0.3 * $kuota_penerimaan;
+		$kuota_cadangan = $kuota_penerimaan - ($kuota_sma + $kuota_smk);
+
 		$editProdi = prodi::find($id);
-		$editProdi->prodiKode = Input::get('prodiKode'); //atau $input['prodiKode']
-		$editProdi->prodiNama = $input['prodiNama'];
-		$editProdi->prodiKodeJurusan = Input::get('prodiKodeJurusan');
+		$editProdi->kode_prodi = Input::get('kode_prodi'); //atau $input['prodiKode']
+		$editProdi->nama_prodi = $input['nama_prodi'];
+		$editProdi->kuota_max = $input['kuota_max'];
+		$editProdi->kuota_penerimaan = $kuota_penerimaan;
+		$editProdi->kuota_sma = $kuota_sma;
+		$editProdi->kuota_smk = $kuota_smk;
+		$editProdi->kuota_cadangan = $kuota_cadangan;
+
+
 		if(!$editProdi->save()){
 			App::abort(500);
 		}
-		return Redirect::action('Prodi\prodiController@index')->with('successMessage',
-		'Data Prodi "'.Input::get('prodiNama').'" telah berhasil diubah')
-	}*/
+		return Redirect::action('Prodi\ProdiController@index')->with('successMessage',
+		'Data Program Studi "'.Input::get('nama_prodi').'" telah berhasil diubah');
+	}
 }

@@ -23,18 +23,18 @@
               </ul>
           </div>
       @endif
+			@if (Session::has('successMessage'))
+			<div class="alert alert-success alert-dismissable">
+				<p>{{  Session::get('successMessage') }}</p>
+			</div>
+			@endif
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title"> Ubah Program Studi - {{ $kode_prodi }}
+					<h3 class="box-title"> Ubah Program Studi - {{ $nama_prodi }}
 					</h3>
 				</div>
 				<div class="box-body">
-					@if (Session::has('successMessage'))
-					<div class="alert alert-success alert-dismissable">
-						<p>{{  Session::get('successMessage') }}</p>
-					</div>
-					@endif
-					<form id="formEditProdi" class="col-md-4" role="form" method="POST" action="{{ url('/kelola_prodi/ubahProdi') }}">
+					<form id="formEditProdi" class="col-md-4" role="form" method="POST" action="{{ url('/kelola_prodi/'.$kode_prodi.'/ubahProdi') }}">
 						{{ csrf_field() }}
 						<div class="form-group">
 							<label class="control-label">Kode Program Studi</label>
