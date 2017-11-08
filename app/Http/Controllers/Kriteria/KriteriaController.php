@@ -37,6 +37,7 @@ class KriteriaController extends Controller
   protected function tambah(array $data){
     $kriteria = new kriteria();
     $kriteria->nama_kriteria = $data['nama_kriteria'];
+    $kriteria->bobot_kriteria = 0;
 
     //save, jika gagal abort
     if(!$kriteria->save()){
@@ -73,7 +74,7 @@ class KriteriaController extends Controller
     return view('admin.dashboard.kriteria.EditKriteriaView', $data);
   }
 
-  public function ubahProdi($id){
+  public function ubahKriteria($id){
     $input = Input::all();
     $messages = [
       'nama_kriteria.required' => 'Nama Kriteria dibutuhkan',
@@ -87,7 +88,7 @@ class KriteriaController extends Controller
     }
     //bila sukses
     $editKriteria = kriteria::find($id);
-    $editProdi->nama_kriteria = $input['nama_kriteria'];
+    $editKriteria->nama_kriteria = $input['nama_kriteria'];
 
     if(!$editKriteria->save()){
       return Redirect::back()->withErrors('The server encountered an unexpected condition');

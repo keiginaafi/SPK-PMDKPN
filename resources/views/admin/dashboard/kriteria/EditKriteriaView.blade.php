@@ -7,8 +7,8 @@
 	<ol class="breadcrumb">
 		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
 		<li>Dashboard Admin</li>
-		<li>Kelola Prodi</li>
-		<li class="active">Edit Prodi</li>
+		<li>Kelola Kriteria</li>
+		<li class="active">Kelola Kriteria</li>
 	</ol>
 @stop
 @section('content')
@@ -31,38 +31,22 @@
 			@endif
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title"> Ubah Program Studi - {{ $nama_prodi }}
+					<h3 class="box-title"> Ubah Kriteria - {{ $nama_kriteria }}
 					</h3>
 				</div>
 				<div class="box-body">
-					<form id="formEditProdi" class="col-md-4" role="form" method="POST" action="{{ url('/kelola_prodi/'.$kode_prodi.'/ubahProdi') }}">
+					<form id="formEditKriteria" class="col-md-4" role="form" method="POST" action="{{ url('/kelola_kriteria/'.$id_kriteria.'/ubahKriteria') }}">
 						{{ csrf_field() }}
 						<div class="form-group">
-							<label class="control-label">Kode Program Studi</label>
+							<label class="control-label">Nama Kriteria</label>
 							<div>
-								<input type="text" class="form-control" name="kode_prodi"
-								placeholder="Kode Program Studi" maxlength="20" value="{{ $kode_prodi }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label">Nama Program Studi</label>
-							<div>
-								<input type="text" class="form-control" name="nama_prodi"
-								placeholder="Nama Program Studi" maxlength="40" value="{{ $nama_prodi }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label">Kuota Program Studi</label>
-							<div>
-								<input type="number" class="form-control" name="kuota_max"
-								placeholder="Kuota Program Studi" value="{{ $kuota_max }}" required></input>
+								<input type="text" class="form-control" name="nama_kriteria"
+								placeholder="Nama Kriteria" maxlength="30" value="{{ $nama_kriteria }}" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
 							<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
-							<a class="btn btn-default" id="button-back" href="{{{ URL::to('kelola_prodi') }}}">Kembali</a>
+							<a class="btn btn-default" id="button-back" href="{{{ URL::to('kelola_kriteria') }}}">Kembali</a>
 					</form>
 				</div>
 			</div>
@@ -71,7 +55,7 @@
 @endsection
 @section('script')
 	<script>
-		$(document).on('submit', '#formEditProdi', function(e) {
+		$(document).on('submit', '#formEditKriteria', function(e) {
         e.preventDefault();
 
         $('input+small').text('');
@@ -96,7 +80,7 @@
         .fail(function(data) {
             console.log(data.responeJSON);
             $.each(data.responseJSON, function (key, value) {
-                var input = '#formEditProdi input[name=' + key + ']';
+                var input = '#formEditKriteria input[name=' + key + ']';
 
                 $(input + '+small').text(value);
                 $(input).parent().addClass('has-error');

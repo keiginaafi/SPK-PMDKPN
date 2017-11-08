@@ -27,9 +27,21 @@ Route::get('/input_data', function () {
     return view('admin.dashboard.mahasiswa.inputDataView');
 });
 
-Route::get('/kelola_kriteria', function () {
+/*Route::get('/kelola_kriteria', function () {
     return view('admin.dashboard.kriteria.KriteriaView');
-});
+});*/
+
+//route Kriteria
+Route::get('/kelola_kriteria', array('as' => 'kriteria', 'uses' => 'Kriteria\KriteriaController@index'));
+
+Route::post('/kelola_kriteria/tambah', array('as' => 'kriteria.tambah', 'uses' => 'Kriteria\KriteriaController@tambahKriteria'));
+
+Route::get('/kelola_kriteria/{id}/edit', array('as' => 'kriteria.edit', 'uses' => 'Kriteria\KriteriaController@editKriteria'));
+
+Route::post('/kelola_kriteria/{id}/ubahKriteria', array('as' => 'kriteria.ubah', 'uses' => 'Kriteria\KriteriaController@ubahKriteria'));
+
+Route::get('/kelola_kriteria/{id}/hapusKriteria', array('as' => 'kriteria.hapus', 'uses' => 'Kriteria\KriteriaController@hapusKriteria'));
+
 
 Route::get('/kelola_tabel', function () {
     return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
@@ -39,6 +51,7 @@ Route::get('/kelola_tabel', function () {
     return view('admin.dashboard.prodi.ProdiView');
 });*/
 
+//route prodi
 Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiController@index'));
 
 Route::post('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
