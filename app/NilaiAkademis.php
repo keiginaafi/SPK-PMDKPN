@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Peringkat extends Model
+class NilaiAkademis extends Model
 {
-    protected $table = "peringkat";
+    protected $table = "nilai_akademis";
     public $timestamps = false;
-    protected $primaryKey = 'id_peringkat';
+    protected $primaryKey = 'id_nilai_akademis';    
     protected $fillable = [
-        'semester', 'peringkat', 'jumlah_siswa'
+        'semester', 'mapel'
     ];
 
     public function mahasiswa(){

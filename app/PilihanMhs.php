@@ -12,4 +12,8 @@ class PilihanMhs extends Model
     protected $fillable = [
         'pilihan_ke', 'pilihan_poltek', 'pilihan_prodi'
     ];
+
+    public function mahasiswa(){
+        return $this->belongsTo('App\Mahasiswa', 'foreign_key', 'no_pendaftar');
+    }
 }

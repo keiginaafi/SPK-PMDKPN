@@ -14,4 +14,20 @@ class Mahasiswa extends Model
         'nama', 'jenis_kelamin', 'agama', 'tgl_lahir', 'kecamatan', 'kota', 'provinsi',
         'npsn', 'tipe_sekolah', 'jenis_sekolah', 'jurusan_asal', 'periode'
     ];
+
+    public function peringkat(){
+        return $this->hasMany('App\Peringkat', 'foreign_key', 'no_pendaftar');
+    }
+
+    public function pilihan_mhs(){
+        return $this->hasMany('App\PilihanMhs', 'foreign_key', 'no_pendaftar');
+    }
+
+    public function nilai_akademis(){
+        return $this->hasMany('App\NilaiAkademis', 'foreign_key', 'no_pendaftar');
+    }
+
+    public function nilai_non_akademis(){
+        return $this->hasMany('App\NilaiNonAkademis', 'foreign_key', 'no_pendaftar');
+    }
 }
