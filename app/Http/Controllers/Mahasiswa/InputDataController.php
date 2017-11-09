@@ -38,24 +38,29 @@ class InputDataController extends Controller
       ], $messages);
     }
 
-    protected function tambah(array $data){
-      $kuota_penerimaan = $data['kuota_max'] * (90/100);
-      $kuota_sma = 0.5 * $kuota_penerimaan;
-      $kuota_smk = 0.3 * $kuota_penerimaan;
-      $kuota_cadangan = $kuota_penerimaan - ($kuota_sma + $kuota_smk);
+    protected function inputDataAkademis(Request $request){
+      //import to database
+      if($request->hasFile('nilai_akademis')){
 
-      $prodi = new prodi();
-      $prodi->kode_prodi = $data['kode_prodi'];
-      $prodi->nama_prodi = $data['nama_prodi'];
-      $prodi->kuota_max = $data['kuota_max'];
-      $prodi->kuota_penerimaan = $kuota_penerimaan;
-      $prodi->kuota_sma = $kuota_sma;
-      $prodi->kuota_smk = $kuota_smk;
-      $prodi->kuota_cadangan = $kuota_cadangan;
+        $path = $request->file('nilai_akademis')->getRealPath();
+  		  $data = Excel::load($path, function($reader) {})->get();
 
-      //save, jika gagal abort
-      if(!$prodi->save()){
-        return Redirect::back()->withErrors('The server encountered an unexpected condition');
+        if(!empty($data) && $data->count()){
+  			  foreach ($data->toArray() as $key => $value) {
+  				  if(!empty($value)){
+  					  foreach ($value as $v) {
+  						  $insert[] = ['title' => $v['title'], 'description' => $v['description']];
+  					  }
+  				  }
+  			  }
+
+  			  if(!empty($insert)){
+  				  Item::insert($insert);
+  				  return back()->with('success','Insert Record successfully.');
+  			  }
+  		  }
+  		}else{
+        return back()->with('error','Please Check your file, Something is wrong there.');
       }
     }
 

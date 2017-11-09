@@ -6,7 +6,7 @@
 	</h1>
 	<ol class="breadcrumb">
 		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>		
+		<li>Dashboard Admin</li>
 		<li class="active">Input Data</li>
 	</ol>
 @stop
@@ -16,16 +16,16 @@
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Input Data</h3>
-				</div>				
-				<div class="box-body">					
-					<div class="col-md-1">						
+				</div>
+				<div class="box-body">
+					<div class="col-md-1">
 					</div>
 					<div class="col-md-4" style="border: 1px solid grey;">
 						<form id="dataAkademis" role="form" method="POST" action="" enctype="multipart/form-data">
 							{{ csrf_field() }}
 							<div class="form-group" style="padding-top: 15px;">
 								<label for="nilaiAkademis" class="control-label">Nilai Akademis</label>
-								<input type="file" class="form-control-file" id="nilaiAkademis" name="nilaiAkademis" style="padding-top: 5px;"></input>
+								<input type="file" class="form-control-file" id="nilaiAkademis" name="nilai_akademis" style="padding-top: 5px;"></input>
 								<p class="help-block" style="padding-top: 5px;">Pilih file berita acara yang akan diunggah.</p>
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
@@ -51,7 +51,7 @@
 								</center>
 							</div>
 						</form>
-					</div>				
+					</div>
 				</div>
 				<div class="box-header" style="padding-top: 35px;">
 					<h3 class="box-title">History</h3>
@@ -61,19 +61,19 @@
 					<table id="histroy" class="table table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>No.</th>								
+								<th>No.</th>
 								<th>Periode</th>
-								<th>Jumlah Pendaftar</th>								
+								<th>Jumlah Pendaftar</th>
 							</tr>
 						</thead>
 						<tbody>
 							<td></td>
 							<td></td>
-							<td></td>							
+							<td></td>
 						</tbody>
 						<tfoot>
 							<tr>
-								<th>No.</th>								
+								<th>No.</th>
 								<th>Periode</th>
 								<th>Jumlah Pendaftar</th>
 							</tr>
