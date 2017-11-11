@@ -13,6 +13,21 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
+			@if (count($errors) > 0)
+        <div class="alert alert-danger">
+        	<strong>Whoops!</strong> There were some problems with your input.<br><br>
+          <ul>
+          	@foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+      	</div>
+      @endif
+			@if (Session::has('successMessage'))
+			<div class="alert alert-success alert-dismissable">
+				<p>{{  Session::get('successMessage') }}</p>
+			</div>
+			@endif
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Input Data</h3>
@@ -21,12 +36,12 @@
 					<div class="col-md-1">
 					</div>
 					<div class="col-md-4" style="border: 1px solid grey;">
-						<form id="dataAkademis" role="form" method="POST" action="" enctype="multipart/form-data">
+						<form id="dataAkademis" role="form" method="POST" action="{{ url('/input_data/tambah_mahasiswa') }}" enctype="multipart/form-data">
 							{{ csrf_field() }}
 							<div class="form-group" style="padding-top: 15px;">
 								<label for="nilaiAkademis" class="control-label">Nilai Akademis</label>
 								<input type="file" class="form-control-file" id="nilaiAkademis" name="nilai_akademis" style="padding-top: 5px;"></input>
-								<p class="help-block" style="padding-top: 5px;">Pilih file berita acara yang akan diunggah.</p>
+								<p class="help-block" style="padding-top: 5px;">Pilih file nilai akademis yang akan diunggah. (.xls)</p>
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>
@@ -38,12 +53,12 @@
 					<div class="col-md-2">
 					</div>
 					<div class="col-md-4" style="border: 1px solid grey;">
-						<form id="dataNonAkademis" role="form" method="POST" action="" enctype="multipart/form-data">
+						<form id="dataNonAkademis" role="form" method="POST" action="{{ url('/input_data/tambah_prestasi') }}" enctype="multipart/form-data">
 							{{ csrf_field() }}
 							<div class="form-group" style="padding-top: 15px;">
 								<label for="nilaiNonAkademis" class="control-label">Nilai Non Akademis</label>
-								<input type="file" class="form-control-file" id="nilaiNonAkademis" name="nilaiNonAkademis" style="padding-top: 5px;"></input>
-								<p class="help-block" style="padding-top: 5px;">Pilih file berita acara yang akan diunggah.</p>
+								<input type="file" class="form-control-file" id="nilaiNonAkademis" name="nilai_non_akademis" style="padding-top: 5px;"></input>
+								<p class="help-block" style="padding-top: 5px;">Pilih file prestasi yang akan diunggah. (.xls)</p>
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>
@@ -85,12 +100,45 @@
 		</div>
 	</div>
 @endsection
-<!--@section('script')
+@section('script')
 	<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 	<script>
 		$(function(){
 			$('#dataMahasiswa').DataTable({"pagelength": 100});
 		});
+
+		$(document).on('submit', '#dataNonAkademis', function(e) {
+        e.preventDefault();
+
+        $('input+small').text('');
+        $('input').parent().removeClass('has-error');
+
+        $.ajax({
+            method: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            dataType: "json"
+        })
+
+        .done(function(data) {
+            console.log(data);
+
+            $('.alert-success').removeClass('hidden');
+            $('#myModal').modal('hide');
+
+            //window.location.href='/kelola_prodi';
+        })
+
+        .fail(function(data) {
+            console.log(data.responeJSON);
+            $.each(data.responseJSON, function (key, value) {
+                var input = '#dataNonAkademis input[name=' + key + ']';
+
+                $(input + '+small').text(value);
+                $(input).parent().addClass('has-error');
+            });
+        });
+    });
 	</script>
-@endsection-->
+@endsection

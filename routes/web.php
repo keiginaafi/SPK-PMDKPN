@@ -23,9 +23,16 @@ Route::get('/data_pendaftar', function () {
     return view('admin.dashboard.mahasiswa.dataPendaftarView');
 });
 
-Route::get('/input_data', function () {
+/*Route::get('/input_data', function () {
     return view('admin.dashboard.mahasiswa.inputDataView');
-});
+});*/
+
+//route Input Data
+Route::get('/input_data', array('as' => 'input', 'uses' => 'Mahasiswa\InputDataController@index'));
+
+Route::post('/input_data/tambah_prestasi', array('as' => 'input.prestasi', 'uses' => 'Mahasiswa\InputDataController@inputDataNonAkademis'));
+
+Route::post('/input_data/tambah_mahasiswa', array('as' => 'input.mahasiswa', 'uses' => 'Mahasiswa\InputDataController@inputDataAkademis'));
 
 /*Route::get('/kelola_kriteria', function () {
     return view('admin.dashboard.kriteria.KriteriaView');

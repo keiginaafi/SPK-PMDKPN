@@ -17,7 +17,7 @@ class BuatTabelNonAkademis extends Migration
             $table->increments('id_prestasi');
             $table->string('no_pendaftar', 12);
             $table->foreign('no_pendaftar')->references('no_pendaftar')->on('mahasiswa');
-            $table->string('nama_prestasi', 60);
+            $table->string('nama_prestasi', 255);
             $table->string('skala_prestasi', 13);
             $table->string('jenis_prestasi', 8);
             $table->string('juara_prestasi', 7);
