@@ -16,9 +16,9 @@ class BuatTabelTabelPerbandingan extends Migration
         Schema::create('tabel_perbandingan', function (Blueprint $table) {
             $table->increments('id_perbandingan');
             $table->integer('id_kriteria_1')->unsigned();
-            $table->integer('id_kriteria_2')->unsigned();            
-            $table->float('nilai_banding', 2, 2);
-            $table->float('normalisasi', 2, 2);
+            $table->integer('id_kriteria_2')->unsigned();
+            $table->decimal('nilai_banding', 3, 2);
+            $table->decimal('normalisasi', 3, 2);
         });
     }
 

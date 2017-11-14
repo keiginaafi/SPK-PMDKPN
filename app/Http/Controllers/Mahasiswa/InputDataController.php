@@ -41,7 +41,7 @@ class InputDataController extends Controller
           $results = $reader->get();
           foreach($results as $col){
             //data mahasiswa
-            /*$akademis = new mahasiswa();
+            $akademis = new mahasiswa();
             $akademis->no_pendaftar = $col->nomor_pendaftaran;
             $akademis->nisn = $col->nisn;
             $akademis->nama = $col->nama_lengkap;
@@ -60,7 +60,7 @@ class InputDataController extends Controller
             $akademis->nilai_non_akademis = 0;
             $akademis->nilai_akhir = 0;
             $akademis->periode = date('Y');
-            $akademis->save();*/
+            $akademis->save();
             /*var_dump($akademis->no_pendaftar, $akademis->nisn, $akademis->nama, $akademis->jenis_kelamin,
             $akademis->agama, $akademis->tgl_lahir, $akademis->kecamatan, $akademis->kota, $akademis->provinsi,
             $akademis->npsn, $akademis->tipe_sekolah, $akademis->jenis_sekolah, $akademis->akreditasi_sekolah,
@@ -76,7 +76,7 @@ class InputDataController extends Controller
               $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
               $nilai->mapel = "matematika";
               $nilai->nilai_mapel = $col->semester_1_matematika;
-              //$nilai->nilai_mapel_koreksi = 0;
+              $nilai->nilai_mapel_koreksi = 0;
               $nilai->save();
             }
             if($col->semester_2_matematika && $col->semester_2_matematika != 0){
@@ -587,12 +587,321 @@ class InputDataController extends Controller
               $nilai->nilai_mapel_koreksi = 0;
               $nilai->save();
             }
-            //a
-            //a
-            //a
-            //a
+
+            //bahasa-antropologi
+            if($col->semester_1_bahasa_antropologi && $col->semester_1_bahasa_antropologi != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "antropologi";
+              $nilai->nilai_mapel = $col->semester_1_bahasa_antropologi;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_bahasa_antropologi && $col->semester_2_bahasa_antropologi != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "antropologi";
+              $nilai->nilai_mapel = $col->semester_2_bahasa_antropologi;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_bahasa_antropologi && $col->semester_3_bahasa_antropologi != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "antropologi";
+              $nilai->nilai_mapel = $col->semester_3_bahasa_antropologi;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_bahasa_antropologi && $col->semester_4_bahasa_antropologi != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "antropologi";
+              $nilai->nilai_mapel = $col->semester_4_bahasa_antropologi;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_bahasa_antropologi && $col->semester_5_bahasa_antropologi != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "antropologi";
+              $nilai->nilai_mapel = $col->semester_5_bahasa_antropologi;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
+            //bahasa-asing
+            if($col->semester_1_bahasa_bahasa_asing && $col->semester_1_bahasa_bahasa_asing != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "bahasa asing";
+              $nilai->nilai_mapel = $col->semester_1_bahasa_bahasa_asing;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_bahasa_bahasa_asing && $col->semester_2_bahasa_bahasa_asing != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "bahasa asing";
+              $nilai->nilai_mapel = $col->semester_2_bahasa_bahasa_asing;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_bahasa_bahasa_asing && $col->semester_3_bahasa_bahasa_asing != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "bahasa asing";
+              $nilai->nilai_mapel = $col->semester_3_bahasa_bahasa_asing;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_bahasa_bahasa_asing && $col->semester_4_bahasa_bahasa_asing != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "bahasa asing";
+              $nilai->nilai_mapel = $col->semester_4_bahasa_bahasa_asing;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_bahasa_bahasa_asing && $col->semester_5_bahasa_bahasa_asing != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "bahasa asing";
+              $nilai->nilai_mapel = $col->semester_5_bahasa_bahasa_asing;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
+            //agama-tafsir
+            if($col->semester_1_agama_tafsir && $col->semester_1_agama_tafsir != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "tafsir";
+              $nilai->nilai_mapel = $col->semester_1_agama_tafsir;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_agama_tafsir && $col->semester_2_agama_tafsir != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "tafsir";
+              $nilai->nilai_mapel = $col->semester_2_agama_tafsir;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_agama_tafsir && $col->semester_3_agama_tafsir != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "tafsir";
+              $nilai->nilai_mapel = $col->semester_3_agama_tafsir;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_agama_tafsir && $col->semester_4_agama_tafsir != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "tafsir";
+              $nilai->nilai_mapel = $col->semester_4_agama_tafsir;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_agama_tafsir && $col->semester_5_agama_tafsir != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "tafsir";
+              $nilai->nilai_mapel = $col->semester_5_agama_tafsir;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
+            //agama-fikih
+            if($col->semester_1_agama_fikih && $col->semester_1_agama_fikih != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "fikih";
+              $nilai->nilai_mapel = $col->semester_1_agama_fikih;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_agama_fikih && $col->semester_2_agama_fikih != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "fikih";
+              $nilai->nilai_mapel = $col->semester_2_agama_fikih;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_agama_fikih && $col->semester_3_agama_fikih != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "fikih";
+              $nilai->nilai_mapel = $col->semester_3_agama_fikih;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_agama_fikih && $col->semester_4_agama_fikih != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "fikih";
+              $nilai->nilai_mapel = $col->semester_4_agama_fikih;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_agama_fikih && $col->semester_5_agama_fikih != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "fikih";
+              $nilai->nilai_mapel = $col->semester_5_agama_fikih;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
+            //agama-hadist
+            if($col->semester_1_agama_hadist && $col->semester_1_agama_hadist != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "hadist";
+              $nilai->nilai_mapel = $col->semester_1_agama_hadist;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_agama_hadist && $col->semester_2_agama_hadist != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "hadist";
+              $nilai->nilai_mapel = $col->semester_2_agama_hadist;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_agama_hadist && $col->semester_3_agama_hadist != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "hadist";
+              $nilai->nilai_mapel = $col->semester_3_agama_hadist;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_agama_hadist && $col->semester_4_agama_hadist != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "hadist";
+              $nilai->nilai_mapel = $col->semester_4_agama_hadist;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_agama_hadist && $col->semester_5_agama_hadist != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "hadist";
+              $nilai->nilai_mapel = $col->semester_5_agama_hadist;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
+            //smk rata-rata kejuruan
+            if($col->semester_1_smk_rata_rata_kejuruanproduktif && $col->semester_1_smk_rata_rata_kejuruanproduktif != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 1;
+              $nilai->jenis_nilai = $col->semester_1_jenis_nilai;
+              $nilai->mapel = "smk rata rata kejuruan";
+              $nilai->nilai_mapel = $col->semester_1_smk_rata_rata_kejuruanproduktif;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_2_smk_rata_rata_kejuruanproduktif && $col->semester_2_smk_rata_rata_kejuruanproduktif != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 2;
+              $nilai->jenis_nilai = $col->semester_2_jenis_nilai;
+              $nilai->mapel = "smk rata rata kejuruan";
+              $nilai->nilai_mapel = $col->semester_2_smk_rata_rata_kejuruanproduktif;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_3_smk_rata_rata_kejuruanproduktif && $col->semester_3_smk_rata_rata_kejuruanproduktif != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 3;
+              $nilai->jenis_nilai = $col->semester_3_jenis_nilai;
+              $nilai->mapel = "smk rata rata kejuruan";
+              $nilai->nilai_mapel = $col->semester_3_smk_rata_rata_kejuruanproduktif;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_4_smk_rata_rata_kejuruanproduktif && $col->semester_4_smk_rata_rata_kejuruanproduktif != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 4;
+              $nilai->jenis_nilai = $col->semester_4_jenis_nilai;
+              $nilai->mapel = "smk rata rata kejuruan";
+              $nilai->nilai_mapel = $col->semester_4_smk_rata_rata_kejuruanproduktif;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+            if($col->semester_5_smk_rata_rata_kejuruanproduktif && $col->semester_5_smk_rata_rata_kejuruanproduktif != 0){
+              $nilai = new nilai_akademis();
+              $nilai->no_pendaftar = $col->nomor_pendaftaran;
+              $nilai->semester = 5;
+              $nilai->jenis_nilai = $col->semester_5_jenis_nilai;
+              $nilai->mapel = "smk rata rata kejuruan";
+              $nilai->nilai_mapel = $col->semester_5_smk_rata_rata_kejuruanproduktif;
+              $nilai->nilai_mapel_koreksi = 0;
+              $nilai->save();
+            }
+
             //peringkat
-            /*if($col->semester_1_peringkat){
+            if($col->semester_1_peringkat){
               $peringkat = new peringkat();
               $peringkat->no_pendaftar = $col->nomor_pendaftaran;
               $peringkat->semester = 1;
@@ -631,7 +940,33 @@ class InputDataController extends Controller
               $peringkat->peringkat = $col->semester_5_peringkat;
               $peringkat->jumlah_siswa = $col->semester_5_jumlah_siswa;
               $peringkat->save();
-            }*/
+            }
+
+            //pilihan prodi
+            if($col->pilihan_poltek_1 && $col->pilihan_poltek_1 != "0"){
+              $pilihan = new pilihan_mhs();
+              $pilihan->no_pendaftar = $col->nomor_pendaftaran;
+              $pilihan->pilihan_ke = 1;
+              $pilihan->pilihan_poltek = $col->pilihan_poltek_1;
+              $pilihan->pilihan_prodi = $col->pilihan_prodi_1;
+              $pilihan->save();
+            }
+            if($col->pilihan_poltek_2 && $col->pilihan_poltek_2 != "0"){
+              $pilihan = new pilihan_mhs();
+              $pilihan->no_pendaftar = $col->nomor_pendaftaran;
+              $pilihan->pilihan_ke = 2;
+              $pilihan->pilihan_poltek = $col->pilihan_poltek_2;
+              $pilihan->pilihan_prodi = $col->pilihan_prodi_2;
+              $pilihan->save();
+            }
+            if($col->pilihan_poltek_3 && $col->pilihan_poltek_3 != "0"){
+              $pilihan = new pilihan_mhs();
+              $pilihan->no_pendaftar = $col->nomor_pendaftaran;
+              $pilihan->pilihan_ke = 3;
+              $pilihan->pilihan_poltek = $col->pilihan_poltek_3;
+              $pilihan->pilihan_prodi = $col->pilihan_prodi_3;
+              $pilihan->save();
+            }
             //var_dump($col, '<br>');
           }
         });

@@ -19,9 +19,9 @@ class BuatTabelNilaiAkademis extends Migration
             $table->foreign('no_pendaftar')->references('no_pendaftar')->on('mahasiswa');
             $table->char('semester', 1);
             $table->char('jenis_nilai', 3);
-            $table->string('mapel', 20);
-            $table->float('nilai_mapel', 3, 2);
-            $table->float('nilai_mapel_koreksi', 3, 2);            
+            $table->string('mapel', 30);
+            $table->decimal('nilai_mapel', 4, 2);
+            $table->decimal('nilai_mapel_koreksi', 4, 2);
         });
     }
 

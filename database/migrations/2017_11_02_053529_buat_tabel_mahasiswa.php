@@ -27,11 +27,11 @@ class BuatTabelMahasiswa extends Migration
             $table->string('tipe_sekolah', 7);
             $table->string('jenis_sekolah', 6);
             $table->char('akreditasi_sekolah', 1);
-            $table->string('jurusan_asal', 30);            
-            $table->float('nilai_akademis', 4, 2);
-            $table->float('nilai_non_akademis', 4, 2);
-            $table->float('nilai_akhir', 4, 2);
-            $table->string('periode', 4);            
+            $table->string('jurusan_asal', 60);
+            $table->decimal('nilai_akademis', 5, 2);
+            $table->decimal('nilai_non_akademis', 5, 2);
+            $table->decimal('nilai_akhir', 4, 2);
+            $table->string('periode', 4);
         });
     }
 

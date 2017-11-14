@@ -18,8 +18,8 @@ class BuatTabelPilihanMhs extends Migration
             $table->string('no_pendaftar', 12);
             $table->foreign('no_pendaftar')->references('no_pendaftar')->on('mahasiswa');
             $table->char('pilihan_ke', 1);
-            $table->string('pilihan_poltek', 40);
-            $table->string('pilihan_prodi', 40);            
+            $table->string('pilihan_poltek', 60);
+            $table->string('pilihan_prodi', 60);            
         });
     }
 

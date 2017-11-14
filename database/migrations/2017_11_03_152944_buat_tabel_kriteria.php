@@ -15,8 +15,8 @@ class BuatTabelKriteria extends Migration
     {
         Schema::create('kriteria', function (Blueprint $table) {
             $table->increments('id_kriteria');
-            $table->string('nama_kriteria', 30);            
-            $table->float('bobot_kriteria', 2, 2);            
+            $table->string('nama_kriteria', 30);
+            $table->decimal('bobot_kriteria', 3, 2);            
         });
     }
 
