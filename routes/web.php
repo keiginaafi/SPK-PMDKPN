@@ -19,9 +19,11 @@ Route::get('/admin', function () {
     return view('admin.dashboard.main');
 });
 
-Route::get('/data_pendaftar', function () {
+/*Route::get('/data_pendaftar', function () {
     return view('admin.dashboard.mahasiswa.dataPendaftarView');
-});
+});*/
+//route data pendaftar
+Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
 
 /*Route::get('/input_data', function () {
     return view('admin.dashboard.mahasiswa.inputDataView');

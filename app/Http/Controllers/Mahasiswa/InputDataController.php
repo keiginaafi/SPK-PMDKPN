@@ -18,6 +18,9 @@ use App\NilaiNonAkademis as nilai_non_akademis;
 
 class InputDataController extends Controller
 {
+  /*public function __construct(){
+    $this->middleware('auth');
+    }*/
     public function index(){
       $dataHistory = mahasiswa::select(DB::raw("no_pendaftar, periode"))
       ->get();
@@ -61,11 +64,6 @@ class InputDataController extends Controller
             $akademis->nilai_akhir = 0;
             $akademis->periode = date('Y');
             $akademis->save();
-            /*var_dump($akademis->no_pendaftar, $akademis->nisn, $akademis->nama, $akademis->jenis_kelamin,
-            $akademis->agama, $akademis->tgl_lahir, $akademis->kecamatan, $akademis->kota, $akademis->provinsi,
-            $akademis->npsn, $akademis->tipe_sekolah, $akademis->jenis_sekolah, $akademis->akreditasi_sekolah,
-            $akademis->jurusan_asal, $akademis->nilai_akademis, $akademis->nilai_non_akademis,
-            $akademis->nilai_akhir, $akademis->periode. '<br>');*/
 
             //nilai akademis
             //matematika
@@ -943,7 +941,7 @@ class InputDataController extends Controller
             }
 
             //pilihan prodi
-            if($col->pilihan_poltek_1 && $col->pilihan_poltek_1 != "0"){
+            if($col->pilihan_poltek_1 && $col->pilihan_poltek_1 != "0" && $col->pilihan_poltek_1 == "Politeknik Negeri Semarang"){
               $pilihan = new pilihan_mhs();
               $pilihan->no_pendaftar = $col->nomor_pendaftaran;
               $pilihan->pilihan_ke = 1;
@@ -951,7 +949,7 @@ class InputDataController extends Controller
               $pilihan->pilihan_prodi = $col->pilihan_prodi_1;
               $pilihan->save();
             }
-            if($col->pilihan_poltek_2 && $col->pilihan_poltek_2 != "0"){
+            if($col->pilihan_poltek_2 && $col->pilihan_poltek_2 != "0" && $col->pilihan_poltek_2 == "Politeknik Negeri Semarang"){
               $pilihan = new pilihan_mhs();
               $pilihan->no_pendaftar = $col->nomor_pendaftaran;
               $pilihan->pilihan_ke = 2;
@@ -959,7 +957,7 @@ class InputDataController extends Controller
               $pilihan->pilihan_prodi = $col->pilihan_prodi_2;
               $pilihan->save();
             }
-            if($col->pilihan_poltek_3 && $col->pilihan_poltek_3 != "0"){
+            if($col->pilihan_poltek_3 && $col->pilihan_poltek_3 != "0" && $col->pilihan_poltek_3 == "Politeknik Negeri Semarang"){
               $pilihan = new pilihan_mhs();
               $pilihan->no_pendaftar = $col->nomor_pendaftaran;
               $pilihan->pilihan_ke = 3;
