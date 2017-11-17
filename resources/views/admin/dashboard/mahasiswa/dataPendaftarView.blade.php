@@ -27,18 +27,42 @@
 							@endforeach
 						</select>
 					</div>
-					<div class="form-group">
-						<div id="data_mhs" name="data-mhs">
-						</div>
-					</div>
-					<!--
-					<div class="tab-content">
-
-							<div id="" class="tab-pane fade">
-
-							</div>
-
-					</div>-->
+					<table id="table_data" class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>No. Pendaftar</th>
+								<th>NISN</th>
+								<th>Nama</th>
+								<th>Jenis Kelamin</th>
+								<th>Agama</th>
+								<th>Tanggal Lahir</th>
+								<th>Kota</th>
+								<th>Tipe Sekolah</th>
+								<th>Jenis Sekolah</th>
+								<th>Akreditasi Sekolah</th>
+								<th>Jurusan Asal</th>
+								<th>Detail</th>
+							</tr>
+						</thead>
+						<tbody id="data_mhs" name="data_mhs">
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>No. Pendaftar</th>
+								<th>NISN</th>
+								<th>Nama</th>
+								<th>Jenis Kelamin</th>
+								<th>Agama</th>
+								<th>Tanggal Lahir</th>
+								<th>Kota</th>
+								<th>Tipe Sekolah</th>
+								<th>Jenis Sekolah</th>
+								<th>Akreditasi Sekolah</th>
+								<th>Jurusan Asal</th>
+								<th>Detail</th>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -52,88 +76,50 @@
 
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
-				$.ajaxSetup({
-				  headers: {
-				    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-				  }
-				});
+				if(prodi != "NONE"){
+					$.ajaxSetup({
+						headers: {
+							'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+						}
+					});
 
-				$.ajax({
-					url: "data_pendaftar/" + prodi,
-					type: "POST",
-					dataType: 'json',
-					data:{
-						id: prodi,
-					},
-					success: function(data){
-						console.log(data);
-
-						var detail = "data_pendaftar";
-						var edit = "edit";
-						var view = '<table id="dataPendaftar" class="table table-bordered table-hover">';
-							view += '<thead>';
-								view += '<tr>';
-									view += '<th>No. Pendaftar</th>';
-	          			view += '<th>NISN</th>';
-	          			view += '<th>Nama</th>';
-	          			view += '<th>Jenis Kelamin</th>';
-	          			view += '<th>Agama</th>';
-	          			view += '<th>Tanggal Lahir</th>';
-	          			view += '<th>Kota</th>';
-	          			view += '<th>Tipe Sekolah</th>';
-	          			view += '<th>Jenis Sekolah</th>';
-	          			view += '<th>Akreditasi Sekolah</th>';
-	          			view += '<th>Jurusan Asal</th>';
-	          			view += '<th>Detail</th>';
-								view += '</tr>';
-							view += '</thead>';
-							view += '<tbody>';
+					$.ajax({
+						url: "data_pendaftar/" + prodi,
+						type:"POST",
+						cache: false,
+						dataType: 'json',
+						data:{
+							id: prodi,
+						},
+						success: function(data){
+							console.log(data);
+							$("#data_mhs tr").last().remove();
+							var detail = "data_pendaftar";
+							var details = "details";
 							$.each(data, function(i, d){
-								view += '<tr>';
+								var view = '<tr>';
 								$.each(d, function(j, e){
 									view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-					        view += '<td>' + e + '</td>';
-									view += '<td>';
-					        view += '<a class="btn btn-primary btn-flat btn-sm" href="(' + detail + '/' + e + '/' + edit + ')">';
-					        view += '<i class="fa fa-list"> Detail </i>';
-					          view += '</a>';
-					        view += '</td>';
 								});
+								view += '<td>';
+								view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
+								view += '<i class="fa fa-list"> Detail </i>';
+								view += '</a>';
+								view += '</td>';
 								view += '</tr>';
+								$("#data_mhs").append(view);
 							});
-							view += '</tbody>';
-							view += '<tfoot>'
-				        view += '<tr>';
-				          view += '<th>No. Pendaftar</th>';
-				          view += '<th>NISN</th>';
-				         	view += '<th>Nama</th>';
-				          view += '<th>Jenis Kelamin</th>';
-				          view += '<th>Agama</th>';
-				          view += '<th>Tanggal Lahir</th>';
-				          view += '<th>Kota</th>';
-				          view += '<th>Tipe Sekolah</th>';
-				          view += '<th>Jenis Sekolah</th>';
-				          view += '<th>Akreditasi Sekolah</th>';
-				          view += '<th>Jurusan Asal</th>';
-				          view += '<th>Detail</th>';
-				        view += '</tr>';
-				      view += '</tfoot>';
-				    view += '</table>';
-						$("#data_mhs").append(view);
-					},
-					error: function(){
-						alert('data kosong');
-					}
-				});
+						},
+						error: function(data, ajaxOptions, thrownError){
+
+							alert(data.status);
+						}
+					});
+				}else{
+
+					alert('Anda belum memilih mahasiswa');
+					$("#data_mhs").html("");
+				}
 
 				$("#select_prodi").change(function(){
 					var prodi = $("#select_prodi").val();
@@ -147,66 +133,29 @@
 						$.ajax({
 							url: "data_pendaftar/" + prodi,
 							type:"POST",
+							cache: false,
 							dataType: 'json',
 							data:{
 								id: prodi,
 							},
 							success: function(data){
 								console.log(data);
-
+								$("#data_mhs tr").last().remove();
 								var detail = "data_pendaftar";
-								var edit = "edit";
-								var view = '<table id="dataPendaftar" class="table table-bordered table-hover">';
-									view += '<thead>';
-										view += '<tr>';
-											view += '<th>No. Pendaftar</th>';
-			          			view += '<th>NISN</th>';
-			          			view += '<th>Nama</th>';
-			          			view += '<th>Jenis Kelamin</th>';
-			          			view += '<th>Agama</th>';
-			          			view += '<th>Tanggal Lahir</th>';
-			          			view += '<th>Kota</th>';
-			          			view += '<th>Tipe Sekolah</th>';
-			          			view += '<th>Jenis Sekolah</th>';
-			          			view += '<th>Akreditasi Sekolah</th>';
-			          			view += '<th>Jurusan Asal</th>';
-			          			view += '<th>Pilihan</th>';
-			          			view += '<th>Detail</th>';
-										view += '</tr>';
-									view += '</thead>';
-									view += '<tbody>';
-									$.each(data, function(i, d){
-										view += '<tr>';
-										$.each(d, function(j, e){
-											view += '<td>' + e + '</td>';
-										});
-											view += '<td>';
-											view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + edit + '">';
-											view += '<i class="fa fa-list"> Detail </i>';
-												view += '</a>';
-											view += '</td>';
-										view += '</tr>';
+								var details = "details";
+								$.each(data, function(i, d){
+									var view = '<tr>';
+									$.each(d, function(j, e){
+										view += '<td>' + e + '</td>';
 									});
-									view += '</tbody>';
-									view += '<tfoot>'
-						        view += '<tr>';
-						          view += '<th>No. Pendaftar</th>';
-						          view += '<th>NISN</th>';
-						          view += '<th>Nama</th>';
-						          view += '<th>Jenis Kelamin</th>';
-						          view += '<th>Agama</th>';
-						          view += '<th>Tanggal Lahir</th>';
-						          view += '<th>Kota</th>';
-						          view += '<th>Tipe Sekolah</th>';
-						          view += '<th>Jenis Sekolah</th>';
-						          view += '<th>Akreditasi Sekolah</th>';
-						          view += '<th>Jurusan Asal</th>';
-						          view += '<th>Pilihan</th>';
-						          view += '<th>Detail</th>';
-						        view += '</tr>';
-						      view += '</tfoot>';
-						    view += '</table>';
-								$("#data_mhs").append(view);
+									view += '<td>';
+									view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
+									view += '<i class="fa fa-list"> Detail </i>';
+									view += '</a>';
+									view += '</td>';
+									view += '</tr>';
+									$("#data_mhs").append(view);
+								});
 							},
 							error: function(data, ajaxOptions, thrownError){
 
@@ -214,7 +163,7 @@
 							}
 						});
 					}else{
-						console.log(data);
+
 						alert('Anda belum memilih mahasiswa');
 						$("#data_mhs").html("");
 					}

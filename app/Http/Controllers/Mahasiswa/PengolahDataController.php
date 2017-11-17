@@ -32,6 +32,8 @@ class PengolahDataController extends Controller
 
   public function getDataMhs($id){
     //$id_prodi = $id;
+    $data_pendaftar = "";
+    $data_prodi = "";
     try {
       //get nama prodi based on id
       $data_prodi = DB::table('prodi')
