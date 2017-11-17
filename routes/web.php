@@ -1,5 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use App\Mahasiswa as mahasiswa;
+use App\Peringkat as peringkat;
+use App\PilihanMhs as pilihan_mhs;
+use App\NilaiAkademis as nilai_akademis;
+use App\NilaiNonAkademis as nilai_non_akademis;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,6 +30,8 @@ Route::get('/admin', function () {
 });*/
 //route data pendaftar
 Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
+
+Route::post('/data_pendaftar/{id}', array('as' => 'get_data', 'uses' => 'Mahasiswa\PengolahDataController@getDataMhs'));
 
 /*Route::get('/input_data', function () {
     return view('admin.dashboard.mahasiswa.inputDataView');

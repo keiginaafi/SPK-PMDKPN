@@ -130,51 +130,51 @@
 		</div>
 	</div>
 	<!-- End of Modal -->
-@endsection
-@section('script')
-	<script>
-		$(function(){
-			$('#tambahProdi').click(function(){
-				$('input+small').text('');
-				$('input').parent().removeClass('has-error');
+	@section('script')
+		<script>
+			$(function(){
+				$('#tambahProdi').click(function(){
+					$('input+small').text('');
+					$('input').parent().removeClass('has-error');
 
-				$('#inputProdi').modal('show');
-				//console.log('test');
-				return false;
+					$('#inputProdi').modal('show');
+					//console.log('test');
+					return false;
+				});
 			});
-		});
 
-		$(document).on('submit', '#formTambahProdi', function(e) {
-        e.preventDefault();
+			$(document).on('submit', '#formTambahProdi', function(e) {
+	        e.preventDefault();
 
-        $('input+small').text('');
-        $('input').parent().removeClass('has-error');
+	        $('input+small').text('');
+	        $('input').parent().removeClass('has-error');
 
-        $.ajax({
-            method: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            dataType: "json"
-        })
+	        $.ajax({
+	            method: $(this).attr('method'),
+	            url: $(this).attr('action'),
+	            data: $(this).serialize(),
+	            dataType: "json"
+	        })
 
-        .done(function(data) {
-            console.log(data);
+	        .done(function(data) {
+	            console.log(data);
 
-            $('.alert-success').removeClass('hidden');
-            $('#myModal').modal('hide');
+	            $('.alert-success').removeClass('hidden');
+	            $('#myModal').modal('hide');
 
-            //window.location.href='/kelola_prodi';
-        })
+	            //window.location.href='/kelola_prodi';
+	        })
 
-        .fail(function(data) {
-            console.log(data.responeJSON);
-            $.each(data.responseJSON, function (key, value) {
-                var input = '#formTambahProdi input[name=' + key + ']';
+	        .fail(function(data) {
+	            console.log(data.responeJSON);
+	            $.each(data.responseJSON, function (key, value) {
+	                var input = '#formTambahProdi input[name=' + key + ']';
 
-                $(input + '+small').text(value);
-                $(input).parent().addClass('has-error');
-            });
-        });
-    });
-	</script>
+	                $(input + '+small').text(value);
+	                $(input).parent().addClass('has-error');
+	            });
+	        });
+	    });
+		</script>
+	@endsection
 @endsection
