@@ -15,51 +15,69 @@
 		<div class="col-xs-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">Nama Mahasiswa
+					<h3 class="box-title">{{ $data_mhs[0]->nama }}
 						<button class="btn btn-success btn-flat btn-sm" id="tambahProdi" title="Tambah" data-toggle="modal" data-target="#inputProdi" style="margin-left: 10px;">
 							<i class="fa fa-plus"></i>
 						</button>
 					</h3>
 				</div>
 				<div class="box-body">
-					<table id="dataProdi" class="table table-bordered table-hover">
-						<thead>
-							<tr>
-								<th>Kode Prodi</th>
-								<th>Nama Prodi</th>
-								<th>Kuota</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach ($prodi as $item_prodi)
+					<div class="form-group">
+						<label class="control-label">Data Akademis</label>
+						<table id="dataAkademis" class="table table-bordered table-hover">
+							<thead>
 								<tr>
-									<td>{{ $item_prodi->kode_prodi }}</td>
-									<td>{{ $item_prodi->nama_prodi }}</td>
-									<td>{{ $item_prodi->kuota_max }}</td>
-									<td>
-										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
-											<i class="fa fa-list"> Edit </i>
-										</a> |
-										<a class="btn btn-danger btn-flat btn-sm" href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
-										title="hapus"
-										onclick="return confirm('Apakah anda yakin akan menghapus program studi
-										{{{ $item_prodi->nama_prodi }}} ?')">
-											<i class="fa fa-trash"> Delete </i>
-										</a>
-									</td>
+									<th>Semester</th>
+									<th>Jenis Nilai</th>
+									<th>Mata Pelajaran</th>
+									<th>Nilai</th>
 								</tr>
-							@endforeach
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>Kode Prodi</th>
-								<th>Nama Prodi</th>
-								<th>Kuota</th>
-								<th>Aksi</th>
-							</tr>
-						</tfoot>
-					</table>
+							</thead>
+							<tbody>
+								<tr>
+									@foreach($data_mhs as $akademis)
+										<td>{{ $akademis->semester }}</td>
+										<td>{{ $akademis->jenis_nilai }}</td>
+										<td>{{ $akademis->mapel }}</td>
+										<td>{{ $akademis->nilai }}</td>
+									@endforeach
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr>
+									<th>Semester</th>
+									<th>Jenis Nilai</th>
+									<th>Mata Pelajaran</th>
+									<th>Nilai</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Data Prestasi</label>
+						<table id="dataPrestasi" class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>Kode Prodi</th>
+									<th>Nama Prodi</th>
+									<th>Kuota</th>
+									<th>Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>									
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr>
+									<th>Kode Prodi</th>
+									<th>Nama Prodi</th>
+									<th>Kuota</th>
+									<th>Aksi</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>

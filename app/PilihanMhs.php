@@ -14,6 +14,6 @@ class PilihanMhs extends Model
     ];
 
     public function mahasiswa(){
-        return $this->belongsTo('App\Mahasiswa', 'foreign_key', 'no_pendaftar');
+        return $this->belongsTo('App\Mahasiswa', 'no_pendaftar');
     }
 }

@@ -33,6 +33,8 @@ Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\Pe
 
 Route::post('/data_pendaftar/{id}', array('as' => 'get_data', 'uses' => 'Mahasiswa\PengolahDataController@getDataMhs'));
 
+Route::get('/data_pendaftar/{id}/details', array('as' => 'olah_data.details', 'uses' => 'Mahasiswa\PengolahDataController@detailMhs'));
+
 /*Route::get('/input_data', function () {
     return view('admin.dashboard.mahasiswa.inputDataView');
 });*/

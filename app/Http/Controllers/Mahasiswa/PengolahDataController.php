@@ -58,4 +58,24 @@ class PengolahDataController extends Controller
     //var_dump($data_pendaftar);
     return Response::json($data_pendaftar);
   }
+
+  public function detailMhs($id){
+    //get data akademis and prestasi based on id
+    $data_mhs = mahasiswa::where('no_pendaftar', '=', $id)
+    ->with([
+      'nilai_akademis' => function($query){
+        $query->orderBy('semester', 'asc');
+      },
+      'nilai_non_akademis'
+      ])
+    ->get();
+
+    foreach ($data_mhs as $key => $value) {
+      var_dump($value);
+    }
+
+
+    $data = array('data_mhs' => $data_mhs);
+    return view('admin.dashboard.mahasiswa.detailView', $data);
+  }
 }

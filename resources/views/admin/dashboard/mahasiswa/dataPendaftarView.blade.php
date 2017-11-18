@@ -27,7 +27,7 @@
 							@endforeach
 						</select>
 					</div>
-					<table id="table_data" class="table table-bordered table-hover">
+					<table id="table_data" class="table table-bordered table-hover col-md-12">
 						<thead>
 							<tr>
 								<th>No. Pendaftar</th>
@@ -115,10 +115,6 @@
 							alert(data.status);
 						}
 					});
-				}else{
-
-					alert('Anda belum memilih mahasiswa');
-					$("#data_mhs").html("");
 				}
 
 				$("#select_prodi").change(function(){
@@ -158,13 +154,12 @@
 								});
 							},
 							error: function(data, ajaxOptions, thrownError){
-
 								alert(data.status);
 							}
 						});
 					}else{
 
-						alert('Anda belum memilih mahasiswa');
+						alert('Anda belum memilih prodi');
 						$("#data_mhs").html("");
 					}
 				});
