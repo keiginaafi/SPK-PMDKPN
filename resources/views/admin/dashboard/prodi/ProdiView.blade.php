@@ -5,8 +5,7 @@
 		<small>Control Panel</small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>
+		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>		
 		<li class="active">Kelola Prodi</li>
 	</ol>
 @stop
