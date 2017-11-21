@@ -5,7 +5,7 @@
 		<small>Control Panel</small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>		
+		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
 		<li class="active">Data Pendaftar</li>
 	</ol>
 @stop
@@ -14,7 +14,11 @@
 		<div class="col-xs-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">Data Pendaftar</h3>
+					<h3 class="box-title">Data Pendaftar
+						<button class="btn btn-primary btn-flat btn-sm" id="normalisasiMhs" title="Normalisasi" style="margin-left: 10px;">
+							Normalisasi Data Pendaftar
+						</button>
+					</h3>
 				</div>
 				<div class="box-body">
 					<div class="form-group">
@@ -71,7 +75,25 @@
 		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 		<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
 		<script>
+			$("#normalisasiMhs").click(function(){
+				$.ajaxSetup({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+					}
+				});
 
+				$.ajax({
+					url: "data_pendaftar/olah_data",
+					type:"POST",
+					cache: false,
+					dataType: 'json',
+					success: function(data){
+						console.log(data);
+					},
+					error: function(data, ajaxOptions, thrownError){
+						alert(data.status);
+					}
+			});
 
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();

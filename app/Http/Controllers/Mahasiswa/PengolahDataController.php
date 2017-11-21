@@ -74,4 +74,125 @@ class PengolahDataController extends Controller
     $data = array('data_mhs' => $data_akademis);
     return view('admin.dashboard.mahasiswa.detailView', $data);
   }
+
+  public function olahDataMhs(){
+    //get nilai akademis
+    $nilai = nilai_akademis::all();
+    foreach ($nilai as $akademis) {
+      //jenis nilai 4
+      if($akademis->jenis_nilai == 4){
+        //cek nilai antara 1 - 4
+        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 10
+        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 100
+        }else{
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        }
+      //jenis nilai = 10
+      }elseif($akademis->jenis_nilai == 10){
+        //cek nilai antara 1 - 4
+        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 10
+        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 100
+        }else{
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        }
+      //jenis nilai = 100
+      }else{
+        //cek nilai antara 1 - 4
+        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 10
+        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        //cek nilai antara 1 - 100
+        }else{
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
+          if(!$akademis->save()){
+      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
+      		}
+        }
+      }
+    }
+
+    //get prestasi
+    $lomba = nilai_non_akademis::all();
+    foreach ($lomba as $prestasi) {
+      $nilai_prestasi = 0;
+
+      //cek skala prestasi
+      if ($prestasi->skala_prestasi == "KOTA") {
+        $nilai_prestasi = 1;
+      }elseif ($prestasi->skala_prestasi == "PROVINSI") {
+        $nilai_prestasi = 5;
+      }elseif ($prestasi->skala_prestasi == "NASIONAL") {
+        $nilai_prestasi = 15;
+      }elseif ($prestasi->skala_prestasi == "INTERNASIONAL") {
+        $nilai_prestasi = 50;
+      }
+
+      //cek jenis prestasi
+      if ($prestasi->jenis_prestasi == "Kelompok") {
+        $nilai_prestasi = $nilai_prestasi * 1;
+      }else {
+        $nilai_prestasi = $nilai_prestasi * 2;
+      }
+
+      //cek juara
+      if ($prestasi->juara_prestasi == 1) {
+        $nilai_prestasi = $nilai_prestasi * 6;
+      }elseif ($prestasi->juara_prestasi == 2) {
+        $nilai_prestasi = $nilai_prestasi * 5;
+      }elseif ($prestasi->juara_prestasi == 3) {
+        $nilai_prestasi = $nilai_prestasi * 4;
+      }elseif ($prestasi->juara_prestasi == 4) {
+        $nilai_prestasi = $nilai_prestasi * 3;
+      }elseif ($prestasi->juara_prestasi == 5) {
+        $nilai_prestasi = $nilai_prestasi * 2;
+      }else {
+        $nilai_prestasi = $nilai_prestasi * 1;
+      }
+
+      //simpan ke Mahasiswa
+      $mahasiswa = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
+      ->update(['nilai_non_akademis' => $nilai_prestasi]);
+      /*$mahasiswa->nilai_non_akademis = $nilai_prestasi;
+      $mahasiswa->save();*/
+      //return success
+      return Response::json([
+        'input' => 'success',
+        'message' => 'Data Pendaftar telah dinormalisasi'
+      ])
+    }
+  }
 }

@@ -27,6 +27,7 @@
 									<th>Jenis Nilai</th>
 									<th>Mata Pelajaran</th>
 									<th>Nilai</th>
+									<th>Nilai Koreksi</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -36,6 +37,7 @@
 										<td>{{ $akademis->jenis_nilai }}</td>
 										<td>{{ $akademis->mapel }}</td>
 										<td>{{ $akademis->nilai_mapel }}</td>
+										<td>{{ $akademis->nilai_mapel_koreksi }}</td>
 									</tr>
 									@endforeach
 							</tbody>
@@ -45,6 +47,7 @@
 									<th>Jenis Nilai</th>
 									<th>Mata Pelajaran</th>
 									<th>Nilai</th>
+									<th>Nilai Koreksi</th>
 								</tr>
 							</tfoot>
 						</table>
