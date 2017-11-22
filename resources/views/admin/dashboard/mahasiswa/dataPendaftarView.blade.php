@@ -12,6 +12,18 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
+			@if (count($errors) > 0)
+        <div class="alert alert-danger">
+        	<strong>Whoops!</strong> There were some problems with your input.<br><br>
+          <ul>
+          	@foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+      	</div>
+      @endif
+			<div id="message">
+			</div>
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Data Pendaftar
@@ -75,25 +87,6 @@
 		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 		<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
 		<script>
-			$("#normalisasiMhs").click(function(){
-				$.ajaxSetup({
-					headers: {
-						'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-					}
-				});
-
-				$.ajax({
-					url: "data_pendaftar/olah_data",
-					type:"POST",
-					cache: false,
-					dataType: 'json',
-					success: function(data){
-						console.log(data);
-					},
-					error: function(data, ajaxOptions, thrownError){
-						alert(data.status);
-					}
-			});
 
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
@@ -182,6 +175,40 @@
 
 						alert('Anda belum memilih prodi');
 						$("#data_mhs").html("");
+					}
+				});
+
+				$("#normalisasiMhs").click(function(){
+					var confirm = window.confirm("Mulai Normalisasi Data?");
+					if (confirm == true) {
+						$.ajaxSetup({
+							headers: {
+								'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+							}
+						});
+
+						$.ajax({
+							url: "data_pendaftar/olah_data",
+							type:"GET",
+							cache: false,
+							dataType: 'json',
+							success: function(data){
+								console.log(data);
+								var message = '<div class="alert alert-success alert-dismissable">';
+								message += '<p>' + data.input + '</p>';
+								message += '<p>' + data.message + '</p>';
+								message += '</div>';
+								$('#message').append(message);
+							},
+							error: function(data){
+								console.log(data);
+								var message = '<div class="alert alert-danger">';
+								message += '<p>' + data.status + '</p>';
+								message += '<p>' + data.Error + '</p>';
+								message += '</div>';
+								$('#message').append(message);
+							}
+						});
 					}
 				});
 			})

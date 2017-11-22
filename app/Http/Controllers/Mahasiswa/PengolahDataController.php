@@ -78,74 +78,76 @@ class PengolahDataController extends Controller
   public function olahDataMhs(){
     //get nilai akademis
     $nilai = nilai_akademis::all();
+    /*foreach ($nilai as $value) {
+      var_dump($value->no_pendaftar, $value->semester, $value->mapel, $value->nilai_mapel);
+    }*/
     foreach ($nilai as $akademis) {
-      //jenis nilai 4
-      if($akademis->jenis_nilai == 4){
-        //cek nilai antara 1 - 4
-        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 10
-        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 100
-        }else{
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        }
-      //jenis nilai = 10
-      }elseif($akademis->jenis_nilai == 10){
-        //cek nilai antara 1 - 4
-        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 10
-        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 100
-        }else{
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        }
-      //jenis nilai = 100
-      }else{
-        //cek nilai antara 1 - 4
-        if($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 10
-        }elseif($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10){
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        //cek nilai antara 1 - 100
-        }else{
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
-          if(!$akademis->save()){
-      			return Redirect::back()->withErrors('The server encountered an unexpected condition');
-      		}
-        }
+      //konversi nilai ke skala 100
+      if ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4) {
+        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
+        if(!$akademis->save()){
+    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+    		}
+      }elseif ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10) {
+        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
+        if(!$akademis->save()){
+    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+    		}
+      }else {
+        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
+        if(!$akademis->save()){
+    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+    		}
       }
     }
 
-    //get prestasi
+    //sum nilai avg mapel koreksi tiap semester, lalu save ke mahasiswa
+    $pendaftar = DB::table('mahasiswa')->select('no_pendaftar')->get();
+    foreach ($pendaftar as $id) {
+      //rata-rata smt 1
+      $avg_smt_1 = DB::table('nilai_akademis')
+      ->where('no_pendaftar', '=', $id->no_pendaftar)
+      ->where('semester', '=', 1)
+      ->avg('nilai_mapel_koreksi');
+
+      //rata-rata smt 2
+      $avg_smt_2 = DB::table('nilai_akademis')
+      ->where('no_pendaftar', '=', $id->no_pendaftar)
+      ->where('semester', '=', 2)
+      ->avg('nilai_mapel_koreksi');
+
+      //rata-rata smt 3
+      $avg_smt_3 = DB::table('nilai_akademis')
+      ->where('no_pendaftar', '=', $id->no_pendaftar)
+      ->where('semester', '=', 3)
+      ->avg('nilai_mapel_koreksi');
+
+      //rata-rata smt 4
+      $avg_smt_4 = DB::table('nilai_akademis')
+      ->where('no_pendaftar', '=', $id->no_pendaftar)
+      ->where('semester', '=', 4)
+      ->avg('nilai_mapel_koreksi');
+
+      //rata-rata smt 5
+      $avg_smt_5 = DB::table('nilai_akademis')
+      ->where('no_pendaftar', '=', $id->no_pendaftar)
+      ->where('semester', '=', 5)
+      ->avg('nilai_mapel_koreksi');
+
+      //jumlah rata-rata
+      $sum = $avg_smt_1 + $avg_smt_2 + $avg_smt_3 + $avg_smt_4 + $avg_smt_5;
+
+      try {
+        $mhs = mahasiswa::where('no_pendaftar', '=', $id->no_pendaftar)
+        ->update(['nilai_akademis' => $sum]);
+      } catch(\Illuminate\Database\QueryException $ex){
+        dd($ex->getMessage());
+        // Note any method of class PDOException can be called on $ex.
+      }
+      //var_dump($avg_smt_1);
+    }
+
+    //olah data prestasi
     $lomba = nilai_non_akademis::all();
     foreach ($lomba as $prestasi) {
       $nilai_prestasi = 0;
@@ -183,16 +185,23 @@ class PengolahDataController extends Controller
         $nilai_prestasi = $nilai_prestasi * 1;
       }
 
-      //simpan ke Mahasiswa
-      $mahasiswa = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
-      ->update(['nilai_non_akademis' => $nilai_prestasi]);
-      /*$mahasiswa->nilai_non_akademis = $nilai_prestasi;
-      $mahasiswa->save();*/
-      //return success
-      return Response::json([
-        'input' => 'success',
-        'message' => 'Data Pendaftar telah dinormalisasi'
-      ])
+      //ambil nilai non akademis dari mahasiswa, tambahkan dengan nilai sebelumnya, lalu save
+      $mahasiswa = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)->value('nilai_non_akademis');
+      $mahasiswa = $mahasiswa + $nilai_prestasi;
+      try {
+        $mhs = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
+        ->update(['nilai_non_akademis' => $mahasiswa]);
+      } catch(\Illuminate\Database\QueryException $ex){
+        dd($ex->getMessage());
+        // Note any method of class PDOException can be called on $ex.
+      }
     }
+
+    //return success
+    $response = array(
+      'input' => 'Success',
+      'message' => 'Data Pendaftar telah dinormalisasi',
+    );
+    return Response::json($response);
   }
 }
