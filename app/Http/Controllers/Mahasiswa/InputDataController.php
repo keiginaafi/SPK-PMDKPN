@@ -22,9 +22,20 @@ class InputDataController extends Controller
     $this->middleware('auth');
     }*/
     public function index(){
-      $dataHistory = mahasiswa::select(DB::raw("no_pendaftar, periode"))
+      $periode = DB::table('mahasiswa')
+      ->select('periode')
+      ->distinct()
       ->get();
-      $data = array('mahasiswa' => $dataHistory);
+
+      foreach ($periode as $value) {
+        $dataHistory = DB::table('mahasiswa')
+        ->count('no_pendaftar');
+        $data = array(
+          'periode' => $value->periode,
+          'mahasiswa' => $dataHistory,
+        );
+      }
+      //var_dump($data);
       return view('admin.dashboard.mahasiswa.inputDataView', $data);
     }
 

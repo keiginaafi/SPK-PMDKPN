@@ -82,9 +82,13 @@
 							</tr>
 						</thead>
 						<tbody>
-							<td></td>
-							<td></td>
-							<td></td>
+							@for($i = 1; $i <= count($periode); $i++)
+								<tr>
+									<td>{{ $i }}</td>
+									<td>{{ $periode }}</td>
+									<td>{{ $mahasiswa }}</td>
+								</tr>
+							@endfor
 						</tbody>
 						<tfoot>
 							<tr>
