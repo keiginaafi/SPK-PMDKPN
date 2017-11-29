@@ -12,4 +12,8 @@ class Kriteria extends Model
     protected $fillable = [
         'nama_kriteria', 'bobot_kriteria',
     ];
+
+    public function tabel_perbandingan(){
+        return $this->hasMany('App\TabelPerbandingan', 'id_kriteria_1');
+    }
 }

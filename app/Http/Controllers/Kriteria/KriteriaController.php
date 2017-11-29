@@ -10,6 +10,7 @@ use Response;
 use Validator;
 use App\Http\Controllers\Controller;
 use App\Kriteria as kriteria;
+use App\TabelPerbandingan as tabel_perbandingan;
 
 class KriteriaController extends Controller
 {
@@ -28,6 +29,7 @@ class KriteriaController extends Controller
   protected function validator(array $data){
     $messages = [
       'nama_kriteria.required' => 'Nama Kriteria dibutuhkan',
+      'nama_kriteria.unique' => 'Nama Kriteria sudah dipakai',
     ];
     return Validator::make($data, [
       'nama_kriteria' => 'required|unique:kriteria|max:30',
@@ -43,6 +45,14 @@ class KriteriaController extends Controller
     if(!$kriteria->save()){
       return Redirect::back()->withErrors('The server encountered an unexpected condition');
     }
+
+    //input ke tabel Perbandingan
+    $tabel = new tabel_perbandingan();
+    $tabel->id_kriteria_1 = $kriteria->id_kriteria;
+    $tabel->id_kriteria_2 = $kriteria->id_kriteria;
+    $tabel->nilai_banding = 1;
+    $tabel->normalisasi = 0;
+    $tabel->save();
   }
 
   public function tambahKriteria(Request $request){
@@ -59,10 +69,14 @@ class KriteriaController extends Controller
 
   public function hapusKriteria($id){
     $kriteria = kriteria::where('id_kriteria', '=', $id)->first();
+    $tabel_1 = tabel_perbandingan::where('id_kriteria_1', $id);
+    $tabel_2 = tabel_perbandingan::where('id_kriteria_2', $id);
     if($kriteria == null){
       return Redirect::back()->withErrors('Kriteria does not exist');
     }
     $kriteria->delete();
+    $tabel_1->delete();
+    $tabel_2->delete();
     return Redirect::action('Kriteria\KriteriaController@index')->with('successMessage',
     'Data Kriteria telah berhasil dihapus');
   }

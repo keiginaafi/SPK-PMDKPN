@@ -25,9 +25,6 @@ Route::get('/admin', function () {
     return view('admin.dashboard.main');
 });
 
-/*Route::get('/data_pendaftar', function () {
-    return view('admin.dashboard.mahasiswa.dataPendaftarView');
-});*/
 //route data pendaftar
 Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
 
@@ -37,20 +34,12 @@ Route::get('/data_pendaftar/{id}/details', array('as' => 'olah_data.details', 'u
 
 Route::get('/data_pendaftar/olah_data', array('as' => 'olah_data.normalisasi', 'uses' => 'Mahasiswa\PengolahDataController@olahDataMhs'));
 
-/*Route::get('/input_data', function () {
-    return view('admin.dashboard.mahasiswa.inputDataView');
-});*/
-
 //route Input Data
 Route::get('/input_data', array('as' => 'input', 'uses' => 'Mahasiswa\InputDataController@index'));
 
 Route::post('/input_data/tambah_prestasi', array('as' => 'input.prestasi', 'uses' => 'Mahasiswa\InputDataController@inputDataNonAkademis'));
 
 Route::post('/input_data/tambah_mahasiswa', array('as' => 'input.mahasiswa', 'uses' => 'Mahasiswa\InputDataController@inputDataAkademis'));
-
-/*Route::get('/kelola_kriteria', function () {
-    return view('admin.dashboard.kriteria.KriteriaView');
-});*/
 
 //route Kriteria
 Route::get('/kelola_kriteria', array('as' => 'kriteria', 'uses' => 'Kriteria\KriteriaController@index'));
@@ -63,13 +52,14 @@ Route::post('/kelola_kriteria/{id}/ubahKriteria', array('as' => 'kriteria.ubah',
 
 Route::get('/kelola_kriteria/{id}/hapusKriteria', array('as' => 'kriteria.hapus', 'uses' => 'Kriteria\KriteriaController@hapusKriteria'));
 
+//route tabel perbandingan
+Route::get('/kelola_tabel', array('as' => 'tabel', 'uses' => 'Tabel\TabelPerbandinganController@index'));
 
-Route::get('/kelola_tabel', function () {
+Route::post('/kelola_tabel/tambah', array('as' => 'tabel.tambah', 'uses' => 'Tabel\TabelPerbandinganController@inputNilaiPerbandingan'));
+
+Route::get('/kelola_tabel/get_nilai/{id1}{id2}', array('as' => 'tabel.get', 'uses' => 'Tabel\TabelPerbandinganController@getNilaiBanding'));
+/*Route::get('/kelola_tabel', function () {
     return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
-});
-
-/*Route::get('/kelola_prodi', function () {
-    return view('admin.dashboard.prodi.ProdiView');
 });*/
 
 //route prodi
