@@ -58,6 +58,8 @@ Route::get('/kelola_tabel', array('as' => 'tabel', 'uses' => 'Tabel\TabelPerband
 Route::post('/kelola_tabel/tambah', array('as' => 'tabel.tambah', 'uses' => 'Tabel\TabelPerbandinganController@inputNilaiPerbandingan'));
 
 Route::get('/kelola_tabel/get_nilai/{id1}{id2}', array('as' => 'tabel.get', 'uses' => 'Tabel\TabelPerbandinganController@getNilaiBanding'));
+
+Route::get('/kelola_tabel/cek_ci', array('as' => 'tabel.cek_ci', 'uses' => 'Tabel\TabelPerbandinganController@hitungConsistency'));
 /*Route::get('/kelola_tabel', function () {
     return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
 });*/

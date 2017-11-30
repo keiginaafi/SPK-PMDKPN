@@ -28,10 +28,12 @@
 				<p>{{ Session::get('successMessage') }}</p>
 			</div>
 			@endif
+			<div id="message">
+			</div>
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Tabel Perbandingan
-						<button class="btn btn-success btn-sm" id="cekCI" title="Tambah" data-toggle="modal" data-target="#inputKriteria" style="margin-left: 10px;">
+						<button class="btn btn-success btn-sm" id="cekCI" title="cekCi" style="margin-left: 10px;">
 							Periksa CI
 						</button>
 					</h3>
@@ -94,8 +96,6 @@
 						</div>
 					</form>
 				</div>
-				<div id="asdf">
-				</div>
 			</div>
 		</div>
 	</div>
@@ -115,8 +115,6 @@
 
 			$.each(kriteria1, function(n, i){
 				$.each(kriteria2, function(j, e){
-					/*$("#asdf").append(n+" => "+i+" ");
-					$("#asdf").append(j+" => "+e+"<br>");*/
 					$.ajaxSetup({
 						headers: {
 							'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -128,10 +126,6 @@
 						type: "GET",
 						cache: false,
 						dataType: 'json',
-						data:{
-							id1: kriteria1,
-							id2: kriteria2,
-						},
 						success: function(data){
 							console.log(data);
 							$("#"+i+e).val(data.nilai);
@@ -142,6 +136,47 @@
 					});
 				});
 			});
+
+			$("#cekCI").click(function(){
+				$.ajaxSetup({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+					}
+				});
+
+				$.ajax({
+					url: "kelola_tabel/cek_ci",
+					type: "GET",
+					cache: false,
+					dataType: 'json',
+					success: function(data){
+						$("#message").last().remove();
+						console.log(data);
+						if (data.fail) {
+							var message = '<div class="alert alert-danger">';
+							message += '<p>' + data.input + '</p>';
+							message += '<p>' + data.message + '</p>';
+							message += '</div>';
+							$('#message').append(message);
+						} else {
+							var message = '<div class="alert alert-success alert-dismissable">';
+							message += '<p>' + data.input + '</p>';
+							message += '<p>' + data.message + '</p>';
+							message += '</div>';
+							$('#message').append(message);
+						}
+					},
+					error: function(data, ajaxOptions, thrownError){
+						console.log(data);
+						$("#message").last().remove();
+						var message = '<div class="alert alert-danger">';
+						message += '<p>' + data.status + '</p>';
+						message += '<p>' + data.Error + '</p>';
+						message += '</div>';
+						$('#message').append(message);
+					}
+				});
+			})
 
 		})
 	</script>
