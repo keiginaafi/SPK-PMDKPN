@@ -75,14 +75,12 @@ Route::post('/kelola_prodi/{id}/ubahProdi', array('as' => 'prodi.ubah', 'uses' =
 
 Route::get('/kelola_prodi/{id}/hapusProdi', array('as' => 'prodi.hapus', 'uses' => 'Prodi\ProdiController@hapusProdi'));
 
-/*Route::get('/kelola_prodi/edit', function () {
-    return view('admin.dashboard.prodi.EditView');
-});*/
-
-Route::get('/saran_penerimaan', function () {
+//route saran penerimaan
+Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController@index'));
+/*Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
 });
-Auth::routes();
+Auth::routes();*/
 
 Route::get('/home', 'HomeController@index')->name('home');
 

@@ -56,10 +56,10 @@
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_kriteria/'.$item_kriteria->id_kriteria.'/edit') }}}">
 											<i class="fa fa-list"> Edit </i>
 										</a> |
-										<a id="hapus" class="btn btn-danger btn-flat btn-sm" href="{{{ action('Kriteria\KriteriaController@hapusKriteria', [$item_kriteria->id_kriteria]) }}}"
+										<button id="hapus" class="btn btn-danger btn-flat btn-sm" href="{{{ action('Kriteria\KriteriaController@hapusKriteria', [$item_kriteria->id_kriteria]) }}}"
 										title="hapus">
 											<i class="fa fa-trash"> Delete </i>
-										</a>
+										</button>
 									</td>
 								</tr>
 							@endforeach
@@ -111,26 +111,13 @@
 			</div>
 		</div>
 	</div>
+	<meta name="_token" content="{{ csrf_token() }}" />
 	<!-- End of Modal -->
-@endsection
-@section('script')
 	<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 	<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
 	<script>
-		$(function(){
-			$('#tambahKriteria').click(function(){
-				$('input+small').text('');
-				$('input').parent().removeClass('has-error');
-				//$('select').parent().removeClass('has-error');
-
-				$('#inputKriteria').modal('show');
-				//console.log('test');
-				return false;
-			});
-		});
-
 		$(document).ready(function(){
-			$("#hapus").click(function(){
+			$("#hapus a i").click(function(){
 				var nama = $("#nama_kriteria").getAttribute('name');
 				var confirm = window.confirm("Yakin ingin hapus kriteria " + nama + "?");
 				if (confirm == true) {
@@ -149,10 +136,21 @@
 					});
 				}
 			});
-		})
+		});
+
+		$(function(){
+			$('#tambahKriteria').click(function(){
+				$('input+small').text('');
+				$('input').parent().removeClass('has-error');
+				//$('select').parent().removeClass('has-error');
+
+				$('#inputKriteria').modal('show');
+				//console.log('test');
+				return false;
+			});
+		});
 	</script>
 @endsection
-
 <!--@section('script')
 	<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
