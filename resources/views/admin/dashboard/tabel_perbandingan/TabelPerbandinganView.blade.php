@@ -150,7 +150,6 @@
 					cache: false,
 					dataType: 'json',
 					success: function(data){
-						$("#message").last().remove();
 						console.log(data);
 						if (data.fail) {
 							var message = '<div class="alert alert-danger">';
@@ -167,8 +166,7 @@
 						}
 					},
 					error: function(data, ajaxOptions, thrownError){
-						console.log(data);
-						$("#message").last().remove();
+						console.log(data);						
 						var message = '<div class="alert alert-danger">';
 						message += '<p>' + data.status + '</p>';
 						message += '<p>' + data.Error + '</p>';

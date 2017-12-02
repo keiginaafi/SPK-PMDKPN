@@ -89,7 +89,7 @@
 		<script>
 
 			$(document).ready(function(){
-				var prodi = $("#select_prodi").val();
+				/*var prodi = $("#select_prodi").val();
 				if(prodi != "NONE"){
 					$.ajaxSetup({
 						headers: {
@@ -176,7 +176,7 @@
 						alert('Anda belum memilih prodi');
 						$("#data_mhs").html("");
 					}
-				});
+				});*/
 
 				$("#mooraMethod").click(function(){
 					var confirm = window.confirm("Mulai Hasilkan Saran Penerimaan?");
@@ -188,17 +188,17 @@
 						});
 
 						$.ajax({
-							url: "",
+							url: "saran_penerimaan/hasilkan_saran",
 							type:"GET",
 							cache: false,
 							dataType: 'json',
 							success: function(data){
 								console.log(data);
-								var message = '<div class="alert alert-success alert-dismissable">';
+								/*var message = '<div class="alert alert-success alert-dismissable">';
 								message += '<p>' + data.input + '</p>';
 								message += '<p>' + data.message + '</p>';
 								message += '</div>';
-								$('#message').append(message);
+								$('#message').append(message);*/
 							},
 							error: function(data){
 								console.log(data);

@@ -59,7 +59,7 @@ Route::post('/kelola_tabel/tambah', array('as' => 'tabel.tambah', 'uses' => 'Tab
 
 Route::get('/kelola_tabel/get_nilai/{id1}{id2}', array('as' => 'tabel.get', 'uses' => 'Tabel\TabelPerbandinganController@getNilaiBanding'));
 
-Route::get('/kelola_tabel/cek_ci', array('as' => 'tabel.cek_ci', 'uses' => 'Tabel\TabelPerbandinganController@hitungConsistency'));
+Route::get('/kelola_tabel/cek_ci', array('as' => 'tabel.cek_ci', 'uses' => 'Tabel\TabelPerbandinganController@periksaCr'));
 /*Route::get('/kelola_tabel', function () {
     return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
 });*/
@@ -77,6 +77,8 @@ Route::get('/kelola_prodi/{id}/hapusProdi', array('as' => 'prodi.hapus', 'uses' 
 
 //route saran penerimaan
 Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController@index'));
+
+Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController@saranPenerimaan'));
 /*Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
 });
