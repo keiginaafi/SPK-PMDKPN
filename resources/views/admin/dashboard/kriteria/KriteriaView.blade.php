@@ -50,14 +50,14 @@
 							@foreach ($kriteria as $item_kriteria)
 								<tr>
 									<td>{{ $loop->iteration }}</td>
-									<td id="nama_kriteria" name="{{ $item_kriteria->nama_kriteria }}">{{ $item_kriteria->nama_kriteria }}</td>
+									<td id="nama_kriteria">{{ $item_kriteria->nama_kriteria }}</td>
 									<td>{{ $item_kriteria->bobot_kriteria }}</td>
 									<td>
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_kriteria/'.$item_kriteria->id_kriteria.'/edit') }}}">
 											<i class="fa fa-list"> Edit </i>
 										</a> |
-										<button id="hapus" class="btn btn-danger btn-flat btn-sm" href="{{{ action('Kriteria\KriteriaController@hapusKriteria', [$item_kriteria->id_kriteria]) }}}"
-										title="hapus">
+										<button class="btn btn-danger btn-flat btn-sm hapus" href="{{{ action('Kriteria\KriteriaController@hapusKriteria', [$item_kriteria->id_kriteria]) }}}"
+										data-confirm="Yakin ingin hapus kriteria {{ $item_kriteria->nama_kriteria }} ?" title="hapus">
 											<i class="fa fa-trash"> Delete </i>
 										</button>
 									</td>
@@ -116,27 +116,18 @@
 	<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 	<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
 	<script>
-		$(document).ready(function(){
-			$("#hapus a i").click(function(){
-				var nama = $("#nama_kriteria").getAttribute('name');
-				var confirm = window.confirm("Yakin ingin hapus kriteria " + nama + "?");
-				if (confirm == true) {
-					var url = $("#hapus").getAttribute('href');
-					$.ajaxSetup({
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-						}
-					});
+		var deleteLinks = document.querySelectorAll('.hapus');
+		for (var i = 0; i < deleteLinks.length; i++) {
+			deleteLinks[i].addEventListener('click', function(event) {
+				event.preventDefault();
 
-					$.ajax({
-						url: url,
-						type:"POST",
-						cache: false,
-						dataType: 'json'
-					});
+				var choice = confirm(this.getAttribute('data-confirm'));
+
+				if (choice) {
+					window.location.href = this.getAttribute('href');
 				}
 			});
-		});
+		}
 
 		$(function(){
 			$('#tambahKriteria').click(function(){

@@ -95,6 +95,96 @@
 							<button type="reset" class="btn btn-default" name="resetNilaiTabel" value="resetNilaiTabel">Reset</button>
 						</div>
 					</form>
+					<div class="form-group">
+						<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#petunjuk" aria-expanded="false" aria-controls="petunjuk">
+							Petunjuk Pengisian Nilai
+						</button>
+					</div>
+					<div class="collapse form-group" id="petunjuk">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Derajat Kepentingan</th>
+									<th>Definisi</th>
+									<th>Keterangan</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>1</td>
+									<td>Sama Pentingnya</td>
+									<td>Kedua kriteria yang sama-sama penting</td>
+								</tr>
+								<tr>
+									<td>2</td>
+									<td>Kepentingan antara 1 dan 3</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>3</td>
+									<td>Sedikit Lebih Penting</td>
+									<td>Pengalaman dan pendapat sedikit lebih
+										mementingkan suatu kriteria dibanding pasangannya</td>
+								</tr>
+								<tr>
+									<td>4</td>
+									<td>Kepentingan antara 3 dan 5</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>5</td>
+									<td>Lebih Penting</td>
+									<td>Pengalaman dan pendapat lebih
+										mementingkan suatu kriteria dibanding pasangannya</td>
+								</tr>
+								<tr>
+									<td>6</td>
+									<td>Kepentingan antara 5 dan 7</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>7</td>
+									<td>Sangat Penting</td>
+									<td>Pengalaman dan pendapat sangat
+										mementingkan suatu kriteria dibanding pasangannya;
+										terlihat jelas kepentingannya dalam keadaan nyata</td>
+								</tr>
+								<tr>
+									<td>8</td>
+									<td>Kepentingan antara 7 dan 9</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>9</td>
+									<td>Mutlak Lebih Penting</td>
+									<td>Suatu kriteria mutlak lebih penting
+										daripada pasangannya, pada keyakinan tertinggi</td>
+								</tr>
+								<tr>
+									<td>Kebalikan nilai diatas</td>
+									<td>Jika kriteria <i>i</i> memiliki
+										salah satu angka kepentingan diatas
+										bila dibandingkan dengan kriteria <i>j</i>,
+										maka kriteria <i>j</i> memiliki nilai kebalikan
+										ketika dibandingkan dengan kriteria <i>i</i></td>
+									<td>Contoh:
+									jika kriteria <i>a</i> dibanding kriteria <i>b</i> = 4
+									maka kriteria <i>b</i> dibanding kriteria <i>a</i> = 1/4
+									</td>
+								</tr>
+								<tr>
+									<td>1.1 - 1.9</td>
+									<td>Jika kepentingan dari pasangan
+										kriteria sangat berdekatan</td>
+									<td>Jika terdapat kesulitan memberikan nilai
+										kepentingan tetapi jika dibandingkan dengan
+										kriteria pasangannya, nilai kecil tersebut
+										tidak terlalu berpengaruh, namun nilai tersebut
+										masih bisa menunjukkan kepentingan dari kriteria tersebut</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -122,7 +212,7 @@
 					});
 
 					$.ajax({
-						url: "kelola_tabel/get_nilai/" + i + e,
+						url: "kelola_tabel/get_nilai/" + i + "_" + e,
 						type: "GET",
 						cache: false,
 						dataType: 'json',
@@ -131,7 +221,7 @@
 							$("#"+i+e).val(data.nilai);
 						},
 						error: function(data, ajaxOptions, thrownError){
-							alert(data.status);
+							//alert(data.status);
 						}
 					});
 				});
@@ -166,7 +256,7 @@
 						}
 					},
 					error: function(data, ajaxOptions, thrownError){
-						console.log(data);						
+						console.log(data);
 						var message = '<div class="alert alert-danger">';
 						message += '<p>' + data.status + '</p>';
 						message += '<p>' + data.Error + '</p>';

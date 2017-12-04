@@ -72,6 +72,7 @@ class TabelPerbandinganController extends Controller
     ->where("id_kriteria_1", $id1)
     ->where("id_kriteria_2", $id2)
     ->get();
+
     //return success
     $response = array(
       'nilai' => $nilai[0]->nilai_banding,

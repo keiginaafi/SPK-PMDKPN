@@ -86,7 +86,12 @@
 		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
 		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 		<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
+		<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+		<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 		<script>
+			$(function(){
+				$('#table_data').DataTable({"pagelength": 25});
+			});
 
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();

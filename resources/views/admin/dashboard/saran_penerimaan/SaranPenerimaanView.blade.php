@@ -49,13 +49,9 @@
 								<th>NISN</th>
 								<th>Nama</th>
 								<th>Jenis Kelamin</th>
-								<th>Agama</th>
-								<th>Tanggal Lahir</th>
-								<th>Kota</th>
 								<th>Tipe Sekolah</th>
-								<th>Jenis Sekolah</th>
-								<th>Akreditasi Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Nilai Akhir</th>
 								<th>Rank</th>
 							</tr>
 						</thead>
@@ -67,13 +63,9 @@
 								<th>NISN</th>
 								<th>Nama</th>
 								<th>Jenis Kelamin</th>
-								<th>Agama</th>
-								<th>Tanggal Lahir</th>
-								<th>Kota</th>
 								<th>Tipe Sekolah</th>
-								<th>Jenis Sekolah</th>
-								<th>Akreditasi Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Nilai Akhir</th>
 								<th>Rank</th>
 							</tr>
 						</tfoot>
@@ -82,6 +74,8 @@
 			</div>
 		</div>
 	</div>
+	<div id="kuota">
+	</div>
 	<meta name="_token" content="{{ csrf_token() }}" />
 		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
 		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
@@ -89,7 +83,7 @@
 		<script>
 
 			$(document).ready(function(){
-				/*var prodi = $("#select_prodi").val();
+				var prodi = $("#select_prodi").val();
 				if(prodi != "NONE"){
 					$.ajaxSetup({
 						headers: {
@@ -98,7 +92,7 @@
 					});
 
 					$.ajax({
-						url: "data_pendaftar/" + prodi,
+						url: "saran_penerimaan/" + prodi,
 						type:"POST",
 						cache: false,
 						dataType: 'json',
@@ -108,20 +102,26 @@
 						success: function(data){
 							console.log(data);
 							$("#data_mhs tr").last().remove();
-							var detail = "data_pendaftar";
-							var details = "details";
-							$.each(data, function(i, d){
-								var view = '<tr>';
+							var success = data.sma;
+							var smk = data.smk;
+							var cadangan = data.cadangan;
+							var counter = 1;
+							$.each(data.saran, function(i, d){
+								if (counter <= success) {
+									var view = '<tr class="bg-success">';
+								} else if ((counter > success) && (counter <= (success + smk))) {
+									var view = '<tr class="bg-primary">';
+								} else if ((counter > (success + smk)) && (counter <= (success + smk + cadangan))) {
+									var view = '<tr class="bg-warning">';
+								} else {
+									var view = '<tr class="bg-danger">';
+								}
 								$.each(d, function(j, e){
 									view += '<td>' + e + '</td>';
 								});
-								view += '<td>';
-								view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
-								view += '<i class="fa fa-list"> Detail </i>';
-								view += '</a>';
-								view += '</td>';
 								view += '</tr>';
 								$("#data_mhs").append(view);
+								counter += 1;
 							});
 						},
 						error: function(data, ajaxOptions, thrownError){
@@ -141,7 +141,7 @@
 						});
 
 						$.ajax({
-							url: "data_pendaftar/" + prodi,
+							url: "saran_penerimaan/" + prodi,
 							type:"POST",
 							cache: false,
 							dataType: 'json',
@@ -151,20 +151,26 @@
 							success: function(data){
 								console.log(data);
 								$("#data_mhs tr").last().remove();
-								var detail = "data_pendaftar";
-								var details = "details";
-								$.each(data, function(i, d){
-									var view = '<tr>';
+								var success = data.sma;
+								var smk = data.smk;
+								var cadangan = data.cadangan;
+								var counter = 1;
+								$.each(data.saran, function(i, d){
+									if (counter <= success) {
+										var view = '<tr class="bg-success">';
+									} else if ((counter > success) && (counter <= (success + smk))) {
+										var view = '<tr class="bg-primary">';
+									} else if ((counter > (success + smk)) && (counter <= (success + smk + cadangan))) {
+										var view = '<tr class="bg-warning">';
+									} else {
+										var view = '<tr class="bg-danger">';
+									}
 									$.each(d, function(j, e){
 										view += '<td>' + e + '</td>';
 									});
-									view += '<td>';
-									view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
-									view += '<i class="fa fa-list"> Detail </i>';
-									view += '</a>';
-									view += '</td>';
 									view += '</tr>';
 									$("#data_mhs").append(view);
+									counter += 1;
 								});
 							},
 							error: function(data, ajaxOptions, thrownError){
@@ -176,7 +182,7 @@
 						alert('Anda belum memilih prodi');
 						$("#data_mhs").html("");
 					}
-				});*/
+				});
 
 				$("#mooraMethod").click(function(){
 					var confirm = window.confirm("Mulai Hasilkan Saran Penerimaan?");
@@ -194,11 +200,19 @@
 							dataType: 'json',
 							success: function(data){
 								console.log(data);
-								/*var message = '<div class="alert alert-success alert-dismissable">';
-								message += '<p>' + data.input + '</p>';
-								message += '<p>' + data.message + '</p>';
-								message += '</div>';
-								$('#message').append(message);*/
+								if (data.fail) {
+									var message = '<div class="alert alert-danger">';
+									message += '<p>' + data.input + '</p>';
+									message += '<p>' + data.message + '</p>';
+									message += '</div>';
+									$('#message').append(message);
+								} else {
+									var message = '<div class="alert alert-success alert-dismissable">';
+									message += '<p>' + data.input + '</p>';
+									message += '<p>' + data.message + '</p>';
+									message += '</div>';
+									$('#message').append(message);
+								}
 							},
 							error: function(data){
 								console.log(data);

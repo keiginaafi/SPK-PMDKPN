@@ -17,6 +17,7 @@ use App\PilihanMhs as pilihan_mhs;
 //use App\NilaiAkademis as nilai_akademis;
 //use App\NilaiNonAkademis as nilai_non_akademis;
 use App\Kriteria as kriteria;
+use App\SaranPenerimaan as saran_penerimaan;
 
 class SaranPenerimaanController extends Controller
 {
@@ -37,8 +38,36 @@ class SaranPenerimaanController extends Controller
   }
 
   //fungsi untuk mengambil data penerimaan
-  public function getDataPenerimaan(){
+  public function getDataPenerimaan($id){
+    $data_prodi = '';
+    $data_saran = '';
+    try {
+      $data_prodi = DB::table('prodi')
+      ->select('kuota_sma', 'kuota_smk', 'kuota_cadangan')
+      ->where('kode_prodi', $id)
+      ->get();
 
+      $data_saran = DB::table('saran_penerimaan')
+      ->join('mahasiswa', 'saran_penerimaan.no_pendaftar', '=', 'mahasiswa.no_pendaftar')
+      ->select('saran_penerimaan.no_pendaftar', 'mahasiswa.nisn', 'mahasiswa.nama',
+      'mahasiswa.jenis_kelamin', 'mahasiswa.tipe_sekolah', 'mahasiswa.jurusan_asal',
+      'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
+      ->where('saran_penerimaan.kode_prodi', $id)
+      ->get();
+
+      $data_saran = $data_saran->sortBy('ranking', SORT_NATURAL, true);
+    } catch (\Illuminate\Database\QueryException $ex) {
+      return Response::json($ex->getMessage());
+    }
+
+    $response = array(
+      'sma' => $data_prodi[0]->kuota_sma,
+      'smk' => $data_prodi[0]->kuota_smk,
+      'cadangan' => $data_prodi[0]->kuota_cadangan,
+      'saran' => $data_saran,
+    );
+    return Response::json($response);
+    //var_dump($response);
   }
 
   //fungsi untuk menghasilkan saran penerimaan dengan metode moora
@@ -141,11 +170,104 @@ class SaranPenerimaanController extends Controller
 
     //normalisasi tiap nilai kriteria tiap mahasiswa dengan denominator masing-masing
     $data_mhs = DB::table('mahasiswa')
-    ->select('nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah')
+    ->select('no_pendaftar', 'nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah')
     ->orderBy('no_pendaftar')
     ->get();
 
+    foreach ($data_mhs as $value) {
+
+      if ($value->akreditasi_sekolah == 'A') {
+        $akr = 2.0;
+      } elseif ($value->akreditasi_sekolah == 'B') {
+        $akr = 1.8;
+      } elseif ($value->akreditasi_sekolah == 'C') {
+        $akr = 1.6;
+      } else {
+        $akr = 1.4;
+      }
+
+      $data_normalisasi[$value->no_pendaftar] = array(
+        'Nilai Akademis' => $value->nilai_akademis/$sqrt_nilai_akademis,
+        'Nilai Non Akademis' => $value->nilai_non_akademis/$sqrt_nilai_non_akademis,
+        'Akreditasi Sekolah' => $akr / $sqrt_akreditasi_sekolah,
+      );
+    }
+
     //ambil bobot
-    //$bobot = DB::table('kriteria');
+    $get_bobot = DB::table('kriteria')
+    ->select('nama_kriteria', 'bobot_kriteria')
+    ->orderBy('id_kriteria')
+    ->get();
+
+    //simpan bobot dalam array
+    foreach ($get_bobot as $value) {
+      $bobot[$value->nama_kriteria] = $value->bobot_kriteria;
+    }
+    //var_dump($bobot);
+
+    //mulai proses optimisasi
+    foreach ($data_normalisasi as $key => $value) {
+      $optimize_result[$key] = 0;
+      foreach ($value as $k => $v) {
+        $optimize_result[$key] += ($v * $bobot[$k]);
+      }
+    }
+
+    //save nilai akhir ke database
+    foreach ($optimize_result as $key => $value) {
+      //var_dump($key.' => '.$value);
+      try {
+        $mhs = mahasiswa::where('no_pendaftar', $key)
+        ->update(['nilai_akhir' => $value]);
+      } catch (\Illuminate\Database\QueryException $ex) {
+        return Redirect::back()->withErrors($ex->getMessage());
+      }
+    }
+
+    //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
+    try {
+      //ambil data prodi
+      $data_prodi = DB::table('prodi')
+      ->select('kode_prodi', 'nama_prodi')
+      ->get();
+
+      //ambil data mhs dari tiap prodi
+      foreach ($data_prodi as $value) {
+        $data_moora = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->nama_prodi)
+        ->get();
+
+        $rank = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora as $val) {
+          $rank[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank);
+        //inisiasi ranking
+        $i = 1;
+        //save ke database
+        foreach ($rank as $k => $v) {
+          $saran = new saran_penerimaan();
+          $saran->no_pendaftar = $k;
+          $saran->kode_prodi = $value->kode_prodi;
+          $saran->ranking = $i;
+          if (!$saran->save()) {
+            return Redirect::back()->withErrors('The server encountered an unexpected condition');
+          }
+          $i += 1;
+        }
+      }
+    } catch (\Illuminate\Database\QueryException $ex) {
+      return Redirect::back()->withErrors($ex->getMessage());
+    }
+
+    $response = array(
+      'fail' => 0,
+      'input' => 'Success',
+      'message' => 'Saran Penerimaan telah dihasilkan'
+    );
+    return Response::json($response);
   }
 }

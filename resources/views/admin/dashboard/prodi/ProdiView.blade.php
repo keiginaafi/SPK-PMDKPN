@@ -5,7 +5,7 @@
 		<small>Control Panel</small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>		
+		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
 		<li class="active">Kelola Prodi</li>
 	</ol>
 @stop
@@ -55,10 +55,8 @@
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
 											<i class="fa fa-list"> Edit </i>
 										</a> |
-										<a class="btn btn-danger btn-flat btn-sm" href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
-										title="hapus"
-										onclick="return confirm('Apakah anda yakin akan menghapus program studi
-										{{{ $item_prodi->nama_prodi }}} ?')">
+										<a class="btn btn-danger btn-flat btn-sm hapus" href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
+										data-confirm="Yakin ingin hapus kriteria {{ $item_prodi->nama_prodi }} ?" title="hapus">
 											<i class="fa fa-trash"> Delete </i>
 										</a>
 									</td>
@@ -129,51 +127,64 @@
 		</div>
 	</div>
 	<!-- End of Modal -->
-	@section('script')
-		<script>
-			$(function(){
-				$('#tambahProdi').click(function(){
-					$('input+small').text('');
-					$('input').parent().removeClass('has-error');
+	<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
+	<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
+	<script>
+		var deleteLinks = document.querySelectorAll('.hapus');
+		for (var i = 0; i < deleteLinks.length; i++) {
+			deleteLinks[i].addEventListener('click', function(event) {
+				event.preventDefault();
 
-					$('#inputProdi').modal('show');
-					//console.log('test');
-					return false;
-				});
+				var choice = confirm(this.getAttribute('data-confirm'));
+
+				if (choice) {
+					window.location.href = this.getAttribute('href');
+				}
 			});
+		}
 
-			$(document).on('submit', '#formTambahProdi', function(e) {
-	        e.preventDefault();
+		$(function(){
+			$('#tambahProdi').click(function(){
+				$('input+small').text('');
+				$('input').parent().removeClass('has-error');
 
-	        $('input+small').text('');
-	        $('input').parent().removeClass('has-error');
+				$('#inputProdi').modal('show');
+				//console.log('test');
+				return false;
+			});
+		});
 
-	        $.ajax({
-	            method: $(this).attr('method'),
-	            url: $(this).attr('action'),
-	            data: $(this).serialize(),
-	            dataType: "json"
-	        })
+		$(document).on('submit', '#formTambahProdi', function(e) {
+        e.preventDefault();
 
-	        .done(function(data) {
-	            console.log(data);
+        $('input+small').text('');
+        $('input').parent().removeClass('has-error');
 
-	            $('.alert-success').removeClass('hidden');
-	            $('#myModal').modal('hide');
+        $.ajax({
+            method: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            dataType: "json"
+        })
 
-	            //window.location.href='/kelola_prodi';
-	        })
+        .done(function(data) {
+            console.log(data);
 
-	        .fail(function(data) {
-	            console.log(data.responeJSON);
-	            $.each(data.responseJSON, function (key, value) {
-	                var input = '#formTambahProdi input[name=' + key + ']';
+            $('.alert-success').removeClass('hidden');
+            $('#myModal').modal('hide');
 
-	                $(input + '+small').text(value);
-	                $(input).parent().addClass('has-error');
-	            });
-	        });
-	    });
-		</script>
-	@endsection
+            //window.location.href='/kelola_prodi';
+        })
+
+        .fail(function(data) {
+            console.log(data.responeJSON);
+            $.each(data.responseJSON, function (key, value) {
+                var input = '#formTambahProdi input[name=' + key + ']';
+
+                $(input + '+small').text(value);
+                $(input).parent().addClass('has-error');
+            });
+        });
+    });
+	</script>
 @endsection
