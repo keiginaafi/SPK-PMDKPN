@@ -19,8 +19,11 @@ class LevelMiddleware
     {
         $user = Auth::user();
         if ($user && $user->level !== $level) {
-          return abort(Auth::check() ? 403 : 401,
+          /*return abort(Auth::check() ? 403 : 401,
+          Auth::check() ? 'Forbidden' : 'Unauthorized');*/
+          abort(Auth::check() ? 403 : 401,
           Auth::check() ? 'Forbidden' : 'Unauthorized');
+
         }
         return $next($request);
     }

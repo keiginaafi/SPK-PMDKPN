@@ -17,13 +17,26 @@ use App\NilaiNonAkademis as nilai_non_akademis;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/admin', function () {
     return view('admin.dashboard.main');
 });
+
+//route login
+Route::group(['middleware' => 'web'], function(){
+	Auth::routes();
+	//Route::auth();
+	Route::get('/', array('as' => 'admin', 'uses' => 'adminController@index'));
+	Route::get('/home', 'HomeController@index')->name('home');
+});
+
+/*Route::get('/', function () {
+    return view('auth.login');
+});*/
+
+/*Route::group(['middleware' => ['web', 'level:1']], function()
+{
+
+});*/
 
 //route data pendaftar
 Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
@@ -83,10 +96,7 @@ Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'use
 Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
 /*Route::get('/saran_penerimaan', function () {
     return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
-});
-Auth::routes();*/
-
-Route::get('/home', 'HomeController@index')->name('home');
+});*/
 
 //route CRUD jurusan
 /*Route::group(['middleware' => ['web', 'auth', 'level:1']], function(){
