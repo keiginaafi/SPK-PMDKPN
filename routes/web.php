@@ -17,87 +17,84 @@ use App\NilaiNonAkademis as nilai_non_akademis;
 |
 */
 
-Route::get('/admin', function () {
+/*Route::get('/admin', function () {
     return view('admin.dashboard.main');
-});
+});*/
 
 //route login
 Route::group(['middleware' => 'web'], function(){
 	Auth::routes();
 	//Route::auth();
 	Route::get('/', array('as' => 'admin', 'uses' => 'adminController@index'));
-	Route::get('/home', 'HomeController@index')->name('home');
+	$this->get('logout', 'Auth\LoginController@logout');
 });
 
 /*Route::get('/', function () {
     return view('auth.login');
 });*/
 
-/*Route::group(['middleware' => ['web', 'level:1']], function()
+Route::group(['middleware' => ['web', 'auth']], function(){
+  //route data pendaftar
+  Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
+
+  Route::post('/data_pendaftar/{id}', array('as' => 'olah_data.get_data', 'uses' => 'Mahasiswa\PengolahDataController@getDataMhs'));
+
+  Route::get('/data_pendaftar/{id}/details', array('as' => 'olah_data.details', 'uses' => 'Mahasiswa\PengolahDataController@detailMhs'));
+
+  //route saran penerimaan
+  Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController@index'));
+
+  Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController@saranPenerimaan'));
+
+  Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
+});
+
+Route::group(['middleware' => ['web', 'auth', 'level:1']], function()
 {
+  //route data pendaftar
+  Route::get('/data_pendaftar/olah_data', array('as' => 'olah_data.normalisasi', 'uses' => 'Mahasiswa\PengolahDataController@olahDataMhs'));
 
-});*/
+  //route Input Data
+  Route::get('/input_data', array('as' => 'input', 'uses' => 'Mahasiswa\InputDataController@index'));
 
-//route data pendaftar
-Route::get('/data_pendaftar', array('as' => 'olah_data', 'uses' => 'Mahasiswa\PengolahDataController@index'));
+  Route::post('/input_data/tambah_prestasi', array('as' => 'input.prestasi', 'uses' => 'Mahasiswa\InputDataController@inputDataNonAkademis'));
 
-Route::post('/data_pendaftar/{id}', array('as' => 'olah_data.get_data', 'uses' => 'Mahasiswa\PengolahDataController@getDataMhs'));
+  Route::post('/input_data/tambah_mahasiswa', array('as' => 'input.mahasiswa', 'uses' => 'Mahasiswa\InputDataController@inputDataAkademis'));
 
-Route::get('/data_pendaftar/{id}/details', array('as' => 'olah_data.details', 'uses' => 'Mahasiswa\PengolahDataController@detailMhs'));
+  //route Kriteria
+  Route::get('/kelola_kriteria', array('as' => 'kriteria', 'uses' => 'Kriteria\KriteriaController@index'));
 
-Route::get('/data_pendaftar/olah_data', array('as' => 'olah_data.normalisasi', 'uses' => 'Mahasiswa\PengolahDataController@olahDataMhs'));
+  Route::post('/kelola_kriteria/tambah', array('as' => 'kriteria.tambah', 'uses' => 'Kriteria\KriteriaController@tambahKriteria'));
 
-//route Input Data
-Route::get('/input_data', array('as' => 'input', 'uses' => 'Mahasiswa\InputDataController@index'));
+  Route::get('/kelola_kriteria/{id}/edit', array('as' => 'kriteria.edit', 'uses' => 'Kriteria\KriteriaController@editKriteria'));
 
-Route::post('/input_data/tambah_prestasi', array('as' => 'input.prestasi', 'uses' => 'Mahasiswa\InputDataController@inputDataNonAkademis'));
+  Route::post('/kelola_kriteria/{id}/ubahKriteria', array('as' => 'kriteria.ubah', 'uses' => 'Kriteria\KriteriaController@ubahKriteria'));
 
-Route::post('/input_data/tambah_mahasiswa', array('as' => 'input.mahasiswa', 'uses' => 'Mahasiswa\InputDataController@inputDataAkademis'));
+  Route::get('/kelola_kriteria/{id}/hapusKriteria', array('as' => 'kriteria.hapus', 'uses' => 'Kriteria\KriteriaController@hapusKriteria'));
 
-//route Kriteria
-Route::get('/kelola_kriteria', array('as' => 'kriteria', 'uses' => 'Kriteria\KriteriaController@index'));
+  //route tabel perbandingan
+  Route::get('/kelola_tabel', array('as' => 'tabel', 'uses' => 'Tabel\TabelPerbandinganController@index'));
 
-Route::post('/kelola_kriteria/tambah', array('as' => 'kriteria.tambah', 'uses' => 'Kriteria\KriteriaController@tambahKriteria'));
+  Route::post('/kelola_tabel/tambah', array('as' => 'tabel.tambah', 'uses' => 'Tabel\TabelPerbandinganController@inputNilaiPerbandingan'));
 
-Route::get('/kelola_kriteria/{id}/edit', array('as' => 'kriteria.edit', 'uses' => 'Kriteria\KriteriaController@editKriteria'));
+  Route::get('/kelola_tabel/get_nilai/{id1}_{id2}', array('as' => 'tabel.get', 'uses' => 'Tabel\TabelPerbandinganController@getNilaiBanding'));
 
-Route::post('/kelola_kriteria/{id}/ubahKriteria', array('as' => 'kriteria.ubah', 'uses' => 'Kriteria\KriteriaController@ubahKriteria'));
+  Route::get('/kelola_tabel/cek_ci', array('as' => 'tabel.cek_ci', 'uses' => 'Tabel\TabelPerbandinganController@periksaCr'));
+  /*Route::get('/kelola_tabel', function () {
+      return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
+  });*/
 
-Route::get('/kelola_kriteria/{id}/hapusKriteria', array('as' => 'kriteria.hapus', 'uses' => 'Kriteria\KriteriaController@hapusKriteria'));
+  //route prodi
+  Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiController@index'));
 
-//route tabel perbandingan
-Route::get('/kelola_tabel', array('as' => 'tabel', 'uses' => 'Tabel\TabelPerbandinganController@index'));
+  Route::post('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
 
-Route::post('/kelola_tabel/tambah', array('as' => 'tabel.tambah', 'uses' => 'Tabel\TabelPerbandinganController@inputNilaiPerbandingan'));
+  Route::get('/kelola_prodi/{id}/edit', array('as' => 'prodi.edit', 'uses' => 'Prodi\ProdiController@editProdi'));
 
-Route::get('/kelola_tabel/get_nilai/{id1}_{id2}', array('as' => 'tabel.get', 'uses' => 'Tabel\TabelPerbandinganController@getNilaiBanding'));
+  Route::post('/kelola_prodi/{id}/ubahProdi', array('as' => 'prodi.ubah', 'uses' => 'Prodi\ProdiController@ubahProdi'));
 
-Route::get('/kelola_tabel/cek_ci', array('as' => 'tabel.cek_ci', 'uses' => 'Tabel\TabelPerbandinganController@periksaCr'));
-/*Route::get('/kelola_tabel', function () {
-    return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
-});*/
-
-//route prodi
-Route::get('/kelola_prodi', array('as' => 'prodi', 'uses' => 'Prodi\ProdiController@index'));
-
-Route::post('/kelola_prodi/tambah', array('as' => 'prodi.tambah', 'uses' => 'Prodi\ProdiController@tambahProdi'));
-
-Route::get('/kelola_prodi/{id}/edit', array('as' => 'prodi.edit', 'uses' => 'Prodi\ProdiController@editProdi'));
-
-Route::post('/kelola_prodi/{id}/ubahProdi', array('as' => 'prodi.ubah', 'uses' => 'Prodi\ProdiController@ubahProdi'));
-
-Route::get('/kelola_prodi/{id}/hapusProdi', array('as' => 'prodi.hapus', 'uses' => 'Prodi\ProdiController@hapusProdi'));
-
-//route saran penerimaan
-Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController@index'));
-
-Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController@saranPenerimaan'));
-
-Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
-/*Route::get('/saran_penerimaan', function () {
-    return view('admin.dashboard.saran_penerimaan.SaranPenerimaanView');
-});*/
-
+  Route::get('/kelola_prodi/{id}/hapusProdi', array('as' => 'prodi.hapus', 'uses' => 'Prodi\ProdiController@hapusProdi'));
+});
 //route CRUD jurusan
 /*Route::group(['middleware' => ['web', 'auth', 'level:1']], function(){
 	//index

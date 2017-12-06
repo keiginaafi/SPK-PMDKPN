@@ -25,7 +25,19 @@
             </button>
           </div>
 				</div>
-				<div style="display: block" class="box-body">					
+				<div style="display: block" class="box-body">
+
+          <justified>Aplikasi ini adalah sistem pendukung keputusan yang menghasilkan daftar
+          mahasiswa yang berhak diterima masuk ke Politeknik Negeri Semarang melalui jalur
+          Penelusuran Minat dan Bakat Politeknik Negeri menggunakan metode Moora dan AHP.</justified>
+          <br><br><br>
+          <p>Petunjuk Penggunaan</p>
+          <ol>
+            <li>Menu Data Pendaftar digunakan untuk input data pendaftar, melihat data pendaftar, dan menghasilkan data yang digunakan pada penerimaan calon mahasiswa</li>
+            <li>Menu Program Studi digunakan untuk mengelola data Program Studi</li>
+            <li>Menu Kriteria digunakan untuk mengelola kriteria penerimaan dan menghasilkan bobot kriteria</li>
+            <li>Menu Saran Penerimaan digunakan untuk menghasilkan saran penerimaan dan melihat hasil penerimaan berdasarkan metode Moora dan AHP</li>
+          </ol>
 				</div>
 			</div>
 		</div>

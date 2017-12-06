@@ -27,9 +27,11 @@
 			<div class="box">
 				<div class="box-header">
 					<h3 class="box-title">Data Pendaftar
-						<button class="btn btn-primary btn-flat btn-sm" id="normalisasiMhs" title="Normalisasi" style="margin-left: 10px;">
-							Normalisasi Data Pendaftar
-						</button>
+						@if(Auth::user()->level==1)
+							<button class="btn btn-primary btn-flat btn-sm" id="normalisasiMhs" title="Normalisasi" style="margin-left: 10px;">
+								Normalisasi Data Pendaftar
+							</button>					  
+					  @endif
 					</h3>
 				</div>
 				<div class="box-body">
@@ -56,6 +58,7 @@
 								<th>Jenis Sekolah</th>
 								<th>Akreditasi Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Pilihan</th>
 								<th>Detail</th>
 							</tr>
 						</thead>
@@ -74,6 +77,7 @@
 								<th>Jenis Sekolah</th>
 								<th>Akreditasi Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Pilihan</th>
 								<th>Detail</th>
 							</tr>
 						</tfoot>
@@ -112,7 +116,7 @@
 						},
 						success: function(data){
 							console.log(data);
-							$("#data_mhs tr").last().remove();
+							$("#data_mhs tr").remove();
 							var detail = "data_pendaftar";
 							var details = "details";
 							$.each(data, function(i, d){
@@ -155,7 +159,7 @@
 							},
 							success: function(data){
 								console.log(data);
-								$("#data_mhs tr").last().remove();
+								$("#data_mhs tr").remove();
 								var detail = "data_pendaftar";
 								var details = "details";
 								$.each(data, function(i, d){
