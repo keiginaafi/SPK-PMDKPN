@@ -24,9 +24,9 @@
       	</div>
       @endif
 			@if (Session::has('successMessage'))
-			<div class="alert alert-success alert-dismissable">
-				<p>{{ Session::get('successMessage') }}</p>
-			</div>
+				<div class="alert alert-success alert-dismissable">
+					<p>{{ Session::get('successMessage') }}</p>
+				</div>
 			@endif
 			<div id="message">
 			</div>
@@ -45,40 +45,49 @@
 							<thead>
 								<tr>
 									<th class="col-md-1">\</th>
-									@foreach($kriteria as $item)
-										<th>{{ $item->nama_kriteria }}</th>
-									@endforeach
+									@if(count($kriteria) > 0)
+										@foreach($kriteria as $item)
+											<th>{{ $item->nama_kriteria }}</th>
+										@endforeach
+									@else
+										<th></th>
+									@endif
 								</tr>
 							</thead>
 							<tbody>
 								<?php
-									$iterate = 0;
-									foreach ($kriteria as $item) {
-										//echo " => ".$kriteria[1]."<br>";
-										echo "<tr>
-										<th>".$item->nama_kriteria."</th>";
-										for ($i=0; $i < count($kriteria); $i++) {
-											if ($i == $iterate) {
-												echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number" readonly
-												id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-												data-kriteria1="'.$item->id_kriteria.'" data-kriteria2="'.$kriteria[$i % count($kriteria)]->id_kriteria.'" />';
-												echo "</td>";
-											}elseif ($i <= $iterate) {
-												echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
-												id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-												readonly placeholder="field ini akan terisi otomatis" />';
-												echo '</td>';
-											}else {
-												echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
+									if (count($kriteria) > 0) {
+										$iterate = 0;
+										foreach ($kriteria as $item) {
+											//echo " => ".$kriteria[1]."<br>";
+											echo "<tr>
+											<th>".$item->nama_kriteria."</th>";
+											for ($i=0; $i < count($kriteria); $i++) {
+												if ($i == $iterate) {
+													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number" readonly
 													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-													name="nilai[]" placeholder="isi field dengan nilai 0 - 9" min="0" max="9" required />';
-												echo '<input hidden name="kriteria1[]" value="'.$item->id_kriteria.'"/>';
-												echo '<input hidden name="kriteria2[]" value="'.$kriteria[$i % count($kriteria)]->id_kriteria.'"/>';
-												echo '</td>';
+													data-kriteria1="'.$item->id_kriteria.'" data-kriteria2="'.$kriteria[$i % count($kriteria)]->id_kriteria.'" />';
+													echo "</td>";
+												}elseif ($i <= $iterate) {
+													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
+													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
+													readonly placeholder="field ini akan terisi otomatis" />';
+													echo '</td>';
+												}else {
+													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
+														id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
+														name="nilai[]" placeholder="isi field dengan nilai 0 - 9" min="0" max="9" required />';
+													echo '<input hidden name="kriteria1[]" value="'.$item->id_kriteria.'"/>';
+													echo '<input hidden name="kriteria2[]" value="'.$kriteria[$i % count($kriteria)]->id_kriteria.'"/>';
+													echo '</td>';
+												}
 											}
+											echo "</tr>";
+											$iterate++;
 										}
-										echo "</tr>";
-										$iterate++;
+									} else {
+										echo "<td></td>";
+										echo "<td></td>";
 									}
 								?>
 							</tbody>

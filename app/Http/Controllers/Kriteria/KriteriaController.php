@@ -14,9 +14,9 @@ use App\TabelPerbandingan as tabel_perbandingan;
 
 class KriteriaController extends Controller
 {
-  /*public function __construct(){
+  public function __construct(){
     $this->middleware('auth');
-  }*/
+  }
 
   public function index(){
     $dataKriteria = kriteria::select(DB::raw("id_kriteria, nama_kriteria, bobot_kriteria"))

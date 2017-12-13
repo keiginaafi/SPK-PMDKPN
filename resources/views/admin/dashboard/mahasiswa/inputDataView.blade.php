@@ -82,21 +82,16 @@
 							</tr>
 						</thead>
 						<tbody>
-							@for($i = 1; $i <= count($periode); $i++)
-								<tr>
-									<td>{{ $i }}</td>
-									<td>{{ $periode }}</td>
-									<td>{{ $mahasiswa }}</td>
-								</tr>
-							@endfor
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>No.</th>
-								<th>Periode</th>
-								<th>Jumlah Pendaftar</th>
-							</tr>
-						</tfoot>
+							@if($periode != 0)
+								@for($i = 1; $i <= count($periode); $i++)
+									<tr>
+										<td>{{ $i }}</td>
+										<td>{{ $periode }}</td>
+										<td>{{ $mahasiswa }}</td>
+									</tr>
+								@endfor
+							@endif
+						</tbody>						
 					</table>
 					</center>
 				</div>

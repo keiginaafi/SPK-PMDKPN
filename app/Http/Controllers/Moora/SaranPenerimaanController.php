@@ -14,8 +14,6 @@ use App\Prodi as prodi;
 use App\Mahasiswa as mahasiswa;
 use App\Peringkat as peringkat;
 use App\PilihanMhs as pilihan_mhs;
-//use App\NilaiAkademis as nilai_akademis;
-//use App\NilaiNonAkademis as nilai_non_akademis;
 use App\Kriteria as kriteria;
 use App\SaranPenerimaan as saran_penerimaan;
 
@@ -25,7 +23,7 @@ class SaranPenerimaanController extends Controller
   protected $ahpService;
 
   public function __construct(AHP $ahpService){
-    //$this->middleware('auth');
+    $this->middleware('auth');
     $this->ahpService = $ahpService;
   }
 

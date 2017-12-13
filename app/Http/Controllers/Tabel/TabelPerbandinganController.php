@@ -18,7 +18,7 @@ class TabelPerbandinganController extends Controller
   protected $ahpService;
 
   public function __construct(AHP $ahpService){
-    //$this->middleware('auth');
+    $this->middleware('auth');
     $this->ahpService = $ahpService;
   }
 
@@ -27,15 +27,17 @@ class TabelPerbandinganController extends Controller
     ->orderBy(DB::raw("id_kriteria"))
     ->get();
 
-    $nilai_perbandingan = tabel_perbandingan::select(DB::raw("id_kriteria_1, id_kriteria_2, nilai_banding"))
-    ->get();
     /*foreach ($kriteria as $value) {
       var_dump($value);
     }*/
-    $data = array(
-      'kriteria' => $kriteria,
-    );
-    return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView', $data);
+    if (!empty($kriteria) && $kriteria->count()) {
+      $data = array(
+        'kriteria' => $kriteria,
+      );
+      return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView', $data);
+    } else {
+      return view('admin.dashboard.tabel_perbandingan.TabelPerbandinganView');
+    }
   }
 
   public function inputNilaiPerbandingan(Request $request){

@@ -15,7 +15,7 @@ class BuatTabelMahasiswa extends Migration
     {
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->string('no_pendaftar', 12)->index()->primary();
-            $table->string('nisn', 10);
+            $table->string('nisn', 28);
             $table->string('nama', 60);
             $table->char('jenis_kelamin', 1);
             $table->string('agama', 20);

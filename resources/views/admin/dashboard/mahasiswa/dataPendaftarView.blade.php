@@ -24,13 +24,13 @@
       @endif
 			<div id="message">
 			</div>
-			<div class="box">
+			<div class="box" style="overflow: auto; min-width: 100%; width: auto; height: 100%;">
 				<div class="box-header">
 					<h3 class="box-title">Data Pendaftar
 						@if(Auth::user()->level==1)
 							<button class="btn btn-primary btn-flat btn-sm" id="normalisasiMhs" title="Normalisasi" style="margin-left: 10px;">
 								Normalisasi Data Pendaftar
-							</button>					  
+							</button>
 					  @endif
 					</h3>
 				</div>
@@ -44,8 +44,8 @@
 							@endforeach
 						</select>
 					</div>
-					<table id="table_data" class="table table-bordered table-hover col-md-12">
-						<thead>
+					<table id="table_data" class="table table-bordered col-md-12">
+						<thead style="position: sticky; top: 0">
 							<tr>
 								<th>No. Pendaftar</th>
 								<th>NISN</th>
@@ -62,25 +62,6 @@
 								<th>Detail</th>
 							</tr>
 						</thead>
-						<tbody id="data_mhs" name="data_mhs">
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>No. Pendaftar</th>
-								<th>NISN</th>
-								<th>Nama</th>
-								<th>Jenis Kelamin</th>
-								<th>Agama</th>
-								<th>Tanggal Lahir</th>
-								<th>Kota</th>
-								<th>Tipe Sekolah</th>
-								<th>Jenis Sekolah</th>
-								<th>Akreditasi Sekolah</th>
-								<th>Jurusan Asal</th>
-								<th>Pilihan</th>
-								<th>Detail</th>
-							</tr>
-						</tfoot>
 					</table>
 				</div>
 			</div>
@@ -88,15 +69,9 @@
 	</div>
 	<meta name="_token" content="{{ csrf_token() }}" />
 		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
-		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
-		<script src="{{ asset('js/jquery-3.2.1.slim.js') }}"></script>
-		<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-		<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
-		<script>
-			$(function(){
-				$('#table_data').DataTable({"pagelength": 25});
-			});
 
+
+		<script>
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
 				if(prodi != "NONE"){
@@ -143,43 +118,33 @@
 				$("#select_prodi").change(function(){
 					var prodi = $("#select_prodi").val();
 					if(prodi != "NONE"){
-						$.ajaxSetup({
-						  headers: {
-						    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-						  }
-						});
-
-						$.ajax({
-							url: "data_pendaftar/" + prodi,
-							type:"POST",
-							cache: false,
-							dataType: 'json',
-							data:{
-								id: prodi,
+						$('#table_data').DataTable({
+							processing: true,
+							serverSide: true,
+							ajax: {
+								url: 'data_pendaftar/'+ prodi,
+								type: 'POST',
+								data: {
+									_token: $('meta[name="_token"]').attr('content'),
+									id: prodi,
+								}
 							},
-							success: function(data){
-								console.log(data);
-								$("#data_mhs tr").remove();
-								var detail = "data_pendaftar";
-								var details = "details";
-								$.each(data, function(i, d){
-									var view = '<tr>';
-									$.each(d, function(j, e){
-										view += '<td>' + e + '</td>';
-									});
-									view += '<td>';
-									view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
-									view += '<i class="fa fa-list"> Detail </i>';
-									view += '</a>';
-									view += '</td>';
-									view += '</tr>';
-									$("#data_mhs").append(view);
-								});
-							},
-							error: function(data, ajaxOptions, thrownError){
-								alert(data.status);
-							}
-						});
+							columns: [
+								{ data: 'no_pendaftar'},
+								{ data: 'nisn'},
+								{ data: 'nama'},
+								{ data: 'jenis_kelamin'},
+								{ data: 'agama'},
+								{ data: 'tgl_lahir'},
+								{ data: 'kota'},
+								{ data: 'tipe_sekolah'},
+								{ data: 'jenis_sekolah'},
+								{ data: 'akreditasi_sekolah'},
+								{ data: 'jurusan_asal'},
+								{ data: 'pilihan_ke'},
+								{data: 'action', orderable: false, searchable: false}
+							]
+						})
 					}else{
 
 						alert('Anda belum memilih prodi');

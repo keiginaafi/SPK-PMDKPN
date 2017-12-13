@@ -20,8 +20,8 @@ class BuatTabelNilaiAkademis extends Migration
             $table->char('semester', 1);
             $table->char('jenis_nilai', 3);
             $table->string('mapel', 30);
-            $table->decimal('nilai_mapel', 4, 2);
-            $table->decimal('nilai_mapel_koreksi', 4, 2);
+            $table->decimal('nilai_mapel', 8, 5);
+            $table->decimal('nilai_mapel_koreksi', 8, 5);
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
+use Yajra\Datatables\Datatables;
 use DB;
 use Response;
 use Validator;
@@ -18,9 +19,9 @@ use App\NilaiNonAkademis as nilai_non_akademis;
 
 class PengolahDataController extends Controller
 {
-  /*public function __construct(){
+  public function __construct(){
     $this->middleware('auth');
-  }*/
+  }
 
   public function index(){
     $dataProdi = prodi::select(DB::raw("kode_prodi, nama_prodi"))
@@ -36,10 +37,10 @@ class PengolahDataController extends Controller
     $data_prodi = "";
     try {
       //get nama prodi based on id
-      $data_prodi = DB::table('prodi')
+      /*$data_prodi = DB::table('prodi')
       ->select('nama_prodi')
       ->where('kode_prodi', '=', $id)
-      ->get();
+      ->get();*/
 
       //get data mhs
       $data_pendaftar = DB::table('mahasiswa')
@@ -48,15 +49,26 @@ class PengolahDataController extends Controller
       'mahasiswa.jenis_kelamin', 'mahasiswa.agama', 'mahasiswa.tgl_lahir',
       'mahasiswa.kota', 'mahasiswa.tipe_sekolah', 'mahasiswa.jenis_sekolah',
       'mahasiswa.akreditasi_sekolah', 'mahasiswa.jurusan_asal', 'pilihan_mhs.pilihan_ke')
-      ->where('pilihan_mhs.pilihan_prodi', '=', $data_prodi[0]->nama_prodi)
+      ->where('pilihan_mhs.pilihan_prodi', '=', $id)
       ->get();
     } catch(\Illuminate\Database\QueryException $ex){
       dd($ex->getMessage());
       // Note any method of class PDOException can be called on $ex.
     }
 
-    //var_dump($data_pendaftar);
-    return Response::json($data_pendaftar);
+    //return Response::json($data_pendaftar);
+    $data_pendaftar->transform(function ($data){
+      return array_dot($data);
+    });
+    /*foreach ($data_pendaftar as $key => $value) {
+      var_dump($value['no_pendaftar']);
+    }*/
+    return Datatables::of($data_pendaftar)
+    ->addColumn('action', function($data_pendaftar){
+      return '<a href="data_pendaftar/'.$data_pendaftar['no_pendaftar'].'/details" class="btn btn-primary btn-flat btn-sm">
+      <i class="fa fa-list"></i> Details</a>';
+    })
+    ->make(true);
   }
 
   public function detailMhs($id){
@@ -82,6 +94,7 @@ class PengolahDataController extends Controller
       var_dump($value->no_pendaftar, $value->semester, $value->mapel, $value->nilai_mapel);
     }*/
     foreach ($nilai as $akademis) {
+      set_time_limit(0);
       //konversi nilai ke skala 100
       if ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4) {
         $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
@@ -104,6 +117,7 @@ class PengolahDataController extends Controller
     //sum nilai avg mapel koreksi tiap semester, lalu save ke mahasiswa
     $pendaftar = DB::table('mahasiswa')->select('no_pendaftar')->get();
     foreach ($pendaftar as $id) {
+      set_time_limit(0);
       //rata-rata smt 1
       $avg_smt_1 = DB::table('nilai_akademis')
       ->where('no_pendaftar', '=', $id->no_pendaftar)
@@ -150,6 +164,7 @@ class PengolahDataController extends Controller
     //olah data prestasi
     $lomba = nilai_non_akademis::all();
     foreach ($lomba as $prestasi) {
+      set_time_limit(0);
       $nilai_prestasi = 0;
 
       //cek skala prestasi

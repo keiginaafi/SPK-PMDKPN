@@ -59,7 +59,7 @@
         height: 100%;
         z-index: 1;
         opacity: 0.5;
-        background-image: url("img/eksisten.jpg");
+        background-image: url("images/eksisten.jpg");
         background-repeat: no-repeat;
         background-position: 50% 0;
         background-size: cover;
