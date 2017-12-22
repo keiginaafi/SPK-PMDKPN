@@ -30,7 +30,7 @@
 			@endif
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">Input Data</h3>
+					<h3 class="box-title">Unggah Data</h3>
 				</div>
 				<div class="box-body">
 					<div class="col-md-1">
@@ -45,7 +45,7 @@
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>
-									<button type="submit" class="btn btn-primary" name="submitAkademis" value="submitAkademis">Submit</button>
+									<button type="submit" class="btn btn-primary" name="submitAkademis" value="submitAkademis">Unggah Data</button>
 								</center>
 							</div>
 						</form>
@@ -62,14 +62,14 @@
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>
-									<button type="submit" class="btn btn-primary" name="submitNonAkademis" value="submitNonAkademis">Submit</button>
+									<button type="submit" class="btn btn-primary" name="submitNonAkademis" value="submitNonAkademis">Unggah Data</button>
 								</center>
 							</div>
 						</form>
 					</div>
 				</div>
 				<div class="box-header" style="padding-top: 35px;">
-					<h3 class="box-title">History</h3>
+					<h3 class="box-title">Jumlah Data</h3>
 				</div>
 				<div class="box-body">
 					<center>
@@ -91,7 +91,7 @@
 									</tr>
 								@endfor
 							@endif
-						</tbody>						
+						</tbody>
 					</table>
 					</center>
 				</div>
@@ -103,10 +103,6 @@
 	<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 	<script>
-		$(function(){
-			$('#dataMahasiswa').DataTable({"pagelength": 100});
-		});
-
 		$(document).on('submit', '#dataNonAkademis', function(e) {
         e.preventDefault();
 

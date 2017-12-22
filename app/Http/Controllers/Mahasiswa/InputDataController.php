@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Mahasiswa;
 
 //ini_set('max_execution_time', '600');
-ini_set('memory_limit', '128M');
+ini_set('memory_limit', '256M');
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -63,7 +63,7 @@ class InputDataController extends Controller
       //import to database
       if($request->hasFile('nilai_akademis')){
         $path = $request->file('nilai_akademis')->getRealPath();
-  		  $data = Excel::filter('chunk')->load($path)->chunk(250, function($results){
+  		  $data = Excel::filter('chunk')->load($path)->chunk(300, function($results){
           set_time_limit(0);
           //$reader->ignoreEmpty();
           //$results = $reader->get();
@@ -1075,13 +1075,13 @@ class InputDataController extends Controller
       //import to database
       if($request->hasFile('nilai_non_akademis')){
         $path = $request->file('nilai_non_akademis')->getRealPath();
-  		  $data = Excel::load($path, function($reader){
+        $data = Excel::filter('chunk')->load($path)->chunk(250, function($results){
           //$reader->ignoreEmpty();
-          $results = $reader->get();
+          //$results = $reader->get();
           try {
             if(!empty($results) && $results->count() > 0){
       			  foreach ($results as $key => $value) {
-                $insert[] = ['no_pendaftar' => $value->no_pendaftar, 'nama_prestasi' => $value->nama_prestasi,
+                $insert[] = ['no_pendaftar' => $value->nomor_pendaftaran, 'nama_prestasi' => $value->nama_prestasi,
                 'skala_prestasi' => $value->skala_prestasi, 'jenis_prestasi' => $value->jenis_prestasi,
                 'juara_prestasi' => $value->juara_prestasi, 'tahun_prestasi' => $value->tahun_prestasi];
       			  }
@@ -1093,10 +1093,10 @@ class InputDataController extends Controller
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan input data.<br>'.$ex->getMessage());
           }
-        });
+        }, false);
         return Redirect::back()->with('successMessage', 'Data Prestasi berhasil disimpan.');
   		}else{
-        return Redirect::back()->withErrors('error','Please Check your file, Something is wrong there.');
+        return Redirect::back()->withErrors('Error','Mohon periksa kembali file yang di-upload.');
       }
     }
 }

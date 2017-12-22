@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Moora;
 
+ini_set('memory_limit', '256M');
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
@@ -14,6 +16,8 @@ use App\Prodi as prodi;
 use App\Mahasiswa as mahasiswa;
 use App\Peringkat as peringkat;
 use App\PilihanMhs as pilihan_mhs;
+//use App\NilaiAkademis as nilai_akademis;
+//use App\NilaiNonAkademis as nilai_non_akademis;
 use App\Kriteria as kriteria;
 use App\SaranPenerimaan as saran_penerimaan;
 
@@ -102,6 +106,7 @@ class SaranPenerimaanController extends Controller
     ->select('nilai_akademis')
     ->get();
     foreach ($cek_nilai as $value) {
+      set_time_limit(0);
       if ($value->nilai_akademis == 0) {
         $response = array(
           'fail' => 1,
@@ -122,6 +127,7 @@ class SaranPenerimaanController extends Controller
     //initiate value sum of square
     $sum_sqr_nilai_akademis = 0;
     foreach ($get_nilai_akademis as $value) {
+      set_time_limit(0);
       $sum_sqr_nilai_akademis = $sum_sqr_nilai_akademis + ($value->nilai_akademis ** 2);
     }
     //define denominator for nilai_akademis
@@ -133,6 +139,7 @@ class SaranPenerimaanController extends Controller
     //initiate value sum of square
     $sum_sqr_nilai_non_akademis = 0;
     foreach ($get_nilai_non_akademis as $value) {
+      set_time_limit(0);
       $sum_sqr_nilai_non_akademis = $sum_sqr_nilai_non_akademis + ($value->nilai_non_akademis ** 2);
     }
     //define denominator of nilai_non_akademis
@@ -145,6 +152,7 @@ class SaranPenerimaanController extends Controller
     //initiate value sum of square
     $sum_sqr_akreditasi_sekolah = 0;
     foreach ($get_akreditasi as $value) {
+      set_time_limit(0);
       switch ($value->akreditasi_sekolah) {
         case 'A':
           $sum_sqr_akreditasi_sekolah = $sum_sqr_akreditasi_sekolah + (2.0 ** 2);
@@ -173,6 +181,7 @@ class SaranPenerimaanController extends Controller
     ->get();
 
     foreach ($data_mhs as $value) {
+      set_time_limit(0);
 
       if ($value->akreditasi_sekolah == 'A') {
         $akr = 2.0;
@@ -199,20 +208,24 @@ class SaranPenerimaanController extends Controller
 
     //simpan bobot dalam array
     foreach ($get_bobot as $value) {
+      set_time_limit(0);
       $bobot[$value->nama_kriteria] = $value->bobot_kriteria;
     }
     //var_dump($bobot);
 
     //mulai proses optimisasi
     foreach ($data_normalisasi as $key => $value) {
+      set_time_limit(0);
       $optimize_result[$key] = 0;
       foreach ($value as $k => $v) {
+        set_time_limit(0);
         $optimize_result[$key] += ($v * $bobot[$k]);
       }
     }
 
     //save nilai akhir ke database
     foreach ($optimize_result as $key => $value) {
+      set_time_limit(0);
       //var_dump($key.' => '.$value);
       try {
         $mhs = mahasiswa::where('no_pendaftar', $key)
@@ -231,15 +244,17 @@ class SaranPenerimaanController extends Controller
 
       //ambil data mhs dari tiap prodi
       foreach ($data_prodi as $value) {
+        set_time_limit(0);
         $data_moora = DB::table('mahasiswa')
         ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
         ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
-        ->where('pilihan_mhs.pilihan_prodi', $value->nama_prodi)
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
         ->get();
 
         $rank = array();
         //masukkan ke array untuk di sort
         foreach ($data_moora as $val) {
+          set_time_limit(0);
           $rank[$val->no_pendaftar] = $val->nilai_akhir;
         }
         arsort($rank);
@@ -247,9 +262,11 @@ class SaranPenerimaanController extends Controller
         $i = 1;
         //save ke database
         foreach ($rank as $k => $v) {
+          set_time_limit(0);
           $saran = new saran_penerimaan();
           $saran->no_pendaftar = $k;
           $saran->kode_prodi = $value->kode_prodi;
+          $saran->periode = date('Y');
           $saran->ranking = $i;
           if (!$saran->save()) {
             return Redirect::back()->withErrors('The server encountered an unexpected condition');

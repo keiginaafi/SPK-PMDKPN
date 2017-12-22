@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Mahasiswa;
 
+ini_set('memory_limit', '256M');
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
@@ -88,132 +90,156 @@ class PengolahDataController extends Controller
   }
 
   public function olahDataMhs(){
+    //cek data
+    if (DB::table('nilai_akademis')->count() <= 0) {
+      return Response::json([
+        'fail' => 1,
+        'input' => 'Tidak ada data.',
+        'message' => 'Data nilai akademis tidak ditemukan.'
+      ]);
+    }
+
     //get nilai akademis
-    $nilai = nilai_akademis::all();
+    nilai_akademis::chunk(500, function($nilai){
+      foreach ($nilai as $akademis) {
+        set_time_limit(0);
+        //konversi nilai ke skala 100
+        if ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4) {
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
+          if(!$akademis->save()){
+      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+      		}
+        }elseif ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10) {
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
+          if(!$akademis->save()){
+      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+      		}
+        }else {
+          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
+          if(!$akademis->save()){
+      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
+      		}
+        }
+      }
+    });
     /*foreach ($nilai as $value) {
       var_dump($value->no_pendaftar, $value->semester, $value->mapel, $value->nilai_mapel);
     }*/
-    foreach ($nilai as $akademis) {
-      set_time_limit(0);
-      //konversi nilai ke skala 100
-      if ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4) {
-        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
-        if(!$akademis->save()){
-    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-    		}
-      }elseif ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10) {
-        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
-        if(!$akademis->save()){
-    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-    		}
-      }else {
-        $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
-        if(!$akademis->save()){
-    			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-    		}
-      }
-    }
 
     //sum nilai avg mapel koreksi tiap semester, lalu save ke mahasiswa
-    $pendaftar = DB::table('mahasiswa')->select('no_pendaftar')->get();
-    foreach ($pendaftar as $id) {
-      set_time_limit(0);
-      //rata-rata smt 1
-      $avg_smt_1 = DB::table('nilai_akademis')
-      ->where('no_pendaftar', '=', $id->no_pendaftar)
-      ->where('semester', '=', 1)
-      ->avg('nilai_mapel_koreksi');
+    DB::table('mahasiswa')->select('no_pendaftar')
+    ->orderBy('no_pendaftar', 'asc')
+    ->chunk(500, function($pendaftar){
+      foreach ($pendaftar as $id) {
+        set_time_limit(0);
+        //rata-rata smt 1
+        $avg_smt_1 = DB::table('nilai_akademis')
+        ->where('no_pendaftar', '=', $id->no_pendaftar)
+        ->where('semester', '=', 1)
+        ->avg('nilai_mapel_koreksi');
 
-      //rata-rata smt 2
-      $avg_smt_2 = DB::table('nilai_akademis')
-      ->where('no_pendaftar', '=', $id->no_pendaftar)
-      ->where('semester', '=', 2)
-      ->avg('nilai_mapel_koreksi');
+        //rata-rata smt 2
+        $avg_smt_2 = DB::table('nilai_akademis')
+        ->where('no_pendaftar', '=', $id->no_pendaftar)
+        ->where('semester', '=', 2)
+        ->avg('nilai_mapel_koreksi');
 
-      //rata-rata smt 3
-      $avg_smt_3 = DB::table('nilai_akademis')
-      ->where('no_pendaftar', '=', $id->no_pendaftar)
-      ->where('semester', '=', 3)
-      ->avg('nilai_mapel_koreksi');
+        //rata-rata smt 3
+        $avg_smt_3 = DB::table('nilai_akademis')
+        ->where('no_pendaftar', '=', $id->no_pendaftar)
+        ->where('semester', '=', 3)
+        ->avg('nilai_mapel_koreksi');
 
-      //rata-rata smt 4
-      $avg_smt_4 = DB::table('nilai_akademis')
-      ->where('no_pendaftar', '=', $id->no_pendaftar)
-      ->where('semester', '=', 4)
-      ->avg('nilai_mapel_koreksi');
+        //rata-rata smt 4
+        $avg_smt_4 = DB::table('nilai_akademis')
+        ->where('no_pendaftar', '=', $id->no_pendaftar)
+        ->where('semester', '=', 4)
+        ->avg('nilai_mapel_koreksi');
 
-      //rata-rata smt 5
-      $avg_smt_5 = DB::table('nilai_akademis')
-      ->where('no_pendaftar', '=', $id->no_pendaftar)
-      ->where('semester', '=', 5)
-      ->avg('nilai_mapel_koreksi');
+        //rata-rata smt 5
+        $avg_smt_5 = DB::table('nilai_akademis')
+        ->where('no_pendaftar', '=', $id->no_pendaftar)
+        ->where('semester', '=', 5)
+        ->avg('nilai_mapel_koreksi');
 
-      //jumlah rata-rata
-      $sum = $avg_smt_1 + $avg_smt_2 + $avg_smt_3 + $avg_smt_4 + $avg_smt_5;
+        //jumlah rata-rata
+        $sum = $avg_smt_1 + $avg_smt_2 + $avg_smt_3 + $avg_smt_4 + $avg_smt_5;
 
-      try {
-        $mhs = mahasiswa::where('no_pendaftar', '=', $id->no_pendaftar)
-        ->update(['nilai_akademis' => $sum]);
-      } catch(\Illuminate\Database\QueryException $ex){
-        dd($ex->getMessage());
-        // Note any method of class PDOException can be called on $ex.
+        try {
+          $mhs = mahasiswa::where('no_pendaftar', '=', $id->no_pendaftar)
+          ->update(['nilai_akademis' => $sum]);
+        } catch(\Illuminate\Database\QueryException $ex){
+          return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+          // Note any method of class PDOException can be called on $ex.
+        }
+        //var_dump($avg_smt_1);
       }
-      //var_dump($avg_smt_1);
-    }
+    });
 
-    //olah data prestasi
-    $lomba = nilai_non_akademis::all();
-    foreach ($lomba as $prestasi) {
-      set_time_limit(0);
-      $nilai_prestasi = 0;
+    //cek data
+    if(DB::table('nilai_non_akademis')->count() > 0){
+      //olah data prestasi
+      nilai_non_akademis::chunk(500, function($lomba){
+        foreach ($lomba as $prestasi) {
+          set_time_limit(0);
+          $nilai_prestasi = 0;
 
-      //cek skala prestasi
-      if ($prestasi->skala_prestasi == "KOTA") {
-        $nilai_prestasi = 1;
-      }elseif ($prestasi->skala_prestasi == "PROVINSI") {
-        $nilai_prestasi = 5;
-      }elseif ($prestasi->skala_prestasi == "NASIONAL") {
-        $nilai_prestasi = 15;
-      }elseif ($prestasi->skala_prestasi == "INTERNASIONAL") {
-        $nilai_prestasi = 50;
-      }
+          //cek skala prestasi
+          if ($prestasi->skala_prestasi == "KOTA") {
+            $nilai_prestasi = 1;
+          }elseif ($prestasi->skala_prestasi == "PROVINSI") {
+            $nilai_prestasi = 5;
+          }elseif ($prestasi->skala_prestasi == "NASIONAL") {
+            $nilai_prestasi = 15;
+          }elseif ($prestasi->skala_prestasi == "INTERNASIONAL") {
+            $nilai_prestasi = 50;
+          }
 
-      //cek jenis prestasi
-      if ($prestasi->jenis_prestasi == "Kelompok") {
-        $nilai_prestasi = $nilai_prestasi * 1;
-      }else {
-        $nilai_prestasi = $nilai_prestasi * 2;
-      }
+          //cek jenis prestasi
+          if ($prestasi->jenis_prestasi == "Kelompok") {
+            $nilai_prestasi = $nilai_prestasi * 1;
+          }else {
+            $nilai_prestasi = $nilai_prestasi * 2;
+          }
 
-      //cek juara
-      if ($prestasi->juara_prestasi == 1) {
-        $nilai_prestasi = $nilai_prestasi * 6;
-      }elseif ($prestasi->juara_prestasi == 2) {
-        $nilai_prestasi = $nilai_prestasi * 5;
-      }elseif ($prestasi->juara_prestasi == 3) {
-        $nilai_prestasi = $nilai_prestasi * 4;
-      }elseif ($prestasi->juara_prestasi == 4) {
-        $nilai_prestasi = $nilai_prestasi * 3;
-      }elseif ($prestasi->juara_prestasi == 5) {
-        $nilai_prestasi = $nilai_prestasi * 2;
-      }else {
-        $nilai_prestasi = $nilai_prestasi * 1;
-      }
+          //cek juara
+          if ($prestasi->juara_prestasi == 1) {
+            $nilai_prestasi = $nilai_prestasi * 6;
+          }elseif ($prestasi->juara_prestasi == 2) {
+            $nilai_prestasi = $nilai_prestasi * 5;
+          }elseif ($prestasi->juara_prestasi == 3) {
+            $nilai_prestasi = $nilai_prestasi * 4;
+          }elseif ($prestasi->juara_prestasi == 4) {
+            $nilai_prestasi = $nilai_prestasi * 3;
+          }elseif ($prestasi->juara_prestasi == 5) {
+            $nilai_prestasi = $nilai_prestasi * 2;
+          }else {
+            $nilai_prestasi = $nilai_prestasi * 1;
+          }
 
-      //ambil nilai non akademis dari mahasiswa, tambahkan dengan nilai sebelumnya, lalu save
-      $mahasiswa = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)->value('nilai_non_akademis');
-      $mahasiswa = $mahasiswa + $nilai_prestasi;
-      try {
-        $mhs = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
-        ->update(['nilai_non_akademis' => $mahasiswa]);
-      } catch(\Illuminate\Database\QueryException $ex){
-        dd($ex->getMessage());
-        // Note any method of class PDOException can be called on $ex.
-      }
+          //ambil nilai non akademis dari mahasiswa, tambahkan dengan nilai sebelumnya, lalu save
+          $mahasiswa = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)->value('nilai_non_akademis');
+          $mahasiswa = $mahasiswa + $nilai_prestasi;
+          try {
+            $mhs = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
+            ->update(['nilai_non_akademis' => $mahasiswa]);
+          } catch(\Illuminate\Database\QueryException $ex){
+            return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+            // Note any method of class PDOException can be called on $ex.
+          }
+        }
+      });
+    } else {
+      return Response::json([
+        'fail' => 1,
+        'input' => 'Tidak ada data.',
+        'message' => 'Data prestasi tidak ditemukan.'
+      ]);
     }
 
     //return success
     $response = array(
+      'fail' => 0,
       'input' => 'Success',
       'message' => 'Data Pendaftar telah dinormalisasi',
     );

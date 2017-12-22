@@ -10,7 +10,8 @@ class NilaiNonAkademis extends Model
     public $timestamps = false;
     protected $primaryKey = 'id_prestasi';
     protected $fillable = [
-        'nama_prestasi', 'tahun_prestasi'
+        'no_pendaftar', 'nama_prestasi', 'tahun_prestasi', 'jenis_prestasi',
+        'juara_prestasi', 'skala_prestasi'
     ];
 
     public function mahasiswa(){

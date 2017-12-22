@@ -30,7 +30,7 @@ class BuatTabelMahasiswa extends Migration
             $table->string('jurusan_asal', 60);
             $table->decimal('nilai_akademis', 5, 2);
             $table->decimal('nilai_non_akademis', 5, 2);
-            $table->decimal('nilai_akhir', 4, 2);
+            $table->decimal('nilai_akhir', 8, 5);
             $table->string('periode', 4);
         });
     }

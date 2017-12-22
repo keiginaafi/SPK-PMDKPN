@@ -1,5 +1,32 @@
 @extends('admin.layout.master')
 @section('breadcrump')
+<style type="text/css">
+	.modal {
+	    display:    none;
+	    position:   fixed;
+	    z-index:    1000;
+	    top:        0;
+	    left:       0;
+	    height:     100%;
+	    width:      100%;
+	    background: rgba( 255, 255, 255, .8 )
+	                url('images/tenor.gif')
+	                50% 50%
+	                no-repeat;
+	}
+
+	/* When the body has the loading class, we turn
+	   the scrollbar off with overflow:hidden */
+	body.loading {
+	    overflow: hidden;
+	}
+
+	/* Anytime the body has the loading class, our
+	   modal element will be visible */
+	body.loading .modal {
+	    display: block;
+	}
+</style>
 	<h1>
 		Dashboard
 		<small>Control Panel</small>
@@ -68,51 +95,41 @@
 		</div>
 	</div>
 	<meta name="_token" content="{{ csrf_token() }}" />
+	<div class="modal"></div>
 		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>-->
-
+		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 
 		<script>
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
 				if(prodi != "NONE"){
-					$.ajaxSetup({
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-						}
-					});
-
-					$.ajax({
-						url: "data_pendaftar/" + prodi,
-						type:"POST",
-						cache: false,
-						dataType: 'json',
-						data:{
-							id: prodi,
+					$('#table_data').DataTable({
+						processing: true,
+						serverSide: true,
+						ajax: {
+							url: 'data_pendaftar/'+ prodi,
+							type: 'POST',
+							data: {
+								_token: $('meta[name="_token"]').attr('content'),
+								id: prodi,
+							}
 						},
-						success: function(data){
-							console.log(data);
-							$("#data_mhs tr").remove();
-							var detail = "data_pendaftar";
-							var details = "details";
-							$.each(data, function(i, d){
-								var view = '<tr>';
-								$.each(d, function(j, e){
-									view += '<td>' + e + '</td>';
-								});
-								view += '<td>';
-								view += '<a class="btn btn-primary btn-flat btn-sm" href="' + detail + '/' + data[i].no_pendaftar + '/' + details + '">';
-								view += '<i class="fa fa-list"> Detail </i>';
-								view += '</a>';
-								view += '</td>';
-								view += '</tr>';
-								$("#data_mhs").append(view);
-							});
-						},
-						error: function(data, ajaxOptions, thrownError){
-
-							alert(data.status);
-						}
-					});
+						columns: [
+							{ data: 'no_pendaftar'},
+							{ data: 'nisn'},
+							{ data: 'nama'},
+							{ data: 'jenis_kelamin'},
+							{ data: 'agama'},
+							{ data: 'tgl_lahir'},
+							{ data: 'kota'},
+							{ data: 'tipe_sekolah'},
+							{ data: 'jenis_sekolah'},
+							{ data: 'akreditasi_sekolah'},
+							{ data: 'jurusan_asal'},
+							{ data: 'pilihan_ke'},
+							{data: 'action', orderable: false, searchable: false}
+						]
+					})
 				}
 
 				$("#select_prodi").change(function(){
@@ -165,14 +182,23 @@
 							url: "data_pendaftar/olah_data",
 							type:"GET",
 							cache: false,
+							Accept: 'application/json',
 							dataType: 'json',
 							success: function(data){
 								console.log(data);
-								var message = '<div class="alert alert-success alert-dismissable">';
-								message += '<p>' + data.input + '</p>';
-								message += '<p>' + data.message + '</p>';
-								message += '</div>';
-								$('#message').append(message);
+								if (data.fail) {
+									var message = '<div class="alert alert-danger">';
+									message += '<p>' + data.input + '</p>';
+									message += '<p>' + data.message + '</p>';
+									message += '</div>';
+									$('#message').append(message);
+								} else {
+									var message = '<div class="alert alert-success alert-dismissable">';
+									message += '<p>' + data.input + '</p>';
+									message += '<p>' + data.message + '</p>';
+									message += '</div>';
+									$('#message').append(message);
+								}
 							},
 							error: function(data){
 								console.log(data);
@@ -184,6 +210,14 @@
 							}
 						});
 					}
+				});
+
+				$(document).ajaxStart(function () {
+					$("body").addClass("loading");
+				});
+
+				$(document).ajaxStop(function(){
+				  $("body").removeClass("loading");
 				});
 			})
 		</script>

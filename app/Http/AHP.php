@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+ini_set('memory_limit', '256M');
+
 use Illuminate\Support\Facades\Redirect;
 use DB;
 use Response;
@@ -27,6 +29,7 @@ class AHP
 
     //sum tiap kolom
     foreach ($kolom as $value) {
+      set_time_limit(0);
       try {
         $sum_kolom[] = DB::table('tabel_perbandingan')
         ->where('id_kriteria_2', $value->id_kriteria_2)
@@ -38,6 +41,7 @@ class AHP
 
     //normalisasi dg cara membagi tiap nilai dalam kolom dg sum kolomnya
     for ($i=0; $i < count($kolom); $i++) { //iterasi array kolom dari 0
+      set_time_limit(0);
       try {
         $normalisasi = tabel_perbandingan::where('id_kriteria_2', $kolom[$i]->id_kriteria_2)
         ->get();
@@ -61,6 +65,7 @@ class AHP
 
     //cari average normalisasi tiap baris
     foreach ($baris as $value) {
+      set_time_limit(0);
       try {
         $avg_baris = DB::table('tabel_perbandingan')
         ->where('id_kriteria_1', $value->id_kriteria_1)
@@ -79,6 +84,7 @@ class AHP
     //cari nilai eigenvalue max
     $eigenmax = 0;
     for ($k=0; $k < count($sum_kolom) ; $k++) {
+      set_time_limit(0);
       try {
         $bobot = DB::table('kriteria')
         ->select('bobot_kriteria')
