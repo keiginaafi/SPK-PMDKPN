@@ -73,17 +73,22 @@
 						<thead>
 							<tr>
 								<th>No. Pendaftar</th>
-								<th>NISN</th>
 								<th>Nama</th>
 								<th>Jenis Kelamin</th>
 								<th>Tipe Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Pekerjaan Ayah</th>
+								<th>Pendapatan Ayah</th>
+								<th>Pekerjaan Ibu</th>
+								<th>Pendapatan Ibu</th>
+								<th>Jumlah Tanggungan</th>
+								<th>Bidik Misi</th>
 								<th>Nilai Akhir</th>
 								<th>Rank</th>
 							</tr>
 						</thead>
 						<tbody id="data_mhs" name="data_mhs">
-						</tbody>						
+						</tbody>
 					</table>
 				</div>
 			</div>

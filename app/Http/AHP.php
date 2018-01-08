@@ -18,7 +18,7 @@ class AHP
     $jumlah_tabel = $jumlah_kriteria ** 2;
     $jumlah_perbandingan = DB::table('tabel_perbandingan')->count();
     if ($jumlah_perbandingan != $jumlah_tabel) {
-      $cr = -1;
+      return $cr = -1;
     }
 
     //cari data kolom

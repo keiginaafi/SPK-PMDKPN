@@ -18,7 +18,7 @@ class ProdiController extends Controller
 	}*/
 
 	public function index(){
-		$dataProdi = prodi::select(DB::raw("kode_prodi, nama_prodi, kuota_max"))
+		$dataProdi = prodi::select(DB::raw("kode_prodi, nama_prodi, kuota_sma, kuota_smk, kuota_cadangan"))
 		->orderBy(DB::raw("kode_prodi"))
 		->get();
 		$data = array('prodi' => $dataProdi);
@@ -30,29 +30,26 @@ class ProdiController extends Controller
 			'kode_prodi.required' => 'Kode Program Studi dibutuhkan',
 			'kode_prodi.unique' => 'Kode Program Studi telah digunakan',
 			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
-			'kuota_max.required' => 'Kuota Program Studi dibutuhkan',
+			'kuota_sma.required' => 'Kuota SMA Program Studi dibutuhkan',
+			'kuota_smk.required' => 'Kuota SMA Program Studi dibutuhkan',
+			'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
 		];
 		return Validator::make($data, [
 			'kode_prodi' => 'required|unique:prodi',
-			'nama_prodi' => 'required|max:40',
-			'kuota_max' => 'required',
+			'nama_prodi' => 'required|max:51',
+			'kuota_sma' => 'required',
+			'kuota_smk' => 'required',
+			'kuota_cadangan' => 'required',
 		], $messages);
 	}
 
 	protected function tambah(array $data){
-		$kuota_penerimaan = $data['kuota_max'] * (90/100);
-		$kuota_sma = 0.5 * $kuota_penerimaan;
-		$kuota_smk = 0.3 * $kuota_penerimaan;
-		$kuota_cadangan = $kuota_penerimaan - ($kuota_sma + $kuota_smk);
-
 		$prodi = new prodi();
 		$prodi->kode_prodi = $data['kode_prodi'];
 		$prodi->nama_prodi = $data['nama_prodi'];
-		$prodi->kuota_max = $data['kuota_max'];
-		$prodi->kuota_penerimaan = $kuota_penerimaan;
-		$prodi->kuota_sma = $kuota_sma;
-		$prodi->kuota_smk = $kuota_smk;
-		$prodi->kuota_cadangan = $kuota_cadangan;
+		$prodi->kuota_sma = $data['kuota_sma'];
+		$prodi->kuota_smk = $data['kuota_smk'];
+		$prodi->kuota_cadangan = $data['kuota_cadangan'];
 
 		//save, jika gagal abort
 		if(!$prodi->save()){
@@ -79,7 +76,7 @@ class ProdiController extends Controller
 		}
 		$kode_prodi->delete();
 		return Redirect::action('Prodi\ProdiController@index')->with('successMessage',
-		'Data Program Studi telah berhasil dihapus');
+		'Data Program Studi telah dihapus');
 	}
 
 	public function editProdi($id){
@@ -92,35 +89,27 @@ class ProdiController extends Controller
 	public function ubahProdi($id){
 		$input = Input::all();
 		$messages = [
-			'kode_prodi.required' => 'Kode Program Studi dibutuhkan',
-			'kode_prodi.unique' => 'Kode Program Studi telah digunakan',
 			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
-			'kuota_max.required' => 'Kuota Program Studi dibutuhkan',
+			'kuota_sma.required' => 'Kuota SMA Program Studi dibutuhkan',
+			'kuota_smk.required' => 'Kuota SMA Program Studi dibutuhkan',
+			'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
 		];
 		$validator = Validator::make($input, [
-			'kode_prodi' => 'required|unique:prodi',
-			'nama_prodi' => 'required|max:40',
-			'kuota_max' => 'required',
+			'nama_prodi' => 'required|max:51',
+			'kuota_sma' => 'required',
+			'kuota_smk' => 'required',
+			'kuota_cadangan' => 'required',
 		], $messages);
 		if($validator->fails()){
 			//kembali ke halaman yg sama dengan pesan error
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 		//bila sukses
-		$kuota_penerimaan = $input['kuota_max'] * (90/100);
-		$kuota_sma = 0.5 * $kuota_penerimaan;
-		$kuota_smk = 0.3 * $kuota_penerimaan;
-		$kuota_cadangan = $kuota_penerimaan - ($kuota_sma + $kuota_smk);
-
 		$editProdi = prodi::find($id);
-		$editProdi->kode_prodi = Input::get('kode_prodi'); //atau $input['prodiKode']
 		$editProdi->nama_prodi = $input['nama_prodi'];
-		$editProdi->kuota_max = $input['kuota_max'];
-		$editProdi->kuota_penerimaan = $kuota_penerimaan;
-		$editProdi->kuota_sma = $kuota_sma;
-		$editProdi->kuota_smk = $kuota_smk;
-		$editProdi->kuota_cadangan = $kuota_cadangan;
-
+		$editProdi->kuota_sma = $input['kuota_sma'];
+		$editProdi->kuota_smk = $input['kuota_smk'];
+		$editProdi->kuota_cadangan = $input['kuota_cadangan'];
 
 		if(!$editProdi->save()){
 			return Redirect::back()->withErrors('The server encountered an unexpected condition');

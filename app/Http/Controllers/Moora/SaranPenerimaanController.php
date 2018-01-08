@@ -51,8 +51,10 @@ class SaranPenerimaanController extends Controller
 
       $data_saran = DB::table('saran_penerimaan')
       ->join('mahasiswa', 'saran_penerimaan.no_pendaftar', '=', 'mahasiswa.no_pendaftar')
-      ->select('saran_penerimaan.no_pendaftar', 'mahasiswa.nisn', 'mahasiswa.nama',
-      'mahasiswa.jenis_kelamin', 'mahasiswa.tipe_sekolah', 'mahasiswa.jurusan_asal',
+      ->select('saran_penerimaan.no_pendaftar', 'mahasiswa.nama', 'mahasiswa.jenis_kelamin',
+      'mahasiswa.tipe_sekolah', 'mahasiswa.jurusan_asal', 'mahasiswa.pekerjaan_ayah',
+      'mahasiswa.pendapatan_ayah', 'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu',
+      'mahasiswa.jumlah_tanggungan', 'mahasiswa.bidik_misi',
       'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
       ->where('saran_penerimaan.kode_prodi', $id)
       ->get();

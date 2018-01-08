@@ -28,9 +28,16 @@ class BuatTabelMahasiswa extends Migration
             $table->string('jenis_sekolah', 6);
             $table->char('akreditasi_sekolah', 1);
             $table->string('jurusan_asal', 60);
-            $table->decimal('nilai_akademis', 5, 2);
-            $table->decimal('nilai_non_akademis', 5, 2);
-            $table->decimal('nilai_akhir', 8, 5);
+            $table->string('pekerjaan_ayah', 60);
+            $table->string('pendapatan_ayah', 12);
+            $table->string('pekerjaan_ibu', 60);
+            $table->string('pendapatan_ibu', 12);
+            $table->string('jumlah_tanggungan', 12);
+            $table->string('bidik_misi', 3);
+            $table->decimal('nilai_akademis', 6, 3)->default('0');
+            $table->decimal('nilai_non_akademis', 6, 3)->default('0');
+            $table->decimal('nilai_peringkat', 6, 4)->default('0');
+            $table->decimal('nilai_akhir', 8, 5)->default('0');
             $table->string('periode', 4);
         });
     }

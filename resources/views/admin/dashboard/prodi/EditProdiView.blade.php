@@ -5,7 +5,7 @@
 		<small>Control Panel</small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>		
+		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
 		<li>Kelola Prodi</li>
 		<li class="active">Edit Prodi</li>
 	</ol>
@@ -37,26 +37,34 @@
 					<form id="formEditProdi" class="col-md-4" role="form" method="POST" action="{{ url('/kelola_prodi/'.$kode_prodi.'/ubahProdi') }}">
 						{{ csrf_field() }}
 						<div class="form-group">
-							<label class="control-label">Kode Program Studi</label>
-							<div>
-								<input type="text" class="form-control" name="kode_prodi"
-								placeholder="Kode Program Studi" maxlength="20" value="{{ $kode_prodi }}" required></input>
-								<small class="help-block"></small>
-							</div>
-						</div>
-						<div class="form-group">
 							<label class="control-label">Nama Program Studi</label>
 							<div>
 								<input type="text" class="form-control" name="nama_prodi"
-								placeholder="Nama Program Studi" maxlength="40" value="{{ $nama_prodi }}" required></input>
+								placeholder="Nama Program Studi" maxlength="51" value="{{ $nama_prodi }}" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label">Kuota Program Studi</label>
+							<label class="control-label">Kuota SMA Program Studi</label>
 							<div>
-								<input type="number" class="form-control" name="kuota_max"
-								placeholder="Kuota Program Studi" value="{{ $kuota_max }}" required></input>
+								<input type="number" class="form-control" name="kuota_sma"
+								placeholder="Kuota SMA Program Studi" value="{{ $kuota_sma }}" required></input>
+								<small class="help-block"></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Kuota SMK Program Studi</label>
+							<div>
+								<input type="number" class="form-control" name="kuota_smk"
+								placeholder="Kuota SMK Program Studi" value="{{ $kuota_smk }}" required></input>
+								<small class="help-block"></small>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Kuota Cadangan Program Studi</label>
+							<div>
+								<input type="number" class="form-control" name="kuota_cadangan"
+								placeholder="Kuota Cadangan Program Studi" value="{{ $kuota_cadangan }}" required></input>
 								<small class="help-block"></small>
 							</div>
 						</div>

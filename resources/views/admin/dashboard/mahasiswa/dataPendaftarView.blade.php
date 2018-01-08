@@ -75,16 +75,17 @@
 						<thead style="position: sticky; top: 0">
 							<tr>
 								<th>No. Pendaftar</th>
-								<th>NISN</th>
 								<th>Nama</th>
 								<th>Jenis Kelamin</th>
-								<th>Agama</th>
-								<th>Tanggal Lahir</th>
 								<th>Kota</th>
 								<th>Tipe Sekolah</th>
-								<th>Jenis Sekolah</th>
 								<th>Akreditasi Sekolah</th>
 								<th>Jurusan Asal</th>
+								<th>Pekerjaan Ayah</th>
+								<th>Pendapatan Ayah</th>
+								<th>Pekerjaan Ibu</th>
+								<th>Pendapatan Ibu</th>
+								<th>Bidik Misi</th>
 								<th>Pilihan</th>
 								<th>Detail</th>
 							</tr>
@@ -116,16 +117,17 @@
 						},
 						columns: [
 							{ data: 'no_pendaftar'},
-							{ data: 'nisn'},
 							{ data: 'nama'},
 							{ data: 'jenis_kelamin'},
-							{ data: 'agama'},
-							{ data: 'tgl_lahir'},
 							{ data: 'kota'},
 							{ data: 'tipe_sekolah'},
-							{ data: 'jenis_sekolah'},
 							{ data: 'akreditasi_sekolah'},
 							{ data: 'jurusan_asal'},
+							{ data: 'pekerjaan_ayah'},
+							{ data: 'pendapatan_ayah'},
+							{ data: 'pekerjaan_ibu'},
+							{ data: 'pendapatan_ibu'},
+							{ data: 'bidik_misi'},
 							{ data: 'pilihan_ke'},
 							{data: 'action', orderable: false, searchable: false}
 						]

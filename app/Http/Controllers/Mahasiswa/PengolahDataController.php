@@ -47,10 +47,11 @@ class PengolahDataController extends Controller
       //get data mhs
       $data_pendaftar = DB::table('mahasiswa')
       ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
-      ->select('mahasiswa.no_pendaftar', 'mahasiswa.nisn', 'mahasiswa.nama',
-      'mahasiswa.jenis_kelamin', 'mahasiswa.agama', 'mahasiswa.tgl_lahir',
-      'mahasiswa.kota', 'mahasiswa.tipe_sekolah', 'mahasiswa.jenis_sekolah',
-      'mahasiswa.akreditasi_sekolah', 'mahasiswa.jurusan_asal', 'pilihan_mhs.pilihan_ke')
+      ->select('mahasiswa.no_pendaftar', 'mahasiswa.nama', 'mahasiswa.jenis_kelamin',
+      'mahasiswa.kota', 'mahasiswa.tipe_sekolah', 'mahasiswa.akreditasi_sekolah',
+      'mahasiswa.jurusan_asal', 'mahasiswa.pekerjaan_ayah', 'mahasiswa.pendapatan_ayah',
+      'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu', 'mahasiswa.bidik_misi',
+      'pilihan_mhs.pilihan_ke')
       ->where('pilihan_mhs.pilihan_prodi', '=', $id)
       ->get();
     } catch(\Illuminate\Database\QueryException $ex){

@@ -15,11 +15,9 @@ class BuatTabelProdi extends Migration
     {
         Schema::create('prodi', function (Blueprint $table) {
             $table->string('kode_prodi', 15)->primary()->index();
-            $table->string('nama_prodi', 40);            
-            $table->unsignedTinyInteger('kuota_max');
-            $table->unsignedTinyInteger('kuota_penerimaan');
+            $table->string('nama_prodi', 50);
             $table->unsignedTinyInteger('kuota_sma');
-            $table->unsignedTinyInteger('kuota_smk');            
+            $table->unsignedTinyInteger('kuota_smk');
             $table->unsignedTinyInteger('kuota_cadangan');
         });
     }
