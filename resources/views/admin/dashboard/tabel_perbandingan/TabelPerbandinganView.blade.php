@@ -1,5 +1,32 @@
 @extends('admin.layout.master')
 @section('breadcrump')
+<style type="text/css">
+	.modal {
+	    display:    none;
+	    position:   fixed;
+	    z-index:    1000;
+	    top:        0;
+	    left:       0;
+	    height:     100%;
+	    width:      100%;
+	    background: rgba( 255, 255, 255, .8 )
+	                url('images/tenor.gif')
+	                50% 50%
+	                no-repeat;
+	}
+
+	/* When the body has the loading class, we turn
+	   the scrollbar off with overflow:hidden */
+	body.loading {
+	    overflow: hidden;
+	}
+
+	/* Anytime the body has the loading class, our
+	   modal element will be visible */
+	body.loading .modal {
+	    display: block;
+	}
+</style>
 	<h1>
 		Dashboard
 		<small>Control Panel</small>
@@ -44,7 +71,7 @@
 						<table id="tabelPerbandingan" class="table table-bordered table-hover">
 							<thead>
 								<tr>
-									<th class="col-md-1">\</th>
+									<th class="col-md-1">Kriteria</th>
 									@if(count($kriteria) > 0)
 										@foreach($kriteria as $item)
 											<th>{{ $item->nama_kriteria }}</th>
@@ -68,12 +95,12 @@
 													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
 													data-kriteria1="'.$item->id_kriteria.'" data-kriteria2="'.$kriteria[$i % count($kriteria)]->id_kriteria.'" />';
 													echo "</td>";
-												}elseif ($i <= $iterate) {
+												} elseif ($i <= $iterate) {
 													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
 													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
 													readonly placeholder="field ini akan terisi otomatis" />';
 													echo '</td>';
-												}else {
+												} else {
 													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
 														id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
 														name="nilai[]" placeholder="isi field dengan nilai 0 - 9" min="0" max="9" required />';
@@ -274,6 +301,14 @@
 					}
 				});
 			})
+
+			$(document).ajaxStart(function () {
+				$("body").addClass("loading");
+			});
+
+			$(document).ajaxStop(function(){
+				$("body").removeClass("loading");
+			});
 
 		})
 	</script>

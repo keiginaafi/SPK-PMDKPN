@@ -46,6 +46,8 @@ Route::group(['middleware' => ['web', 'auth']], function(){
 
   Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController@saranPenerimaan'));
 
+	Route::get('/saran_penerimaan/cetak_saran', array('as' => 'moora.cetak', 'uses' => 'Moora\SaranPenerimaanController@cetakDataPenerimaan'));
+
   Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
 });
 

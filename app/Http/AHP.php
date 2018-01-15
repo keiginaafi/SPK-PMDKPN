@@ -5,6 +5,8 @@ namespace App\Http;
 ini_set('memory_limit', '256M');
 
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 use Response;
 use App\Kriteria as kriteria;
@@ -24,6 +26,7 @@ class AHP
     //cari data kolom
     $kolom = DB::table('tabel_perbandingan')
     ->select('id_kriteria_2')
+    ->orderBy('id_kriteria_2', 'asc')
     ->distinct()
     ->get();
 
@@ -60,6 +63,7 @@ class AHP
     //cari data baris
     $baris = DB::table('tabel_perbandingan')
     ->select('id_kriteria_1')
+    ->orderBy('id_kriteria_1', 'asc')
     ->distinct()
     ->get();
 
@@ -139,6 +143,106 @@ class AHP
         $cr = $ci / 1.58;
         break;
     }
+
+    //cetak perhitungan
+    date_default_timezone_set('Asia/Jakarta');
+    $tgl = date('d-m-y H-i-s');
+    Excel::create('Perhitungan AHP '.$tgl, function($excel) use($sum_kolom, $baris, $eigenmax, $ci, $cr){
+      //hasil normalisasi
+      $excel->sheet('Hasil Normalisasi', function($sheet) use($sum_kolom, $baris){
+        $sheetArray = array();
+
+        $nama_kriteria = kriteria::select(DB::raw('nama_kriteria'))
+        ->orderBy(DB::raw('id_kriteria'))
+        ->get();
+
+        //sheet header
+        for ($j=0; $j <= count($nama_kriteria); $j++) {
+          set_time_limit(0);
+          $sheetArray[] = array('Kriteria', $nama_kriteria[$j]->nama_kriteria, $nama_kriteria[$j+1]->nama_kriteria, $nama_kriteria[$j+2]->nama_kriteria, $nama_kriteria[$j+3]->nama_kriteria);
+          $j += count($nama_kriteria);
+        }
+
+        //insert nilai perbandingan,sort by baris
+        $nilai_normalisasi = tabel_perbandingan::select(DB::raw('normalisasi'))
+        ->orderBy(DB::raw('id_kriteria_1'))
+        ->orderBy(DB::raw('id_kriteria_2'))
+        ->get();
+
+        $i = 0; //counter nilai normalisasi
+        foreach ($nama_kriteria as $name) {
+          set_time_limit(0);
+          //var_dump($nama->nama_kriteria);
+          $sheetArray[] = array($name->nama_kriteria, $nilai_normalisasi[$i]->normalisasi, $nilai_normalisasi[$i+1]->normalisasi, $nilai_normalisasi[$i+2]->normalisasi, $nilai_normalisasi[$i+3]->normalisasi);
+          $i += count($nama_kriteria);
+        }
+
+        //jarak 2 spasi dari tabel
+        $sheetArray[] = array();
+        $sheetArray[] = array();
+
+        //sum kolom
+        for ($k=0; $k < count($nama_kriteria); $k++) {
+          set_time_limit(0);
+          $sheetArray[] = array('Total Kolom '.$nama_kriteria[$k]->nama_kriteria, $sum_kolom[$k]);
+        }
+
+        //jarak 2 spasi
+        $sheetArray[] = array();
+        $sheetArray[] = array();
+
+        //bobot
+        foreach ($baris as $bar) {
+          set_time_limit(0);
+          $avg_baris = DB::table('tabel_perbandingan')
+          ->where('id_kriteria_1', $bar->id_kriteria_1)
+          ->avg('normalisasi');
+
+          $nm = DB::table('kriteria')
+          ->select('nama_kriteria')
+          ->where('id_kriteria', $bar->id_kriteria_1)
+          ->get();
+
+          $sheetArray[] = array('Rata-rata baris / Bobot '.$nm[0]->nama_kriteria, $avg_baris);
+        }
+
+        //format kolom excel
+        $sheet->setColumnFormat(array(
+          'B' => 0.00,
+          'C' => 0.00,
+          'D' => 0.00,
+          'E' => 0.00,
+        ));
+
+        $sheet->fromArray($sheetArray, null, 'A1', true, false);
+      });
+
+      //perhitungan CI
+      $excel->sheet('Consistency', function($sheet2) use($eigenmax, $baris, $ci, $cr){
+        //initiate array sheet 2
+        $sheetArray2 = array();
+
+        //nilai eigenmax
+        $sheetArray2[] = array('Nilai Eigenmax', $eigenmax);
+
+        //jumlah kriteria
+        $sheetArray2[] = array('n / Jumlah Kriteria', count($baris));
+
+        //nilai Consistency Index
+        $sheetArray2[] = array('Nilai Consistency Index (CI)', $ci);
+
+        //nilai Consistency Ratio
+        $sheetArray2[] = array('Nilai Consistency Ratio (CR)', $cr);
+
+        //format kolom excel
+        $sheet2->setColumnFormat(array(
+          'B' => 0.00,
+        ));
+
+        $sheet2->fromArray($sheetArray2, null, 'A1', true, false);
+      });
+
+    })->store('xlsx');
 
     return $cr;
   }

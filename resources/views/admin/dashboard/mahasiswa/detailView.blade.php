@@ -41,15 +41,6 @@
 									</tr>
 									@endforeach
 							</tbody>
-							<tfoot>
-								<tr>
-									<th>Semester</th>
-									<th>Jenis Nilai</th>
-									<th>Mata Pelajaran</th>
-									<th>Nilai</th>
-									<th>Nilai Koreksi</th>
-								</tr>
-							</tfoot>
 						</table>
 					</div>
 					<div class="form-group">
@@ -77,15 +68,27 @@
 									@endforeach
 								@endif
 							</tbody>
-							<tfoot>
+						</table>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Data Ranking Raport</label>
+						<table id="dataPeringkat" class="table table-bordered table-hover">
+							<thead>
 								<tr>
-									<th>Nama Prestasi</th>
-									<th>Skala Prestasi</th>
-									<th>Jenis Prestasi</th>
-									<th>Juara Prestasi</th>
-									<th>Tahun Prestasi</th>
+									<th>Semester</th>
+									<th>Ranking</th>
+									<th>Jumlah Siswa</th>
 								</tr>
-							</tfoot>
+							</thead>
+							<tbody>
+								@foreach($data_mhs[0]->mahasiswa->peringkat as $ranking)
+								<tr>
+									<td>{{ $ranking->semester }}</td>
+									<td>{{ $ranking->peringkat }}</td>
+									<td>{{ $ranking->jumlah_siswa }}</td>									
+								</tr>
+								@endforeach
+							</tbody>
 						</table>
 					</div>
 					<div class="form-group">

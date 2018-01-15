@@ -61,7 +61,7 @@
 					  @endif
 					</h3>
 				</div>
-				<div class="box-body">
+				<div id="boxes" class="box-body">
 					<div class="form-group">
 						<label for="select_prodi">Pilih Program Studi</label>
 						<select id="select_prodi" name="pilih_prodi" class="form-control">
@@ -71,7 +71,7 @@
 							@endforeach
 						</select>
 					</div>
-					<table id="table_data" class="table table-bordered col-md-12">
+					<table id="table_data" class="table table-bordered col-md-12" style="min-width: 100%; width: auto;">
 						<thead style="position: sticky; top: 0">
 							<tr>
 								<th>No. Pendaftar</th>
@@ -138,6 +138,7 @@
 					var prodi = $("#select_prodi").val();
 					if(prodi != "NONE"){
 						$('#table_data').DataTable({
+							destroy: true,
 							processing: true,
 							serverSide: true,
 							ajax: {
@@ -150,16 +151,17 @@
 							},
 							columns: [
 								{ data: 'no_pendaftar'},
-								{ data: 'nisn'},
 								{ data: 'nama'},
 								{ data: 'jenis_kelamin'},
-								{ data: 'agama'},
-								{ data: 'tgl_lahir'},
 								{ data: 'kota'},
 								{ data: 'tipe_sekolah'},
-								{ data: 'jenis_sekolah'},
 								{ data: 'akreditasi_sekolah'},
 								{ data: 'jurusan_asal'},
+								{ data: 'pekerjaan_ayah'},
+								{ data: 'pendapatan_ayah'},
+								{ data: 'pekerjaan_ibu'},
+								{ data: 'pendapatan_ibu'},
+								{ data: 'bidik_misi'},
 								{ data: 'pilihan_ke'},
 								{data: 'action', orderable: false, searchable: false}
 							]

@@ -36,7 +36,6 @@ class PengolahDataController extends Controller
   public function getDataMhs($id){
     //$id_prodi = $id;
     $data_pendaftar = "";
-    $data_prodi = "";
     try {
       //get nama prodi based on id
       /*$data_prodi = DB::table('prodi')
@@ -77,7 +76,7 @@ class PengolahDataController extends Controller
   public function detailMhs($id){
     //get data akademis and prestasi based on id
     $data_akademis = nilai_akademis::where('no_pendaftar', '=', $id)
-    ->with(['mahasiswa:no_pendaftar,nama', 'mahasiswa.nilai_non_akademis'])
+    ->with(['mahasiswa:no_pendaftar,nama', 'mahasiswa.nilai_non_akademis', 'mahasiswa.peringkat'])
     ->orderBy('semester')
     ->get();
 
@@ -176,6 +175,100 @@ class PengolahDataController extends Controller
         //var_dump($avg_smt_1);
       }
     });
+
+    //cek data peringkat
+    if(DB::table('peringkat')->count() > 0){
+      DB::table('mahasiswa')->select('no_pendaftar')
+      ->orderBy('no_pendaftar', 'asc')
+      ->chunk(500, function($noPendaftar){
+        foreach ($noPendaftar as $value) {
+          set_time_limit(0);
+          //initiate pembagi peringkat
+          $pembagi = 0;
+          //ambil peringkat dan jumlah siswa
+          $data_peringkat_smt_1 = DB::table('peringkat')
+          ->select('peringkat', 'jumlah_siswa')
+          ->where('no_pendaftar', $value->no_pendaftar)
+          ->where('semester', 1)
+          ->get();
+
+          //bagi peringkat dengan jumlah siswa
+          $nilai_peringkat_smt_1 = $data_peringkat_smt_1[0]->peringkat / $data_peringkat_smt_1[0]->jumlah_siswa;
+          //cek nilai untuk menambah pembagi
+          if($data_peringkat_smt_1[0]->peringkat != 0){
+            $pembagi += 1;
+          }
+
+          //ambil peringkat dan jumlah siswa
+          $data_peringkat_smt_2 = DB::table('peringkat')
+          ->select('peringkat', 'jumlah_siswa')
+          ->where('no_pendaftar', $value->no_pendaftar)
+          ->where('semester', 2)
+          ->get();
+
+          //bagi peringkat dengan jumlah siswa
+          $nilai_peringkat_smt_2 = $data_peringkat_smt_2[0]->peringkat / $data_peringkat_smt_2[0]->jumlah_siswa;
+          //cek nilai untuk menambah pembagi
+          if($data_peringkat_smt_2[0]->peringkat != 0){
+            $pembagi += 1;
+          }
+
+          //ambil peringkat dan jumlah siswa
+          $data_peringkat_smt_3 = DB::table('peringkat')
+          ->select('peringkat', 'jumlah_siswa')
+          ->where('no_pendaftar', $value->no_pendaftar)
+          ->where('semester', 3)
+          ->get();
+
+          //bagi peringkat dengan jumlah siswa
+          $nilai_peringkat_smt_3 = $data_peringkat_smt_3[0]->peringkat / $data_peringkat_smt_3[0]->jumlah_siswa;
+          //cek nilai untuk menambah pembagi
+          if($data_peringkat_smt_3[0]->peringkat != 0){
+            $pembagi += 1;
+          }
+
+          //ambil peringkat dan jumlah siswa
+          $data_peringkat_smt_4 = DB::table('peringkat')
+          ->select('peringkat', 'jumlah_siswa')
+          ->where('no_pendaftar', $value->no_pendaftar)
+          ->where('semester', 4)
+          ->get();
+
+          //bagi peringkat dengan jumlah siswa
+          $nilai_peringkat_smt_4 = $data_peringkat_smt_4[0]->peringkat / $data_peringkat_smt_4[0]->jumlah_siswa;
+          //cek nilai untuk menambah pembagi
+          if($data_peringkat_smt_4[0]->peringkat != 0){
+            $pembagi += 1;
+          }
+
+          //ambil peringkat dan jumlah siswa
+          $data_peringkat_smt_5 = DB::table('peringkat')
+          ->select('peringkat', 'jumlah_siswa')
+          ->where('no_pendaftar', $value->no_pendaftar)
+          ->where('semester', 5)
+          ->get();
+
+          //bagi peringkat dengan jumlah siswa
+          $nilai_peringkat_smt_5 = $data_peringkat_smt_5[0]->peringkat / $data_peringkat_smt_5[0]->jumlah_siswa;
+          //cek nilai untuk menambah pembagi
+          if($data_peringkat_smt_5[0]->peringkat != 0){
+            $pembagi += 1;
+          }
+
+          $nilai_peringkat_mhs = ($nilai_peringkat_smt_1 + $nilai_peringkat_smt_2 + $nilai_peringkat_smt_3
+          + $nilai_peringkat_smt_4 + $nilai_peringkat_smt_5) / $pembagi;
+
+          try {
+            //insert nilai peringkat
+            mahasiswa::where('no_pendaftar', $value->no_pendaftar)
+            ->update(['nilai_peringkat' => $nilai_peringkat_mhs]);
+          } catch (\Illuminate\Database\QueryException $ex) {
+            return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+          }
+
+        }
+      });
+    }
 
     //cek data
     if(DB::table('nilai_non_akademis')->count() > 0){

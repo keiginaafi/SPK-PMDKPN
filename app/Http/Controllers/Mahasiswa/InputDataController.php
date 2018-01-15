@@ -92,9 +92,10 @@ class InputDataController extends Controller
                   'pekerjaan_ibu' => $col->pekerjaan_ibu,
                   'pendapatan_ibu' => $col->pendapatan_ibu,
                   'jumlah_tanggungan' => $col->jumlah_tanggungan,
-                  'bidik_misi' => $col->bidik_misi,
+                  'bidik_misi' => $col->daftar_bidikmisi,
                   'nilai_akademis' => 0,
                   'nilai_non_akademis' => 0,
+                  'nilai_peringkat' => 0,
                   'nilai_akhir' => 0,
                   'periode' => date_parse($col->tanggal_simpan_data)['year']
                 ];

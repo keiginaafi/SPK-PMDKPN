@@ -51,11 +51,14 @@
       @endif
 			<div id="message">
 			</div>
-			<div class="box">
+			<div class="box" style="overflow: auto; min-width: 100%; width: auto; height: 100%;">
 				<div class="box-header">
 					<h3 class="box-title">Saran Penerimaan
 						<button class="btn btn-primary btn-flat btn-sm" id="mooraMethod" title="Saran Penerimaan" style="margin-left: 10px;">
-							Hasilkan Saran Penerimaan
+							<i class="fa"> Hasilkan Saran Penerimaan </i>
+						</button>
+						<button class="btn btn-primary btn-flat btn-sm" id="cetak_hasil" title="cetak" style="position: relative; left: 134%;" target="_blank">
+							<i class="fa fa-print" aria-hidden="true"> Cetak Saran Penerimaan </i>
 						</button>
 					</h3>
 				</div>
@@ -69,7 +72,7 @@
 							@endforeach
 						</select>
 					</div>
-					<table id="table_data" class="table table-bordered table-hover col-md-12">
+					<table id="table_data" class="table table-bordered table-hover col-md-12" style="min-width: 100%; width: auto;">
 						<thead>
 							<tr>
 								<th>No. Pendaftar</th>
@@ -170,7 +173,7 @@
 							},
 							success: function(data){
 								console.log(data);
-								$("#data_mhs tr").last().remove();
+								$("#data_mhs tr").remove();
 								var success = data.sma;
 								var smk = data.smk;
 								var cadangan = data.cadangan;
@@ -242,6 +245,23 @@
 								message += '</div>';
 								$('#message').append(message);
 							}
+						});
+					}
+				});
+
+				$('#cetak_hasil').click(function(){
+					var confirm = window.confirm("Mulai Cetak Data?")
+					if(confirm == true){
+						$.ajaxSetup({
+							headers: {
+								'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+							}
+						});
+
+						$.ajax({
+							url: "saran_penerimaan/cetak_saran",
+							type:"GET",
+							cache: false,
 						});
 					}
 				});
