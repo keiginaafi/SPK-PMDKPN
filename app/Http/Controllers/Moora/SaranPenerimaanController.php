@@ -80,14 +80,14 @@ class SaranPenerimaanController extends Controller
   public function saranPenerimaan(){
     //periksa CR
     $nilai_cr = $this->ahpService->hitungConsistency();
-    if ($nilai_cr == -1) {
+    if ($nilai_cr['cr'] == -1) {
       $response = array(
         'fail' => 1,
         'input' => 'Tabel perbandingan belum diisi',
         'message' => 'Tidak bisa periksa consistency bila tabel ada yang kosong',
       );
       return Response::json($response);
-    } elseif ($nilai_cr > 0.1) {
+    } elseif ($nilai_cr['cr'] > 0.1) {
       $response = array(
         'fail' => 1,
         'input' => 'Nilai consistency ratio lebih dari 10%',
@@ -326,149 +326,23 @@ class SaranPenerimaanController extends Controller
       }
     }
 
-    //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
-    try {
-      //ambil data prodi
-      $data_prodi = DB::table('prodi')
-      ->select('kode_prodi')
-      ->orderBy('kode_prodi', 'asc')
-      ->get();
-
-      //ambil data mhs dari tiap prodi
-      //ranking sma
-      foreach ($data_prodi as $value) {
-        set_time_limit(0);
-
-        $data_moora = DB::table('mahasiswa')
-        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
-        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
-        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
-        ->where('mahasiswa.tipe_sekolah', 'like', 'SMA%')
-        ->get();
-
-        $rank_sma = array();
-        //masukkan ke array untuk di sort
-        foreach ($data_moora as $val) {
-          set_time_limit(0);
-          $rank_sma[$val->no_pendaftar] = $val->nilai_akhir;
-        }
-        arsort($rank_sma);
-
-        //ambil kuota sma prodi
-        $kuota_sma = DB::table('prodi')
-        ->select('kuota_sma', 'kuota_cadangan')
-        ->where('kode_prodi', $value->kode_prodi)
-        ->get();
-
-        foreach ($kuota_sma as $vals) {
-          $sma = $vals->kuota_sma;
-          $cadangan = $vals->kuota_cadangan;
-        }
-        $total_kuota_sma = $sma + $cadangan;
-
-        //perankingan sma
-        $i = 1; //counter ranking
-        //save ke database
-        foreach ($rank_sma as $k => $v) {
-          set_time_limit(0);
-
-          $cek_sama = DB::table('saran_penerimaan')
-          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
-          ->where('no_pendaftar', $k)
-          ->where('kode_prodi', $value->kode_prodi)
-          ->where('periode', '2017')
-          ->count();
-
-          if ($cek_sama == 0) {
-            $saran = new saran_penerimaan();
-            $saran->no_pendaftar = $k;
-            $saran->kode_prodi = $value->kode_prodi;
-            $saran->periode = '2017';
-            $saran->ranking = $i;
-            if (!$saran->save()) {
-              return Redirect::back()->withErrors('The server encountered an unexpected condition');
-            }
-            $i += 1;
-          }
-
-          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
-          if ($i == $total_kuota_sma) {
-            break;
-          }
-        }
-      }
-      unset($value);
-
-      //ranking SMK
-      foreach ($data_prodi as $value) {
-        set_time_limit(0);
-
-        $data_moora_smk = DB::table('mahasiswa')
-        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
-        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
-        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
-        ->where('mahasiswa.tipe_sekolah', 'like', 'SMK%')
-        ->get();
-
-        $rank_smk = array();
-        //masukkan ke array untuk di sort
-        foreach ($data_moora_smk as $val) {
-          set_time_limit(0);
-          $rank_smk[$val->no_pendaftar] = $val->nilai_akhir;
-        }
-        arsort($rank_smk);
-
-        //ambil kuota sma prodi
-        $kuota_smk = DB::table('prodi')
-        ->select('kuota_smk', 'kuota_cadangan')
-        ->where('kode_prodi', $value->kode_prodi)
-        ->get();
-
-        foreach ($kuota_smk as $vals) {
-          $smk = $vals->kuota_smk;
-          $cadangan = $vals->kuota_cadangan;
-        }
-        $total_kuota_smk = $smk + $cadangan;
-
-        //perankingan
-        $j = 1; //counter ranking
-        //save ke database
-        foreach ($rank_smk as $k => $v) {
-          set_time_limit(0);
-
-          $cek_smk = DB::table('saran_penerimaan')
-          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
-          ->where('no_pendaftar', $k)
-          ->where('kode_prodi', $value->kode_prodi)
-          ->where('periode', '2017')
-          ->count();
-
-          if ($cek_smk == 0) {
-            $saran = new saran_penerimaan();
-            $saran->no_pendaftar = $k;
-            $saran->kode_prodi = $value->kode_prodi;
-            $saran->periode = '2017';
-            $saran->ranking = $j;
-            if (!$saran->save()) {
-              return Redirect::back()->withErrors('The server encountered an unexpected condition');
-            }
-            $j += 1;
-          }
-
-          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
-          if($j == $total_kuota_smk){
-            break;
-          }
-        }
-      }
-    } catch (\Illuminate\Database\QueryException $ex) {
-      return Redirect::back()->withErrors($ex->getMessage());
-    }
+    //perankingan mahasiswa per Prodi
+    //tiap jurusan disendirikan karena kondisi khusus
+    //jurusan teknik => nilai matematika >= 70
+    //jurusan bisnis => nilai bhs inggris >= 70
+    $this->rankProdiTeknik();
+    $this->rankProdiBisnis();
+    $this->rankProdiAkuntansi();
 
     date_default_timezone_set('Asia/Jakarta');
     $tglnow = date('d-m-y H-i-s');
+    //tempat penyimpanan data perhitungan
+    $filename = 'Perhitungan Moora '.$tglnow;
+    $path = 'uploads\Data Perhitungan\Perhitungan Moora';
+    $dl_path = $path.'\\'.$filename.'.xlsx';
+
     //print data perhitungan ke file Excel
-    Excel::create('Perhitungan Moora '.$tglnow, function($excel) use($data_mhs, $sqrt_nilai_akademis, $sqrt_nilai_non_akademis,
+    Excel::create($filename, function($excel) use($data_mhs, $sqrt_nilai_akademis, $sqrt_nilai_non_akademis,
     $sqrt_akreditasi_sekolah, $sqrt_peringkat, $daftar_mhs, $data_akademis, $data_prestasi, $data_akreditasi, $data_peringkat,
     $nilai_akhir_akademis, $nilai_akhir_prestasi, $nilai_akhir_akreditasi, $nilai_akhir_peringkat, $optimize_result){
       //perhitungan moora
@@ -576,12 +450,14 @@ class SaranPenerimaanController extends Controller
 
         $sheet3->fromArray($sheetArray3, null, 'A1', true, false);
       });
-    })->store('xlsx');
+    })->store('xlsx', $path);
 
     $response = array(
       'fail' => 0,
       'input' => 'Success',
-      'message' => 'Saran Penerimaan telah dihasilkan'
+      'message' => 'Saran Penerimaan telah dihasilkan',
+      'mooraUrl' => $dl_path,
+      'AHPurl' => $nilai_cr['dl_path']
     );
     return Response::json($response);
   }
@@ -589,6 +465,10 @@ class SaranPenerimaanController extends Controller
   public function cetakDataPenerimaan(){
     date_default_timezone_set('Asia/Jakarta');
     $tglnow = date('d-m-y H-i-s');
+
+    $filename = 'Data Penerimaan '.$tglnow.'.xlsx';
+    $path = 'Data Penerimaan/';
+    $dl_path = storage_path('Data Penerimaan/'.$filename.'.xlsx');
 
     try {
       $data_prodi = DB::table('prodi')
@@ -645,6 +525,469 @@ class SaranPenerimaanController extends Controller
           $sheet->fromArray($sheetArray, null, 'A1', true, false);
         });
       }
-    })->store('xlsx', false, true)->download('xlsx');
+    })->export('xlsx');
+
+    //$headers = array('Content-Type'=> 'application/xlsx');
+    //return response()->download($dl_path, $filename, $headers);
+    //return Response::json($dl_path);
+  }
+
+  //ranking prodi teknik
+  public function rankProdiTeknik(){
+    //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
+    try {
+      //ambil data prodi
+      $data_prodi_teknik = DB::table('prodi')
+      ->select('kode_prodi')
+      ->where('kode_prodi', 'like', '31%')
+      ->orwhere('kode_prodi', 'like', '32%')
+      ->orwhere('kode_prodi', 'like', '33%')
+      ->orwhere('kode_prodi', 'like', '41%')
+      ->orwhere('kode_prodi', 'like', '42%')
+      ->orwhere('kode_prodi', 'like', '43%')
+      ->orderBy('kode_prodi', 'asc')
+      ->get();
+      //var_dump($data_prodi_teknik);
+
+      //ambil data mhs dari tiap prodi
+      //ranking sma
+      foreach ($data_prodi_teknik as $value) {
+        set_time_limit(0);
+
+        //ambil data mahasiswa dengan nilai matematika >= 70
+        //nilai matematika < 70 dinyatakan gugur = tidak diranking
+        $data_moora = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMA%')
+        ->where('nilai_akademis.mapel', 'like', 'matematika%')
+        ->where('nilai_akademis.nilai_mapel_koreksi', '>=', '70')
+        ->get();
+
+        $rank_sma = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora as $val) {
+          set_time_limit(0);
+          $rank_sma[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_sma);
+
+        //ambil kuota sma prodi
+        $kuota_sma = DB::table('prodi')
+        ->select('kuota_sma', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_sma as $vals) {
+          $sma = $vals->kuota_sma;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_sma = $sma + $cadangan;
+
+        //perankingan sma
+        $i = 1; //counter ranking
+        //save ke database
+        foreach ($rank_sma as $k => $v) {
+          set_time_limit(0);
+
+          $cek_sama = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_sama == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $i;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $i += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if ($i == $total_kuota_sma) {
+            break;
+          }
+        }
+      }
+      unset($value);
+
+      //ranking SMK
+      foreach ($data_prodi_teknik as $value) {
+        set_time_limit(0);
+
+        $data_moora_smk = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMK%')
+        ->where('nilai_akademis.mapel', 'like', 'matematika%')
+        ->where('nilai_akademis.nilai_mapel_koreksi', '>=', '70')
+        ->get();
+
+        $rank_smk = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora_smk as $val) {
+          set_time_limit(0);
+          $rank_smk[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_smk);
+
+        //ambil kuota sma prodi
+        $kuota_smk = DB::table('prodi')
+        ->select('kuota_smk', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_smk as $vals) {
+          $smk = $vals->kuota_smk;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_smk = $smk + $cadangan;
+
+        //perankingan
+        $j = 1; //counter ranking
+        //save ke database
+        foreach ($rank_smk as $k => $v) {
+          set_time_limit(0);
+
+          $cek_smk = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_smk == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $j;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $j += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if($j == $total_kuota_smk){
+            break;
+          }
+        }
+      }
+    } catch (\Illuminate\Database\QueryException $ex) {
+      return Redirect::back()->withErrors($ex->getMessage());
+    }
+  }
+
+  //ranking prodi administrasi bisnis
+  public function rankProdiBisnis(){
+    //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
+    try {
+      //ambil data prodi administrasi bisnis
+      $data_prodi_bisnis = DB::table('prodi')
+      ->select('kode_prodi')
+      ->where('kode_prodi', 'like', '35%')
+      ->orwhere('kode_prodi', 'like', '45%')
+      ->orderBy('kode_prodi', 'asc')
+      ->get();
+      //var_dump($data_prodi_bisnis);
+
+      //ambil data mhs dari tiap prodi
+      //ranking sma
+      foreach ($data_prodi_bisnis as $value) {
+        set_time_limit(0);
+
+        //ambil data mahasiswa dengan nilai inggris >= 70
+        //nilai inggris < 70 dinyatakan gugur = tidak diranking
+        $data_moora = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMA%')
+        ->where('nilai_akademis.mapel', 'like', '%inggris%')
+        ->where('nilai_akademis.nilai_mapel_koreksi', '>=', '70')
+        ->get();
+
+        $rank_sma = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora as $val) {
+          set_time_limit(0);
+          $rank_sma[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_sma);
+
+        //ambil kuota sma prodi
+        $kuota_sma = DB::table('prodi')
+        ->select('kuota_sma', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_sma as $vals) {
+          $sma = $vals->kuota_sma;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_sma = $sma + $cadangan;
+
+        //perankingan sma
+        $i = 1; //counter ranking
+        //save ke database
+        foreach ($rank_sma as $k => $v) {
+          set_time_limit(0);
+
+          $cek_sama = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_sama == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $i;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $i += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if ($i == $total_kuota_sma) {
+            break;
+          }
+        }
+      }
+      unset($value);
+
+      //ranking SMK
+      foreach ($data_prodi_bisnis as $value) {
+        set_time_limit(0);
+
+        $data_moora_smk = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMK%')
+        ->where('nilai_akademis.mapel', 'like', '%inggris%')
+        ->where('nilai_akademis.nilai_mapel_koreksi', '>=', '70')
+        ->get();
+
+        $rank_smk = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora_smk as $val) {
+          set_time_limit(0);
+          $rank_smk[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_smk);
+
+        //ambil kuota sma prodi
+        $kuota_smk = DB::table('prodi')
+        ->select('kuota_smk', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_smk as $vals) {
+          $smk = $vals->kuota_smk;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_smk = $smk + $cadangan;
+
+        //perankingan
+        $j = 1; //counter ranking
+        //save ke database
+        foreach ($rank_smk as $k => $v) {
+          set_time_limit(0);
+
+          $cek_smk = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_smk == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $j;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $j += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if($j == $total_kuota_smk){
+            break;
+          }
+        }
+      }
+    } catch (\Illuminate\Database\QueryException $ex) {
+      return Redirect::back()->withErrors($ex->getMessage());
+    }
+  }
+
+  //perankingan selain prodi teknik dan bisnis / prodi akuntansi only
+  public function rankProdiAkuntansi(){
+    //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
+    try {
+      //ambil data prodi administrasi bisnis
+      $data_prodi_akun = DB::table('prodi')
+      ->select('kode_prodi')
+      ->where('kode_prodi', 'like', '34%')
+      ->orwhere('kode_prodi', 'like', '44%')
+      ->orderBy('kode_prodi', 'asc')
+      ->get();
+      //var_dump($data_prodi_akun);
+
+      //ambil data mhs dari tiap prodi
+      //ranking sma
+      foreach ($data_prodi_akun as $value) {
+        set_time_limit(0);
+
+        //ambil data mahasiswa dengan nilai inggris >= 70
+        //nilai inggris < 70 dinyatakan gugur = tidak diranking
+        $data_moora = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMA%')
+        ->get();
+
+        $rank_sma = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora as $val) {
+          set_time_limit(0);
+          $rank_sma[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_sma);
+
+        //ambil kuota sma prodi
+        $kuota_sma = DB::table('prodi')
+        ->select('kuota_sma', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_sma as $vals) {
+          $sma = $vals->kuota_sma;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_sma = $sma + $cadangan;
+
+        //perankingan sma
+        $i = 1; //counter ranking
+        //save ke database
+        foreach ($rank_sma as $k => $v) {
+          set_time_limit(0);
+
+          $cek_sama = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_sama == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $i;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $i += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if ($i == $total_kuota_sma) {
+            break;
+          }
+        }
+      }
+      unset($value);
+
+      //ranking SMK
+      foreach ($data_prodi_akun as $value) {
+        set_time_limit(0);
+
+        $data_moora_smk = DB::table('mahasiswa')
+        ->join('pilihan_mhs', 'mahasiswa.no_pendaftar', '=', 'pilihan_mhs.no_pendaftar')
+        ->join('nilai_akademis', 'mahasiswa.no_pendaftar', '=', 'nilai_akademis.no_pendaftar')
+        ->select('mahasiswa.no_pendaftar', 'pilihan_mhs.pilihan_prodi', 'mahasiswa.nilai_akhir')
+        ->where('pilihan_mhs.pilihan_prodi', $value->kode_prodi)
+        ->where('mahasiswa.tipe_sekolah', 'like', 'SMK%')
+        ->get();
+
+        $rank_smk = array();
+        //masukkan ke array untuk di sort
+        foreach ($data_moora_smk as $val) {
+          set_time_limit(0);
+          $rank_smk[$val->no_pendaftar] = $val->nilai_akhir;
+        }
+        arsort($rank_smk);
+
+        //ambil kuota sma prodi
+        $kuota_smk = DB::table('prodi')
+        ->select('kuota_smk', 'kuota_cadangan')
+        ->where('kode_prodi', $value->kode_prodi)
+        ->get();
+
+        foreach ($kuota_smk as $vals) {
+          $smk = $vals->kuota_smk;
+          $cadangan = $vals->kuota_cadangan;
+        }
+        $total_kuota_smk = $smk + $cadangan;
+
+        //perankingan
+        $j = 1; //counter ranking
+        //save ke database
+        foreach ($rank_smk as $k => $v) {
+          set_time_limit(0);
+
+          $cek_smk = DB::table('saran_penerimaan')
+          ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+          ->where('no_pendaftar', $k)
+          ->where('kode_prodi', $value->kode_prodi)
+          ->where('periode', '2017')
+          ->count();
+
+          if ($cek_smk == 0) {
+            $saran = new saran_penerimaan();
+            $saran->no_pendaftar = $k;
+            $saran->kode_prodi = $value->kode_prodi;
+            $saran->periode = '2017';
+            $saran->ranking = $j;
+            if (!$saran->save()) {
+              return Redirect::back()->withErrors('The server encountered an unexpected condition');
+            }
+            $j += 1;
+          }
+
+          //jika sudah memenuhi kuota dan cadangan, keluar dari loop
+          if($j == $total_kuota_smk){
+            break;
+          }
+        }
+      }
+    } catch (\Illuminate\Database\QueryException $ex) {
+      return Redirect::back()->withErrors($ex->getMessage());
+    }
   }
 }

@@ -84,14 +84,15 @@ class TabelPerbandinganController extends Controller
 
   public function periksaCr(){
     $nilai_cr = $this->ahpService->hitungConsistency();
-    if ($nilai_cr == -1) {
+    //var_dump($nilai_cr);
+    if ($nilai_cr['cr'] == -1) {
       $response = array(
         'fail' => 1,
         'input' => 'Tabel perbandingan belum diisi',
         'message' => 'Tidak bisa periksa consistency bila tabel ada yang kosong',
       );
       return Response::json($response);
-    } elseif ($nilai_cr > 0.1) {
+    } elseif ($nilai_cr['cr'] > 0.1) {
       $response = array(
         'fail' => 1,
         'input' => 'Nilai consistency ratio lebih dari 10%',
@@ -102,7 +103,8 @@ class TabelPerbandinganController extends Controller
       $response = array(
         'fail' => 0,
         'input' => 'Nilai consistency ratio lebih kecil 10%',
-        'message' => 'Tabel penilaian sudah konsisten'
+        'message' => 'Tabel penilaian sudah konsisten',
+        'AHPurl' => $nilai_cr['dl_path'],
       );
       return Response::json($response);
     }

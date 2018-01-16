@@ -287,8 +287,11 @@
 							var message = '<div class="alert alert-success alert-dismissable">';
 							message += '<p>' + data.input + '</p>';
 							message += '<p>' + data.message + '</p>';
+							message += "<p><a href='" + data.AHPurl + "'> Download Perhitungan Bobot </a></p>";
+							//$('#message').append("<a href='" + data.AHPurl + "'> Download Perhitungan Bobot </a>");
 							message += '</div>';
 							$('#message').append(message);
+							//$('body').append("<iframe src='" + data.AHPurl + "'></iframe>");
 						}
 					},
 					error: function(data, ajaxOptions, thrownError){

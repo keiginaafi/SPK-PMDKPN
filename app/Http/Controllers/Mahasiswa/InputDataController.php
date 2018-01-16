@@ -53,13 +53,15 @@ class InputDataController extends Controller
 
     protected function inputDataAkademis(Request $request){
       //$start = microtime(true);
-      //import to database
+      //validasi
       $validator = Validator::make(Input::all(), [
   			'nilai_akademis' => 'required',
   		]);
       if($validator->fails()){
         return Redirect::back()->withErrors($validator);
       }
+      //simpan data
+      $path = $request->file('nilai_akademis')->store('Nilai Akademis');
       //import to database
       if($request->hasFile('nilai_akademis')){
         $path = $request->file('nilai_akademis')->getRealPath();
@@ -1079,6 +1081,8 @@ class InputDataController extends Controller
       if($validator->fails()){
         return Redirect::back()->withErrors($validator);
       }
+      //simpan data
+      $path = $request->file('nilai_non_akademis')->store('Nilai Non Akademis');
       //import to database
       if($request->hasFile('nilai_non_akademis')){
         $path = $request->file('nilai_non_akademis')->getRealPath();

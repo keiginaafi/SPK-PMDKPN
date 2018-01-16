@@ -144,10 +144,15 @@ class AHP
         break;
     }
 
-    //cetak perhitungan
+    //tempat penyimpanan data perhitungan
     date_default_timezone_set('Asia/Jakarta');
     $tgl = date('d-m-y H-i-s');
-    Excel::create('Perhitungan AHP '.$tgl, function($excel) use($sum_kolom, $baris, $eigenmax, $ci, $cr){
+    $filename = 'Perhitungan AHP '.$tgl;
+    $path = 'uploads\Data Perhitungan\Perhitungan AHP';
+    $dl_path = $path.'\\'.$filename.'.xlsx';
+
+    //cetak perhitungan
+    Excel::create($filename, function($excel) use($sum_kolom, $baris, $eigenmax, $ci, $cr){
       //hasil normalisasi
       $excel->sheet('Hasil Normalisasi', function($sheet) use($sum_kolom, $baris){
         $sheetArray = array();
@@ -242,8 +247,12 @@ class AHP
         $sheet2->fromArray($sheetArray2, null, 'A1', true, false);
       });
 
-    })->store('xlsx');
+    })->store('xlsx', $path);
 
-    return $cr;
+    $result = array(
+      'cr' => $cr,
+      'dl_path' => $dl_path,
+    );
+    return $result;
   }
 }

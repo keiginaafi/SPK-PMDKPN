@@ -57,9 +57,10 @@
 						<button class="btn btn-primary btn-flat btn-sm" id="mooraMethod" title="Saran Penerimaan" style="margin-left: 10px;">
 							<i class="fa"> Hasilkan Saran Penerimaan </i>
 						</button>
-						<button class="btn btn-primary btn-flat btn-sm" id="cetak_hasil" title="cetak" style="position: relative; left: 134%;" target="_blank">
+						<a class="btn btn-primary btn-flat btn-sm" id="cetak_hasil" title="cetak" href="{{{ action('Moora\SaranPenerimaanController@cetakDataPenerimaan') }}}"
+						data-confirm="Cetak data penerimaan?" style="position: relative; left: 134%; right: 10%;">
 							<i class="fa fa-print" aria-hidden="true"> Cetak Saran Penerimaan </i>
-						</button>
+						</a>
 					</h3>
 				</div>
 				<div class="box-body">
@@ -233,6 +234,8 @@
 									var message = '<div class="alert alert-success alert-dismissable">';
 									message += '<p>' + data.input + '</p>';
 									message += '<p>' + data.message + '</p>';
+									message += "<p><a href='" + data.AHPurl + "'> Download Perhitungan Bobot </a></p>";
+									message += "<p><a href='" + data.mooraUrl + "'> Download Perhitungan Moora </a></p>";
 									message += '</div>';
 									$('#message').append(message);
 								}
@@ -249,10 +252,12 @@
 					}
 				});
 
-				$('#cetak_hasil').click(function(){
-					var confirm = window.confirm("Mulai Cetak Data?")
+				$('#cetak_hasil').click(function(event){
+					event.preventDefault();
+					var confirm = window.confirm($('this').attr('data-confirm'));
 					if(confirm == true){
-						$.ajaxSetup({
+						window.location.href = $('this').attr('href');
+						/*$.ajaxSetup({
 							headers: {
 								'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
 							}
@@ -262,7 +267,15 @@
 							url: "saran_penerimaan/cetak_saran",
 							type:"GET",
 							cache: false,
-						});
+							success: function(data){
+								console.log(data);
+								//window.location.href = data;
+								$("body").appendChild("<iframe src='" + data + "' style='display: none;'></iframe>")
+							},
+							error: function(data){
+								alert('Gagal mencetak data.');
+							}
+						});*/
 					}
 				});
 
