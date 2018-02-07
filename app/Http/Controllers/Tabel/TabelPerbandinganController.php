@@ -96,7 +96,8 @@ class TabelPerbandinganController extends Controller
       $response = array(
         'fail' => 1,
         'input' => 'Nilai consistency ratio lebih dari 10%',
-        'message' => 'Tabel penilaian perlu diubah'
+        'message' => 'Tabel penilaian perlu diubah',
+        'AHPurl' => $nilai_cr['dl_path'],
       );
       return Response::json($response);
     } else {

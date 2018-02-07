@@ -93,17 +93,20 @@
 												if ($i == $iterate) {
 													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number" readonly
 													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-													data-kriteria1="'.$item->id_kriteria.'" data-kriteria2="'.$kriteria[$i % count($kriteria)]->id_kriteria.'" />';
+													data-kriteria1="'.$item->id_kriteria.'" data-kriteria2="'.$kriteria[$i % count($kriteria)]->id_kriteria.'"
+													step="any" />';
 													echo "</td>";
 												} elseif ($i <= $iterate) {
 													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
 													id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-													readonly placeholder="field ini akan terisi otomatis" />';
+													readonly placeholder="field ini akan terisi otomatis"
+													step="any" />';
 													echo '</td>';
 												} else {
 													echo '<td class="form-group col-md-2"><input class="form-control nilai" type="number"
 														id="'.$item->id_kriteria.$kriteria[$i % count($kriteria)]->id_kriteria.'"
-														name="nilai[]" placeholder="isi field dengan nilai 0 - 9" min="0" max="9" required />';
+														name="nilai[]" placeholder="isi field dengan nilai 0 - 9" min="0" max="9" required
+														step="any" />';
 													echo '<input hidden name="kriteria1[]" value="'.$item->id_kriteria.'"/>';
 													echo '<input hidden name="kriteria2[]" value="'.$kriteria[$i % count($kriteria)]->id_kriteria.'"/>';
 													echo '</td>';
@@ -281,6 +284,7 @@
 							var message = '<div class="alert alert-danger">';
 							message += '<p>' + data.input + '</p>';
 							message += '<p>' + data.message + '</p>';
+							message += "<p><a href='" + data.AHPurl + "'> Download Perhitungan Bobot </a></p>";
 							message += '</div>';
 							$('#message').append(message);
 						} else {

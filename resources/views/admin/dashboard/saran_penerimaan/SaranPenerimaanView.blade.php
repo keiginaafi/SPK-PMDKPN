@@ -253,10 +253,10 @@
 				});
 
 				$('#cetak_hasil').click(function(event){
-					event.preventDefault();
-					var confirm = window.confirm($('this').attr('data-confirm'));
+
+					var confirm = window.confirm($('#cetak_hasil').attr('data-confirm'));
 					if(confirm == true){
-						window.location.href = $('this').attr('href');
+						window.location.href = $('#cetak_hasil').attr('href');
 						/*$.ajaxSetup({
 							headers: {
 								'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')

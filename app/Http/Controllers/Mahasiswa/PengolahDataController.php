@@ -272,6 +272,15 @@ class PengolahDataController extends Controller
 
     //cek data
     if(DB::table('nilai_non_akademis')->count() > 0){
+      //reset nilai prestasi jika melakukan olah data lagi, agar nilai tidak terakumulasi
+      mahasiswa::chunk(500, function($reset){
+        foreach ($reset as $value) {
+          set_time_limit(0);
+          $value->nilai_non_akademis = 0;
+          $value->save();
+        }
+      });
+      unset($value);
       //olah data prestasi
       nilai_non_akademis::chunk(500, function($lomba){
         foreach ($lomba as $prestasi) {
@@ -323,6 +332,7 @@ class PengolahDataController extends Controller
           }
         }
       });
+      unset($prestasi);
     } else {
       return Response::json([
         'fail' => 1,

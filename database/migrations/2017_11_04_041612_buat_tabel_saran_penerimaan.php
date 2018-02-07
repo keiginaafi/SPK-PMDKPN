@@ -18,8 +18,9 @@ class BuatTabelSaranPenerimaan extends Migration
             $table->string('no_pendaftar', 12);
             $table->foreign('no_pendaftar')->references('no_pendaftar')->on('mahasiswa');
             $table->string('kode_prodi', 15);
+            $table->foreign('kode_prodi')->references('kode_prodi')->on('prodi');
             $table->string('periode', 4);
-			      $table->foreign('kode_prodi')->references('kode_prodi')->on('prodi');
+            $table->string('tipe_sekolah', 7);
             $table->string('ranking', 5);
         });
     }

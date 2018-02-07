@@ -330,9 +330,11 @@ class SaranPenerimaanController extends Controller
     //tiap jurusan disendirikan karena kondisi khusus
     //jurusan teknik => nilai matematika >= 70
     //jurusan bisnis => nilai bhs inggris >= 70
-    $this->rankProdiTeknik();
+    $this->alokasiProdiSMA();
+    $this->alokasiProdiSMK();
+    /*$this->rankProdiTeknik();
     $this->rankProdiBisnis();
-    $this->rankProdiAkuntansi();
+    $this->rankProdiAkuntansi();*/
 
     date_default_timezone_set('Asia/Jakarta');
     $tglnow = date('d-m-y H-i-s');
@@ -478,7 +480,7 @@ class SaranPenerimaanController extends Controller
       return Response::json($ex->getMessage());
     }
 
-    Excel::create('Data Penerimaan '.$tglnow, function($excel) use($data_prodi){
+    Excel::create('Data Saran Penerimaan '.$tglnow, function($excel) use($data_prodi){
       //cetak tiap prodi dalam sheet
       foreach ($data_prodi as $prodi) {
         $excel->sheet($prodi->kode_prodi, function($sheet) use($prodi){
@@ -525,11 +527,555 @@ class SaranPenerimaanController extends Controller
           $sheet->fromArray($sheetArray, null, 'A1', true, false);
         });
       }
+
+      //rank calon mahasiswa
+      $excel->sheet('Rank Seluruh Calon Mahasiswa', function($sheet){
+        $nilai_mhs = DB::table('mahasiswa')
+        ->select('no_pendaftar', 'nilai_akhir')
+        ->get();
+
+        $rank_mhs = array();
+
+        foreach ($nilai_mhs as $value) {
+          set_time_limit(0);
+          $rank_mhs[$value->no_pendaftar] = $value->nilai_akhir;
+        }
+        arsort($rank_mhs);
+
+        $sheetHeader[] = array();
+        $sheetHeader[] = array('Nomor Pendaftar', 'Nama', 'Tipe Sekolah', 'Nilai Akademis', 'Nilai Prestasi',
+        'Akreditasi Sekolah', 'Rerata Peringkat', 'Nilai Akhir', 'Rank');
+        $rank = 1;
+
+        foreach ($rank_mhs as $no_pendaftar => $nilai_akhir) {
+          $mahasiswa = DB::table('mahasiswa')
+          ->select('nama', 'tipe_sekolah', 'nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah',
+          'nilai_peringkat', 'nilai_akhir')
+          ->where('no_pendaftar', $no_pendaftar)
+          ->get();
+
+          $sheetHeader[] = array($no_pendaftar, $mahasiswa[0]->nama, $mahasiswa[0]->tipe_sekolah, $mahasiswa[0]->nilai_akademis,
+          $mahasiswa[0]->nilai_non_akademis, $mahasiswa[0]->akreditasi_sekolah, $mahasiswa[0]->nilai_peringkat,
+          $mahasiswa[0]->nilai_akhir, $rank);
+          $rank++;
+        }
+        $sheet->fromArray($sheetHeader, null, 'A1', true, false);
+      });
     })->export('xlsx');
 
     //$headers = array('Content-Type'=> 'application/xlsx');
     //return response()->download($dl_path, $filename, $headers);
     //return Response::json($dl_path);
+  }
+
+  //ranking SMA
+  public function alokasiProdiSMA(){
+    //ambil data semua calon mahasiswa dari sma
+    $data_mhs_sma = DB::table('mahasiswa')
+    ->select('no_pendaftar', 'nilai_akhir')
+    ->where('tipe_sekolah', 'like', 'SMA%')
+    ->get();
+
+    //inisiasi array untuk mengurutkan ranking
+    $rank_sma = array();
+
+    //urutkan berdasarkan nilai akhir terbesar
+    foreach ($data_mhs_sma as $value) {
+      set_time_limit(0);
+      $rank_sma[$value->no_pendaftar] = $value->nilai_akhir;
+    }
+    arsort($rank_sma);
+
+    /*foreach ($rank_sma as $key => $value) {
+      var_dump($key.' => '.$value.'<br>');
+    }*/
+    //$iterate = 1;
+
+    //proses ranking selesai, mulai alokasi tiap calon mahasiswa ke prodi pilihan
+    foreach (array_chunk($rank_sma, 500, true) as $mhs) {
+      set_time_limit(0);
+      //tes
+      //var_dump(key($mhs));
+      //iterasi nilai dalam chunk
+      foreach ($mhs as $no_pendaftar => $nilai_akhir) {
+        //var_dump($no_pendaftar.' => '.$nilai_akhir);
+        //ambil data prodi pilihan dan kuota sma prodi
+        $prodi_pilihan = DB::table('pilihan_mhs')
+        ->join('prodi', 'pilihan_mhs.pilihan_prodi', '=', 'prodi.kode_prodi')
+        ->select('pilihan_mhs.pilihan_prodi', 'prodi.kuota_sma')
+        ->where('pilihan_mhs.no_pendaftar', $no_pendaftar)
+        ->orderBy('pilihan_mhs.pilihan_ke', 'asc')
+        ->get();
+
+        //var_dump($iterate);
+        //$iterate++;
+
+        //cek mahasiswa yang sudah dialokasi di prodi, kalau penuh, ke pilihan 2
+        foreach ($prodi_pilihan as $prodi) {
+          set_time_limit(0);
+          //cek prodi teknik, bisnis, atau akuntansi
+          if (preg_match('/^31|^32|^33|^41|^42|^43/i', $prodi->pilihan_prodi)) {
+            //untuk prodi pilihan teknik, cek nilai matematika
+            $cek_nilai_matematika = DB::table('nilai_akademis')
+            ->select('nilai_mapel_koreksi')
+            ->where('no_pendaftar', $no_pendaftar)
+            ->where('mapel', 'like', 'matematika%')
+            ->where('nilai_mapel_koreksi', '<', '70')
+            ->first();
+
+            if (!$cek_nilai_matematika) {
+              //nilai matematika lebih dari 70, lanjut ke alokasi prodi
+              //cek ranking terbesar
+              $max_rank = DB::table('saran_penerimaan')
+              ->where('kode_prodi', $prodi->pilihan_prodi)
+              ->where('tipe_sekolah', 'like', 'SMA%')
+              ->max('ranking');
+
+              //cek hasil query kosong atau tidak
+              if ($max_rank) {
+                //var_dump('cek max rank ada => '.$max_rank);
+                //bandingkan ranking max dan kuota
+                if($max_rank < $prodi->kuota_sma){
+                  //var_dump('lolos if max rank < kuota sma');
+                  $periode = DB::table('mahasiswa')
+                  ->select('tipe_sekolah', 'periode')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->get();
+
+                  //cek data sudah ada atau belum
+                  $cek_sama = DB::table('saran_penerimaan')
+                  ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->where('kode_prodi', $prodi->pilihan_prodi)
+                  ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                  ->where('periode', $periode[0]->periode)
+                  ->count();
+
+                  //jika tidak ada, tambahkan
+                  if ($cek_sama == 0) {
+                    $saran = new saran_penerimaan();
+                    $saran->no_pendaftar = $no_pendaftar;
+                    $saran->kode_prodi = $prodi->pilihan_prodi;
+                    $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                    $saran->periode = $periode[0]->periode;
+                    $saran->ranking = $max_rank + 1;
+                    if (!$saran->save()) {
+                      return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                    }
+                    //jika masuk ke prodi, maka break
+                    break;
+                  }
+                }
+              } else {
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //jika max rank kosong, tambah baru
+                $saran = new saran_penerimaan();
+                $saran->no_pendaftar = $no_pendaftar;
+                $saran->kode_prodi = $prodi->pilihan_prodi;
+                $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                $saran->periode = $periode[0]->periode;
+                $saran->ranking = 1;
+                if (!$saran->save()) {
+                  return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                }
+                //jika masuk ke prodi, maka break
+                break;
+              }
+            }
+          //cek prodi bisnis
+        } elseif (preg_match('/^35|^45/i', $prodi->pilihan_prodi)) {
+            //untuk prodi bisnis, cek nilai bahasa inggris
+            $cek_nilai_inggris = DB::table('nilai_akademis')
+            ->select('nilai_mapel_koreksi')
+            ->where('no_pendaftar', $no_pendaftar)
+            ->where('mapel', 'like', '%inggris%')
+            ->where('nilai_mapel_koreksi', '<', '70')
+            ->first();
+
+            if (!$cek_nilai_inggris) {
+              //jika nilai inggris lebih dari 70 semua, lanjut ke alokasi prodi
+              //cek ranking terbesar
+              $max_rank = DB::table('saran_penerimaan')
+              ->where('kode_prodi', $prodi->pilihan_prodi)
+              ->where('tipe_sekolah', 'like', 'SMA%')
+              ->max('ranking');
+
+              //cek hasil query kosong atau tidak
+              if ($max_rank) {
+                //bandingkan ranking max dan kuota
+                if($max_rank < $prodi->kuota_sma){
+                  $periode = DB::table('mahasiswa')
+                  ->select('tipe_sekolah', 'periode')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->get();
+
+                  //cek data sudah ada atau belum
+                  $cek_sama = DB::table('saran_penerimaan')
+                  ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->where('kode_prodi', $prodi->pilihan_prodi)
+                  ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                  ->where('periode', $periode[0]->periode)
+                  ->count();
+
+                  //jika tidak ada, tambahkan
+                  if ($cek_sama == 0) {
+                    $saran = new saran_penerimaan();
+                    $saran->no_pendaftar = $no_pendaftar;
+                    $saran->kode_prodi = $prodi->pilihan_prodi;
+                    $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                    $saran->periode = $periode[0]->periode;
+                    $saran->ranking = $max_rank + 1;
+                    if (!$saran->save()) {
+                      return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                    }
+                    //jika masuk ke prodi, maka break
+                    break;
+                  }
+                }
+              } else {
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //jika max rank kosong, tambah baru
+                $saran = new saran_penerimaan();
+                $saran->no_pendaftar = $no_pendaftar;
+                $saran->kode_prodi = $prodi->pilihan_prodi;
+                $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                $saran->periode = $periode[0]->periode;
+                $saran->ranking = 1;
+                if (!$saran->save()) {
+                  return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                }
+                //jika masuk ke prodi, maka break
+                break;
+              }
+            }
+          //prodi akuntansi
+          } else {
+            //cek ranking terbesar
+            $max_rank = DB::table('saran_penerimaan')
+            ->where('kode_prodi', $prodi->pilihan_prodi)
+            ->where('tipe_sekolah', 'like', 'SMA%')
+            ->max('ranking');
+
+            //cek hasil query kosong atau tidak
+            if ($max_rank) {
+              //bandingkan ranking max dan kuota
+              if($max_rank < $prodi->kuota_sma){
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //cek data sudah ada atau belum
+                $cek_sama = DB::table('saran_penerimaan')
+                ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->where('kode_prodi', $prodi->pilihan_prodi)
+                ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                ->where('periode', $periode[0]->periode)
+                ->count();
+
+                //jika tidak ada, tambahkan
+                if ($cek_sama == 0) {
+                  $saran = new saran_penerimaan();
+                  $saran->no_pendaftar = $no_pendaftar;
+                  $saran->kode_prodi = $prodi->pilihan_prodi;
+                  $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                  $saran->periode = $periode[0]->periode;
+                  $saran->ranking = $max_rank + 1;
+                  if (!$saran->save()) {
+                    return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                  }
+                  //jika masuk ke prodi, maka break
+                  break;
+                }
+              }
+            } else {
+              $periode = DB::table('mahasiswa')
+              ->select('tipe_sekolah', 'periode')
+              ->where('no_pendaftar', $no_pendaftar)
+              ->get();
+
+              //jika max rank kosong, tambah baru
+              $saran = new saran_penerimaan();
+              $saran->no_pendaftar = $no_pendaftar;
+              $saran->kode_prodi = $prodi->pilihan_prodi;
+              $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+              $saran->periode = $periode[0]->periode;
+              $saran->ranking = 1;
+              if (!$saran->save()) {
+                return Redirect::back()->withErrors('The server encountered an unexpected condition');
+              }
+              //jika masuk ke prodi, maka break
+              break;
+            }
+          }
+        }
+      }
+      unset($prodi);
+      unset($no_pendaftar);
+      unset($nilai_akhir);
+    }
+    unset($mhs);
+  }
+
+  //ranking SMK
+  public function alokasiProdiSMK(){
+    //ambil data semua calon mahasiswa dari sma
+    $data_mhs_smk = DB::table('mahasiswa')
+    ->select('no_pendaftar', 'nilai_akhir')
+    ->where('tipe_sekolah', 'like', 'SMK%')
+    ->get();
+
+    //inisiasi array untuk mengurutkan ranking
+    $rank_smk = array();
+
+    //urutkan berdasarkan nilai akhir terbesar
+    foreach ($data_mhs_smk as $value) {
+      set_time_limit(0);
+      $rank_smk[$value->no_pendaftar] = $value->nilai_akhir;
+    }
+    arsort($rank_smk);
+    //$iterate = 1;
+
+    //proses ranking selesai, mulai alokasi tiap calon mahasiswa ke prodi pilihan
+    foreach (array_chunk($rank_smk, 500, true) as $mhs) {
+      set_time_limit(0);
+      //tes
+      //var_dump($no_pendaftar.' => '.$nilai_akhir);
+      foreach ($mhs as $no_pendaftar => $nilai_akhir) {
+        //ambil data prodi pilihan dan kuota smk prodi
+        $prodi_pilihan = DB::table('pilihan_mhs')
+        ->join('prodi', 'pilihan_mhs.pilihan_prodi', '=', 'prodi.kode_prodi')
+        ->select('pilihan_mhs.pilihan_prodi', 'prodi.kuota_smk')
+        ->where('pilihan_mhs.no_pendaftar', $no_pendaftar)
+        ->orderBy('pilihan_mhs.pilihan_ke', 'asc')
+        ->get();
+
+        //var_dump($iterate);
+        //$iterate++;
+
+        //cek mahasiswa yang sudah dialokasi di prodi, kalau penuh, ke pilihan 2
+        foreach ($prodi_pilihan as $prodi) {
+          set_time_limit(0);
+          //cek prodi teknik, bisnis, atau akuntansi
+          if (preg_match('/^31|^32|^33|^41|^42|^43/i', $prodi->pilihan_prodi)) {
+            //untuk prodi pilihan teknik, cek nilai matematika
+            $cek_nilai_matematika = DB::table('nilai_akademis')
+            ->select('nilai_mapel_koreksi')
+            ->where('no_pendaftar', $no_pendaftar)
+            ->where('mapel', 'like', 'matematika%')
+            ->where('nilai_mapel_koreksi', '<', '70')
+            ->first();
+
+            if (!$cek_nilai_matematika) {
+              //nilai matematika lebih dari 70, lanjut ke alokasi prodi
+              //cek ranking terbesar
+              $max_rank = DB::table('saran_penerimaan')
+              ->where('kode_prodi', $prodi->pilihan_prodi)
+              ->where('tipe_sekolah', 'like', 'SMK%')
+              ->max('ranking');
+
+              //cek hasil query kosong atau tidak
+              if ($max_rank) {
+                //bandingkan ranking max dan kuota
+                if($max_rank < $prodi->kuota_smk){
+                  $periode = DB::table('mahasiswa')
+                  ->select('tipe_sekolah', 'periode')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->get();
+
+                  //cek data sudah ada atau belum
+                  $cek_sama = DB::table('saran_penerimaan')
+                  ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->where('kode_prodi', $prodi->pilihan_prodi)
+                  ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                  ->where('periode', $periode[0]->periode)
+                  ->count();
+
+                  //jika tidak ada, tambahkan
+                  if ($cek_sama == 0) {
+                    $saran = new saran_penerimaan();
+                    $saran->no_pendaftar = $no_pendaftar;
+                    $saran->kode_prodi = $prodi->pilihan_prodi;
+                    $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                    $saran->periode = $periode[0]->periode;
+                    $saran->ranking = $max_rank + 1;
+                    if (!$saran->save()) {
+                      return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                    }
+                    //jika masuk ke prodi, maka break
+                    break;
+                  }
+                }
+              } else {
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //jika max rank kosong, tambah baru
+                $saran = new saran_penerimaan();
+                $saran->no_pendaftar = $no_pendaftar;
+                $saran->kode_prodi = $prodi->pilihan_prodi;
+                $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                $saran->periode = $periode[0]->periode;
+                $saran->ranking = 1;
+                if (!$saran->save()) {
+                  return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                }
+                //jika masuk ke prodi, maka break
+                break;
+              }
+            }
+          //cek prodi bisnis
+        } elseif (preg_match('/^35|^45/i', $prodi->pilihan_prodi)) {
+            //untuk prodi bisnis, cek nilai bahasa inggris
+            $cek_nilai_inggris = DB::table('nilai_akademis')
+            ->select('nilai_mapel_koreksi')
+            ->where('no_pendaftar', $no_pendaftar)
+            ->where('mapel', 'like', '%inggris%')
+            ->where('nilai_mapel_koreksi', '<', '70')
+            ->first();
+
+            if (!$cek_nilai_inggris) {
+              //jika nilai inggris lebih dari 70 semua, lanjut ke alokasi prodi
+              //cek ranking terbesar
+              $max_rank = DB::table('saran_penerimaan')
+              ->where('kode_prodi', $prodi->pilihan_prodi)
+              ->where('tipe_sekolah', 'like', 'SMK%')
+              ->max('ranking');
+
+              //cek hasil query kosong atau tidak
+              if ($max_rank) {
+                //bandingkan ranking max dan kuota
+                if($max_rank < $prodi->kuota_smk){
+                  $periode = DB::table('mahasiswa')
+                  ->select('tipe_sekolah', 'periode')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->get();
+
+                  //cek data sudah ada atau belum
+                  $cek_sama = DB::table('saran_penerimaan')
+                  ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                  ->where('no_pendaftar', $no_pendaftar)
+                  ->where('kode_prodi', $prodi->pilihan_prodi)
+                  ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                  ->where('periode', $periode[0]->periode)
+                  ->count();
+
+                  //jika tidak ada, tambahkan
+                  if ($cek_sama == 0) {
+                    $saran = new saran_penerimaan();
+                    $saran->no_pendaftar = $no_pendaftar;
+                    $saran->kode_prodi = $prodi->pilihan_prodi;
+                    $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                    $saran->periode = $periode[0]->periode;
+                    $saran->ranking = $max_rank + 1;
+                    if (!$saran->save()) {
+                      return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                    }
+                    //jika masuk ke prodi, maka break
+                    break;
+                  }
+                }
+              } else {
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //jika max rank kosong, tambah baru
+                $saran = new saran_penerimaan();
+                $saran->no_pendaftar = $no_pendaftar;
+                $saran->kode_prodi = $prodi->pilihan_prodi;
+                $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                $saran->periode = $periode[0]->periode;
+                $saran->ranking = 1;
+                if (!$saran->save()) {
+                  return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                }
+                //jika masuk ke prodi, maka break
+                break;
+              }
+            }
+          //prodi akuntansi
+          } else {
+            //cek ranking terbesar
+            $max_rank = DB::table('saran_penerimaan')
+            ->where('kode_prodi', $prodi->pilihan_prodi)
+            ->where('tipe_sekolah', 'like', 'SMK%')
+            ->max('ranking');
+
+            //cek hasil query kosong atau tidak
+            if ($max_rank) {
+              //bandingkan ranking max dan kuota
+              if($max_rank < $prodi->kuota_smk){
+                $periode = DB::table('mahasiswa')
+                ->select('tipe_sekolah', 'periode')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->get();
+
+                //cek data sudah ada atau belum
+                $cek_sama = DB::table('saran_penerimaan')
+                ->select('no_pendaftar', 'kode_prodi', 'periode', 'ranking')
+                ->where('no_pendaftar', $no_pendaftar)
+                ->where('kode_prodi', $prodi->pilihan_prodi)
+                ->where('tipe_sekolah', $periode[0]->tipe_sekolah)
+                ->where('periode', $periode[0]->periode)
+                ->count();
+
+                //jika tidak ada, tambahkan
+                if ($cek_sama == 0) {
+                  $saran = new saran_penerimaan();
+                  $saran->no_pendaftar = $no_pendaftar;
+                  $saran->kode_prodi = $prodi->pilihan_prodi;
+                  $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+                  $saran->periode = $periode[0]->periode;
+                  $saran->ranking = $max_rank + 1;
+                  if (!$saran->save()) {
+                    return Redirect::back()->withErrors('The server encountered an unexpected condition');
+                  }
+                  //jika masuk ke prodi, maka break
+                  break;
+                }
+              }
+            } else {
+              $periode = DB::table('mahasiswa')
+              ->select('tipe_sekolah', 'periode')
+              ->where('no_pendaftar', $no_pendaftar)
+              ->get();
+
+              //jika max rank kosong, tambah baru
+              $saran = new saran_penerimaan();
+              $saran->no_pendaftar = $no_pendaftar;
+              $saran->kode_prodi = $prodi->pilihan_prodi;
+              $saran->tipe_sekolah = $periode[0]->tipe_sekolah;
+              $saran->periode = $periode[0]->periode;
+              $saran->ranking = 1;
+              if (!$saran->save()) {
+                return Redirect::back()->withErrors('The server encountered an unexpected condition');
+              }
+              //jika masuk ke prodi, maka break
+              break;
+            }
+          }
+        }
+      }
+      unset($prodi);
+      unset($no_pendaftar);
+      unset($nilai_akhir);
+    }
+    unset($mhs);
   }
 
   //ranking prodi teknik

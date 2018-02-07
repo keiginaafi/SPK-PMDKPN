@@ -42,6 +42,11 @@ class AHP
       }
     }
 
+    /*var_dump('sum kolom');
+    foreach ($sum_kolom as $value) {
+      var_dump($value);
+    }*/
+
     //normalisasi dg cara membagi tiap nilai dalam kolom dg sum kolomnya
     for ($i=0; $i < count($kolom); $i++) { //iterasi array kolom dari 0
       set_time_limit(0);
@@ -52,8 +57,10 @@ class AHP
         return Redirect::back()->withErrors($ex->getMessage());
       }
       //var_dump($normalisasi);
+      //var_dump('normalisasi');
       for ($j=0; $j < count($kolom); $j++) { //iterasi menyimpan nilai normalisasi
         $normalisasi[$j]->normalisasi = $normalisasi[$j]->nilai_banding / $sum_kolom[$i];
+        //var_dump($normalisasi[$j]->normalisasi);
         if(!$normalisasi[$j]->save()){
           return Redirect::back()->withErrors('The server encountered an unexpected condition');
         }
@@ -69,11 +76,14 @@ class AHP
 
     //cari average normalisasi tiap baris
     foreach ($baris as $value) {
+      //var_dump($value);
       set_time_limit(0);
       try {
         $avg_baris = DB::table('tabel_perbandingan')
         ->where('id_kriteria_1', $value->id_kriteria_1)
         ->avg('normalisasi');
+
+        //var_dump($avg_baris);
 
         //simpan ke kriteria sebagai bobot kriteria tersebut
         $kriteria = kriteria::where('id_kriteria', $value->id_kriteria_1)

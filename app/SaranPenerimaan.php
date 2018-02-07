@@ -10,6 +10,6 @@ class SaranPenerimaan extends Model
   public $timestamps = false;
   protected $primaryKey = 'id_saran';
   protected $fillable = [
-    'no_pendaftar', 'kode_prodi', 'periode', 'ranking'
+    'no_pendaftar', 'kode_prodi', 'tipe_sekolah', 'periode', 'ranking'
   ];
 }
