@@ -63,15 +63,7 @@
 									</td>
 								</tr>
 							@endforeach
-						</tbody>
-						<tfoot>
-							<tr>
-								<th>No.</th>
-								<th>Kriteria</th>
-								<th>Bobot</th>
-								<th>Aksi</th>
-							</tr>
-						</tfoot>
+						</tbody>						
 					</table>
 				</div>
 			</div>

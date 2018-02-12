@@ -47,7 +47,7 @@ class SaranPenerimaanController extends Controller
     $data_saran = '';
     try {
       $data_prodi = DB::table('prodi')
-      ->select('kuota_sma', 'kuota_smk', 'kuota_cadangan')
+      ->select('kuota_sma', 'kuota_smk')
       ->where('kode_prodi', $id)
       ->get();
 
@@ -58,6 +58,8 @@ class SaranPenerimaanController extends Controller
       'mahasiswa.pendapatan_ayah', 'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu',
       'mahasiswa.jumlah_tanggungan', 'mahasiswa.bidik_misi',
       'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
+      //->where('mahasiswa.periode', date('Y'))
+      ->where('mahasiswa.periode', '2017')
       ->where('saran_penerimaan.kode_prodi', $id)
       ->get();
 
@@ -69,7 +71,6 @@ class SaranPenerimaanController extends Controller
     $response = array(
       'sma' => $data_prodi[0]->kuota_sma,
       'smk' => $data_prodi[0]->kuota_smk,
-      'cadangan' => $data_prodi[0]->kuota_cadangan,
       'saran' => $data_saran,
     );
     return Response::json($response);
@@ -108,6 +109,8 @@ class SaranPenerimaanController extends Controller
     }
     $cek_nilai = DB::table('mahasiswa')
     ->select('nilai_akademis')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
     foreach ($cek_nilai as $value) {
       set_time_limit(0);
@@ -127,6 +130,8 @@ class SaranPenerimaanController extends Controller
     //ambil sum nilai kuadrat dari tiap kriteria lalu di akar
     $get_nilai_akademis = DB::table('mahasiswa')
     ->select('nilai_akademis')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
     //initiate value sum of square nilai_akademis
     $sum_sqr_nilai_akademis = 0;
@@ -139,6 +144,8 @@ class SaranPenerimaanController extends Controller
 
     $get_nilai_non_akademis = DB::table('mahasiswa')
     ->select('nilai_non_akademis')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
     //initiate value sum of square nilai_non_akademis
     $sum_sqr_nilai_non_akademis = 0;
@@ -152,6 +159,8 @@ class SaranPenerimaanController extends Controller
     //convert akreditasi ke nilai numerik
     $get_akreditasi = DB::table('mahasiswa')
     ->select('akreditasi_sekolah')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
     //initiate value sum of square akreditasi
     $sum_sqr_akreditasi_sekolah = 0;
@@ -180,6 +189,8 @@ class SaranPenerimaanController extends Controller
 
     $get_nilai_peringkat = DB::table('mahasiswa')
     ->select('nilai_peringkat')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
     //initiate value sum of square peringkat
     $sum_sqr_peringkat = 0;
@@ -193,6 +204,8 @@ class SaranPenerimaanController extends Controller
     //normalisasi tiap nilai kriteria tiap mahasiswa dengan denominator masing-masing
     $data_mhs = DB::table('mahasiswa')
     ->select('no_pendaftar', 'nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah', 'nilai_peringkat')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->orderBy('no_pendaftar', 'asc')
     ->get();
 
@@ -307,6 +320,8 @@ class SaranPenerimaanController extends Controller
     //proses optimisasi per mahasiswa
     $daftar_mhs = DB::table('mahasiswa')
     ->select('no_pendaftar')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->orderBy('no_pendaftar', 'asc')
     ->get();
 
@@ -320,6 +335,7 @@ class SaranPenerimaanController extends Controller
       //var_dump($key.' => '.$value);
       try {
         $mhs = mahasiswa::where('no_pendaftar', $key)
+        //->where('periode', date('Y'))        
         ->update(['nilai_akhir' => $value]);
       } catch (\Illuminate\Database\QueryException $ex) {
         return Redirect::back()->withErrors('Gagal menyimpan data nilai akhir '.$ex->getMessage());
@@ -496,6 +512,8 @@ class SaranPenerimaanController extends Controller
             'mahasiswa.nilai_akademis', 'mahasiswa.nilai_non_akademis', 'mahasiswa.akreditasi_sekolah',
             'mahasiswa.nilai_peringkat', 'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
             ->where('saran_penerimaan.kode_prodi', $prodi->kode_prodi)
+            //->where('mahasiswa.periode', date('Y'))
+            ->where('mahasiswa.periode', '2017')
             ->where('pilihan_mhs.pilihan_prodi', $prodi->kode_prodi)
             ->orderBy('mahasiswa.tipe_sekolah')
             ->orderBy('saran_penerimaan.ranking')
@@ -532,6 +550,8 @@ class SaranPenerimaanController extends Controller
       $excel->sheet('Rank Seluruh Calon Mahasiswa', function($sheet){
         $nilai_mhs = DB::table('mahasiswa')
         ->select('no_pendaftar', 'nilai_akhir')
+        //->where('periode', date('Y'))
+        ->where('periode', '2017')
         ->get();
 
         $rank_mhs = array();
@@ -552,6 +572,8 @@ class SaranPenerimaanController extends Controller
           ->select('nama', 'tipe_sekolah', 'nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah',
           'nilai_peringkat', 'nilai_akhir')
           ->where('no_pendaftar', $no_pendaftar)
+          //->where('periode', date('Y'))
+          ->where('periode', '2017')
           ->get();
 
           $sheetHeader[] = array($no_pendaftar, $mahasiswa[0]->nama, $mahasiswa[0]->tipe_sekolah, $mahasiswa[0]->nilai_akademis,
@@ -574,6 +596,8 @@ class SaranPenerimaanController extends Controller
     $data_mhs_sma = DB::table('mahasiswa')
     ->select('no_pendaftar', 'nilai_akhir')
     ->where('tipe_sekolah', 'like', 'SMA%')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
 
     //inisiasi array untuk mengurutkan ranking
@@ -833,6 +857,8 @@ class SaranPenerimaanController extends Controller
     $data_mhs_smk = DB::table('mahasiswa')
     ->select('no_pendaftar', 'nilai_akhir')
     ->where('tipe_sekolah', 'like', 'SMK%')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->get();
 
     //inisiasi array untuk mengurutkan ranking

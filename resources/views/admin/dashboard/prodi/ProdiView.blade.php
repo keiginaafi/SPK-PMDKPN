@@ -43,7 +43,7 @@
 								<th>Nama Prodi</th>
 								<th>Kuota SMA</th>
 								<th>Kuota SMK</th>
-								<th>Kuota Cadangan</th>
+								<!--<th>Kuota Cadangan</th>-->
 								<th>Aksi</th>
 							</tr>
 						</thead>
@@ -54,7 +54,6 @@
 									<td>{{ $item_prodi->nama_prodi }}</td>
 									<td>{{ $item_prodi->kuota_sma }}</td>
 									<td>{{ $item_prodi->kuota_smk }}</td>
-									<td>{{ $item_prodi->kuota_cadangan }}</td>
 									<td>
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
 											<i class="fa fa-list"> Edit </i>
@@ -117,14 +116,14 @@
 								<small class="help-block"></small>
 							</div>
 						</div>
-						<div class="form-group">
+						<!--<div class="form-group">
 							<label class="col-md-4 control-label">Kuota Cadangan Program Studi</label>
 							<div class="col-md-6">
 								<input type="number" class="form-control" name="kuota_cadangan"
 								placeholder="Kuota Cadangan Program Studi" required></input>
 								<small class="help-block"></small>
 							</div>
-						</div>
+						</div>-->
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-4">
 								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>

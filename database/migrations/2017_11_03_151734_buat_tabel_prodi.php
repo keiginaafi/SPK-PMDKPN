@@ -18,7 +18,7 @@ class BuatTabelProdi extends Migration
             $table->string('nama_prodi', 50);
             $table->unsignedTinyInteger('kuota_sma');
             $table->unsignedTinyInteger('kuota_smk');
-            $table->unsignedTinyInteger('kuota_cadangan');
+            //$table->unsignedTinyInteger('kuota_cadangan');
         });
     }
 

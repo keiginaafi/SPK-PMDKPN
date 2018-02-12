@@ -51,6 +51,8 @@ class PengolahDataController extends Controller
       'mahasiswa.jurusan_asal', 'mahasiswa.pekerjaan_ayah', 'mahasiswa.pendapatan_ayah',
       'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu', 'mahasiswa.bidik_misi',
       'pilihan_mhs.pilihan_ke')
+      //->where('mahasiswa.periode', date('Y'))
+      ->where('mahasiswa.periode', '2017')
       ->where('pilihan_mhs.pilihan_prodi', '=', $id)
       ->get();
     } catch(\Illuminate\Database\QueryException $ex){
@@ -128,6 +130,8 @@ class PengolahDataController extends Controller
 
     //sum nilai avg mapel koreksi tiap semester, lalu save ke mahasiswa
     DB::table('mahasiswa')->select('no_pendaftar')
+    //->where('periode', date('Y'))
+    ->where('periode', '2017')
     ->orderBy('no_pendaftar', 'asc')
     ->chunk(500, function($pendaftar){
       foreach ($pendaftar as $id) {
@@ -179,6 +183,8 @@ class PengolahDataController extends Controller
     //cek data peringkat
     if(DB::table('peringkat')->count() > 0){
       DB::table('mahasiswa')->select('no_pendaftar')
+      //->where('periode', date('Y'))
+      ->where('periode', '2017')
       ->orderBy('no_pendaftar', 'asc')
       ->chunk(500, function($noPendaftar){
         foreach ($noPendaftar as $value) {
@@ -273,7 +279,8 @@ class PengolahDataController extends Controller
     //cek data
     if(DB::table('nilai_non_akademis')->count() > 0){
       //reset nilai prestasi jika melakukan olah data lagi, agar nilai tidak terakumulasi
-      mahasiswa::chunk(500, function($reset){
+      mahasiswa::where('periode', '2017')//where('periode', date('Y'))
+      ->chunk(500, function($reset){
         foreach ($reset as $value) {
           set_time_limit(0);
           $value->nilai_non_akademis = 0;

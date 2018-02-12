@@ -18,7 +18,7 @@ class ProdiController extends Controller
 	}*/
 
 	public function index(){
-		$dataProdi = prodi::select(DB::raw("kode_prodi, nama_prodi, kuota_sma, kuota_smk, kuota_cadangan"))
+		$dataProdi = prodi::select(DB::raw("kode_prodi, nama_prodi, kuota_sma, kuota_smk"))
 		->orderBy(DB::raw("kode_prodi"))
 		->get();
 		$data = array('prodi' => $dataProdi);
@@ -32,14 +32,14 @@ class ProdiController extends Controller
 			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
 			'kuota_sma.required' => 'Kuota SMA Program Studi dibutuhkan',
 			'kuota_smk.required' => 'Kuota SMA Program Studi dibutuhkan',
-			'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
+			//'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
 		];
 		return Validator::make($data, [
 			'kode_prodi' => 'required|unique:prodi',
 			'nama_prodi' => 'required|max:51',
 			'kuota_sma' => 'required',
 			'kuota_smk' => 'required',
-			'kuota_cadangan' => 'required',
+			//'kuota_cadangan' => 'required',
 		], $messages);
 	}
 
@@ -49,7 +49,7 @@ class ProdiController extends Controller
 		$prodi->nama_prodi = $data['nama_prodi'];
 		$prodi->kuota_sma = $data['kuota_sma'];
 		$prodi->kuota_smk = $data['kuota_smk'];
-		$prodi->kuota_cadangan = $data['kuota_cadangan'];
+		//$prodi->kuota_cadangan = $data['kuota_cadangan'];
 
 		//save, jika gagal abort
 		if(!$prodi->save()){
@@ -92,13 +92,13 @@ class ProdiController extends Controller
 			'nama_prodi.required' => 'Nama Program Studi dibutuhkan',
 			'kuota_sma.required' => 'Kuota SMA Program Studi dibutuhkan',
 			'kuota_smk.required' => 'Kuota SMA Program Studi dibutuhkan',
-			'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
+			//'kuota_cadangan.required' => 'Kuota SMA Program Studi dibutuhkan',
 		];
 		$validator = Validator::make($input, [
 			'nama_prodi' => 'required|max:51',
 			'kuota_sma' => 'required',
 			'kuota_smk' => 'required',
-			'kuota_cadangan' => 'required',
+			//'kuota_cadangan' => 'required',
 		], $messages);
 		if($validator->fails()){
 			//kembali ke halaman yg sama dengan pesan error
@@ -109,7 +109,7 @@ class ProdiController extends Controller
 		$editProdi->nama_prodi = $input['nama_prodi'];
 		$editProdi->kuota_sma = $input['kuota_sma'];
 		$editProdi->kuota_smk = $input['kuota_smk'];
-		$editProdi->kuota_cadangan = $input['kuota_cadangan'];
+		//$editProdi->kuota_cadangan = $input['kuota_cadangan'];
 
 		if(!$editProdi->save()){
 			return Redirect::back()->withErrors('The server encountered an unexpected condition');

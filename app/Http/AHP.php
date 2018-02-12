@@ -74,7 +74,8 @@ class AHP
     ->distinct()
     ->get();
 
-    //cari average normalisasi tiap baris
+    //var_dump('avg baris');
+    //cari average tiap baris dari tabel normalisasi
     foreach ($baris as $value) {
       //var_dump($value);
       set_time_limit(0);
@@ -96,6 +97,7 @@ class AHP
 
     //cek CI
     //cari nilai eigenvalue max
+    //var_dump('eigenmax');
     $eigenmax = 0;
     for ($k=0; $k < count($sum_kolom) ; $k++) {
       set_time_limit(0);
@@ -106,6 +108,7 @@ class AHP
         ->get();
 
         $eigenmax = $eigenmax + ($sum_kolom[$k] * $bobot[0]->bobot_kriteria);
+        //var_dump($eigenmax);
       } catch (\Illuminate\Database\QueryException $ex) {
         return Redirect::back()->withErrors($ex->getMessage());
       }

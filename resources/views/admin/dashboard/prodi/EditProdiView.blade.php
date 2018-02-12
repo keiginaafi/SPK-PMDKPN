@@ -60,14 +60,14 @@
 								<small class="help-block"></small>
 							</div>
 						</div>
-						<div class="form-group">
+						<!--<div class="form-group">
 							<label class="control-label">Kuota Cadangan Program Studi</label>
 							<div>
 								<input type="number" class="form-control" name="kuota_cadangan"
-								placeholder="Kuota Cadangan Program Studi" value="{{ $kuota_cadangan }}" required></input>
+								placeholder="Kuota Cadangan Program Studi" value="" required></input>
 								<small class="help-block"></small>
 							</div>
-						</div>
+						</div>-->
 							<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
 							<a class="btn btn-default" id="button-back" href="{{{ URL::to('kelola_prodi') }}}">Kembali</a>
 					</form>
