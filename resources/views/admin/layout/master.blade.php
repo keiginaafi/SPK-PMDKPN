@@ -43,7 +43,9 @@
 
   @include('admin.include.header')
   <!-- Left side column. contains the logo and sidebar -->
-  @if(Auth::user()->level==1)
+  @if(Auth::user()->level==0)
+    @include('admin.include.sidebar')
+  @elseif(Auth::user()->level==1)
     @include('admin.include.sidebar')
   @elseif(Auth::user()->level==2)
     @include('admin.include.sidebarlv2')

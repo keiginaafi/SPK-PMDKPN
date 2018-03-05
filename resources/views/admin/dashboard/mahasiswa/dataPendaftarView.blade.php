@@ -28,11 +28,11 @@
 	}
 </style>
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Data Pendaftar
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
 		<li class="active">Data Pendaftar</li>
 	</ol>
 @stop
@@ -54,7 +54,7 @@
 			<div class="box" style="overflow: auto; min-width: 100%; width: auto; height: 100%;">
 				<div class="box-header">
 					<h3 class="box-title">Data Pendaftar
-						@if(Auth::user()->level==1)
+						@if(Auth::user()->level<=1)
 							<button class="btn btn-primary btn-flat btn-sm" id="normalisasiMhs" title="Normalisasi" style="margin-left: 10px;">
 								Normalisasi Data Pendaftar
 							</button>

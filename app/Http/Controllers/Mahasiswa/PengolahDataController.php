@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Mahasiswa;
 
-ini_set('memory_limit', '256M');
+ini_set('max_execution_time', '1800');
+ini_set('memory_limit', '512M');
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -102,7 +103,7 @@ class PengolahDataController extends Controller
     }
 
     //get nilai akademis
-    nilai_akademis::chunk(500, function($nilai){
+    nilai_akademis::chunk(1000, function($nilai){
       foreach ($nilai as $akademis) {
         set_time_limit(0);
         //konversi nilai ke skala 100
@@ -123,6 +124,7 @@ class PengolahDataController extends Controller
       		}
         }
       }
+      unset($akademis);
     });
     /*foreach ($nilai as $value) {
       var_dump($value->no_pendaftar, $value->semester, $value->mapel, $value->nilai_mapel);
@@ -133,7 +135,7 @@ class PengolahDataController extends Controller
     //->where('periode', date('Y'))
     ->where('periode', '2017')
     ->orderBy('no_pendaftar', 'asc')
-    ->chunk(500, function($pendaftar){
+    ->chunk(1000, function($pendaftar){
       foreach ($pendaftar as $id) {
         set_time_limit(0);
         //rata-rata smt 1
@@ -178,6 +180,7 @@ class PengolahDataController extends Controller
         }
         //var_dump($avg_smt_1);
       }
+      unset($id);
     });
 
     //cek data peringkat
@@ -186,11 +189,11 @@ class PengolahDataController extends Controller
       //->where('periode', date('Y'))
       ->where('periode', '2017')
       ->orderBy('no_pendaftar', 'asc')
-      ->chunk(500, function($noPendaftar){
+      ->chunk(1000, function($noPendaftar){
         foreach ($noPendaftar as $value) {
           set_time_limit(0);
           //initiate pembagi peringkat
-          $pembagi = 0;
+          $pembagi = 1;
           //ambil peringkat dan jumlah siswa
           $data_peringkat_smt_1 = DB::table('peringkat')
           ->select('peringkat', 'jumlah_siswa')
@@ -199,7 +202,12 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          $nilai_peringkat_smt_1 = $data_peringkat_smt_1[0]->peringkat / $data_peringkat_smt_1[0]->jumlah_siswa;
+          if ($data_peringkat_smt_1[0]->jumlah_siswa == 0) {
+            $nilai_peringkat_smt_1 = 0;
+          } else {
+            $nilai_peringkat_smt_1 = $data_peringkat_smt_1[0]->peringkat / $data_peringkat_smt_1[0]->jumlah_siswa;
+          }
+
           //cek nilai untuk menambah pembagi
           if($data_peringkat_smt_1[0]->peringkat != 0){
             $pembagi += 1;
@@ -213,7 +221,12 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          $nilai_peringkat_smt_2 = $data_peringkat_smt_2[0]->peringkat / $data_peringkat_smt_2[0]->jumlah_siswa;
+          if ($data_peringkat_smt_2[0]->jumlah_siswa == 0) {
+            $nilai_peringkat_smt_2 = 0;
+          } else {
+            $nilai_peringkat_smt_2 = $data_peringkat_smt_2[0]->peringkat / $data_peringkat_smt_2[0]->jumlah_siswa;
+          }
+
           //cek nilai untuk menambah pembagi
           if($data_peringkat_smt_2[0]->peringkat != 0){
             $pembagi += 1;
@@ -227,7 +240,12 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          $nilai_peringkat_smt_3 = $data_peringkat_smt_3[0]->peringkat / $data_peringkat_smt_3[0]->jumlah_siswa;
+          if ($data_peringkat_smt_3[0]->jumlah_siswa == 0) {
+            $nilai_peringkat_smt_3 = 0;
+          } else {
+            $nilai_peringkat_smt_3 = $data_peringkat_smt_3[0]->peringkat / $data_peringkat_smt_3[0]->jumlah_siswa;
+          }
+
           //cek nilai untuk menambah pembagi
           if($data_peringkat_smt_3[0]->peringkat != 0){
             $pembagi += 1;
@@ -241,7 +259,12 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          $nilai_peringkat_smt_4 = $data_peringkat_smt_4[0]->peringkat / $data_peringkat_smt_4[0]->jumlah_siswa;
+          if ($data_peringkat_smt_4[0]->jumlah_siswa == 0) {
+            $nilai_peringkat_smt_4 = 0;
+          } else {
+            $nilai_peringkat_smt_4 = $data_peringkat_smt_4[0]->peringkat / $data_peringkat_smt_4[0]->jumlah_siswa;
+          }
+
           //cek nilai untuk menambah pembagi
           if($data_peringkat_smt_4[0]->peringkat != 0){
             $pembagi += 1;
@@ -255,10 +278,19 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          $nilai_peringkat_smt_5 = $data_peringkat_smt_5[0]->peringkat / $data_peringkat_smt_5[0]->jumlah_siswa;
+          if ($data_peringkat_smt_5[0]->jumlah_siswa == 0) {
+            $nilai_peringkat_smt_5 = 0;
+          } else {
+            $nilai_peringkat_smt_5 = $data_peringkat_smt_5[0]->peringkat / $data_peringkat_smt_5[0]->jumlah_siswa;
+          }
+
           //cek nilai untuk menambah pembagi
           if($data_peringkat_smt_5[0]->peringkat != 0){
             $pembagi += 1;
+          }
+
+          if($pembagi > 5){
+            $pembagi = 5;
           }
 
           $nilai_peringkat_mhs = ($nilai_peringkat_smt_1 + $nilai_peringkat_smt_2 + $nilai_peringkat_smt_3
@@ -271,8 +303,8 @@ class PengolahDataController extends Controller
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
           }
-
         }
+        unset($value);
       });
     }
 
@@ -280,16 +312,16 @@ class PengolahDataController extends Controller
     if(DB::table('nilai_non_akademis')->count() > 0){
       //reset nilai prestasi jika melakukan olah data lagi, agar nilai tidak terakumulasi
       mahasiswa::where('periode', '2017')//where('periode', date('Y'))
-      ->chunk(500, function($reset){
+      ->chunk(600, function($reset){
         foreach ($reset as $value) {
           set_time_limit(0);
           $value->nilai_non_akademis = 0;
           $value->save();
         }
+        unset($value);
       });
-      unset($value);
       //olah data prestasi
-      nilai_non_akademis::chunk(500, function($lomba){
+      nilai_non_akademis::chunk(600, function($lomba){
         foreach ($lomba as $prestasi) {
           set_time_limit(0);
           $nilai_prestasi = 0;
@@ -338,8 +370,8 @@ class PengolahDataController extends Controller
             // Note any method of class PDOException can be called on $ex.
           }
         }
+        unset($prestasi);
       });
-      unset($prestasi);
     } else {
       return Response::json([
         'fail' => 1,

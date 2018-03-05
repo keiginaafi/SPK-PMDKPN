@@ -1,12 +1,11 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Kelola Kriteria
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
 		<li class="active">Kelola Kriteria</li>
 	</ol>
 @stop
@@ -54,16 +53,16 @@
 									<td>{{ $item_kriteria->bobot_kriteria }}</td>
 									<td>
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_kriteria/'.$item_kriteria->id_kriteria.'/edit') }}}">
-											<i class="fa fa-list"> Edit </i>
+											<i class="fa fa-list"> Ubah </i>
 										</a> |
 										<button class="btn btn-danger btn-flat btn-sm hapus" href="{{{ action('Kriteria\KriteriaController@hapusKriteria', [$item_kriteria->id_kriteria]) }}}"
 										data-confirm="Yakin ingin hapus kriteria {{ $item_kriteria->nama_kriteria }} ?" title="hapus">
-											<i class="fa fa-trash"> Delete </i>
+											<i class="fa fa-trash"> Hapus </i>
 										</button>
 									</td>
 								</tr>
 							@endforeach
-						</tbody>						
+						</tbody>
 					</table>
 				</div>
 			</div>
@@ -92,13 +91,13 @@
 						</div>
 						<div class="form-group">
 							<div class="dol-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
+								<button type="submit" class="btn btn-primary" id="button-reg">Tambahkan</button>
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Urungkan</button>
 				</div>
 			</div>
 		</div>

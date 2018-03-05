@@ -1,12 +1,11 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Input Data
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
 		<li class="active">Input Data</li>
 	</ol>
 @stop
@@ -30,7 +29,14 @@
 			@endif
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">Unggah Data</h3>
+					<h3 class="box-title">Unggah Data
+						@if(Auth::user()->level==0)
+							<a class="btn btn-primary btn-flat btn-sm" id="truncate" title="truncate" href="{{{ action('Mahasiswa\InputDataController@truncateData') }}}"
+							data-confirm="Yakin hapus data mahasiswa?" style="position: relative; left: 355%; right: 10%;">
+								<i class="fa" aria-hidden="true"> Hapus Data Mahasiswa </i>
+							</a>
+						@endif
+					</h3>
 				</div>
 				<div class="box-body">
 					<div class="col-md-1">
@@ -40,6 +46,7 @@
 							{{ csrf_field() }}
 							<div class="form-group" style="padding-top: 15px;">
 								<label for="nilaiAkademis" class="control-label">Nilai Akademis</label>
+
 								<input type="file" class="form-control-file" id="nilaiAkademis" name="nilai_akademis" style="padding-top: 5px;"></input>
 								<p class="help-block" style="padding-top: 5px;">Pilih file nilai akademis yang akan diunggah. (.xls)</p>
 							</div>
@@ -57,6 +64,7 @@
 							{{ csrf_field() }}
 							<div class="form-group" style="padding-top: 15px;">
 								<label for="nilaiNonAkademis" class="control-label">Nilai Non Akademis</label>
+
 								<input type="file" class="form-control-file" id="nilaiNonAkademis" name="nilai_non_akademis" style="padding-top: 5px;"></input>
 								<p class="help-block" style="padding-top: 5px;">Pilih file prestasi yang akan diunggah. (.xls)</p>
 							</div>
@@ -103,6 +111,16 @@
 	<script src="{{ URL::asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
 	<script src="{{ URL::asset('admin/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 	<script>
+		$(document).ready(function(){
+			$('#truncate').click(function(event){
+
+				var confirm = window.confirm($('#truncate').attr('data-confirm'));
+				if(confirm == true){
+					window.location.href = $('#truncate').attr('href');
+				}
+			});
+		});
+
 		$(document).on('submit', '#dataNonAkademis', function(e) {
         e.preventDefault();
 

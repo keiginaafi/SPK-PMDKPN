@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Moora;
 
-ini_set('memory_limit', '256M');
+ini_set('max_execution_time', '1800');
+ini_set('memory_limit', '512M');
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -22,6 +23,7 @@ use App\PilihanMhs as pilihan_mhs;
 //use App\NilaiNonAkademis as nilai_non_akademis;
 use App\Kriteria as kriteria;
 use App\SaranPenerimaan as saran_penerimaan;
+use Yajra\Datatables\Datatables;
 
 class SaranPenerimaanController extends Controller
 {
@@ -68,12 +70,17 @@ class SaranPenerimaanController extends Controller
       return Response::json($ex->getMessage());
     }
 
-    $response = array(
+    $data_saran->transform(function($data){
+      return array_dot($data);
+    });
+
+    return Datatables::of($data_saran)->make(true);
+    /*$response = array(
       'sma' => $data_prodi[0]->kuota_sma,
       'smk' => $data_prodi[0]->kuota_smk,
       'saran' => $data_saran,
     );
-    return Response::json($response);
+    return Response::json($response);*/
     //var_dump($response);
   }
 
@@ -335,7 +342,7 @@ class SaranPenerimaanController extends Controller
       //var_dump($key.' => '.$value);
       try {
         $mhs = mahasiswa::where('no_pendaftar', $key)
-        //->where('periode', date('Y'))        
+        //->where('periode', date('Y'))
         ->update(['nilai_akhir' => $value]);
       } catch (\Illuminate\Database\QueryException $ex) {
         return Redirect::back()->withErrors('Gagal menyimpan data nilai akhir '.$ex->getMessage());
@@ -653,7 +660,8 @@ class SaranPenerimaanController extends Controller
               $max_rank = DB::table('saran_penerimaan')
               ->where('kode_prodi', $prodi->pilihan_prodi)
               ->where('tipe_sekolah', 'like', 'SMA%')
-              ->max('ranking');
+              ->max(DB::raw("cast(ranking as int)"));
+              //var_dump($max_rank);
 
               //cek hasil query kosong atau tidak
               if ($max_rank) {
@@ -726,7 +734,8 @@ class SaranPenerimaanController extends Controller
               $max_rank = DB::table('saran_penerimaan')
               ->where('kode_prodi', $prodi->pilihan_prodi)
               ->where('tipe_sekolah', 'like', 'SMA%')
-              ->max('ranking');
+              ->max(DB::raw("cast(ranking as int)"));
+              var_dump($max_rank);
 
               //cek hasil query kosong atau tidak
               if ($max_rank) {
@@ -787,7 +796,8 @@ class SaranPenerimaanController extends Controller
             $max_rank = DB::table('saran_penerimaan')
             ->where('kode_prodi', $prodi->pilihan_prodi)
             ->where('tipe_sekolah', 'like', 'SMA%')
-            ->max('ranking');
+            ->max(DB::raw("cast(ranking as int)"));
+            //var_dump($max_rank);
 
             //cek hasil query kosong atau tidak
             if ($max_rank) {
@@ -908,7 +918,7 @@ class SaranPenerimaanController extends Controller
               $max_rank = DB::table('saran_penerimaan')
               ->where('kode_prodi', $prodi->pilihan_prodi)
               ->where('tipe_sekolah', 'like', 'SMK%')
-              ->max('ranking');
+              ->max(DB::raw("cast(ranking as int)"));
 
               //cek hasil query kosong atau tidak
               if ($max_rank) {
@@ -979,7 +989,7 @@ class SaranPenerimaanController extends Controller
               $max_rank = DB::table('saran_penerimaan')
               ->where('kode_prodi', $prodi->pilihan_prodi)
               ->where('tipe_sekolah', 'like', 'SMK%')
-              ->max('ranking');
+              ->max(DB::raw("cast(ranking as int)"));
 
               //cek hasil query kosong atau tidak
               if ($max_rank) {
@@ -1040,7 +1050,7 @@ class SaranPenerimaanController extends Controller
             $max_rank = DB::table('saran_penerimaan')
             ->where('kode_prodi', $prodi->pilihan_prodi)
             ->where('tipe_sekolah', 'like', 'SMK%')
-            ->max('ranking');
+            ->max(DB::raw("cast(ranking as int)"));
 
             //cek hasil query kosong atau tidak
             if ($max_rank) {
@@ -1105,7 +1115,7 @@ class SaranPenerimaanController extends Controller
   }
 
   //ranking prodi teknik
-  public function rankProdiTeknik(){
+  /*public function rankProdiTeknik(){
     //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
     try {
       //ambil data prodi
@@ -1259,10 +1269,10 @@ class SaranPenerimaanController extends Controller
     } catch (\Illuminate\Database\QueryException $ex) {
       return Redirect::back()->withErrors($ex->getMessage());
     }
-  }
+  }*/
 
   //ranking prodi administrasi bisnis
-  public function rankProdiBisnis(){
+  /*public function rankProdiBisnis(){
     //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
     try {
       //ambil data prodi administrasi bisnis
@@ -1412,10 +1422,10 @@ class SaranPenerimaanController extends Controller
     } catch (\Illuminate\Database\QueryException $ex) {
       return Redirect::back()->withErrors($ex->getMessage());
     }
-  }
+  }*/
 
   //perankingan selain prodi teknik dan bisnis / prodi akuntansi only
-  public function rankProdiAkuntansi(){
+  /*public function rankProdiAkuntansi(){
     //lakukan perankingan dengan input ke tabel saran penerimaan dg nilai akhir terbesar
     try {
       //ambil data prodi administrasi bisnis
@@ -1561,5 +1571,5 @@ class SaranPenerimaanController extends Controller
     } catch (\Illuminate\Database\QueryException $ex) {
       return Redirect::back()->withErrors($ex->getMessage());
     }
-  }
+  }*/
 }

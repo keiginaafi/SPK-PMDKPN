@@ -28,13 +28,12 @@
 	}
 </style>
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Tabel Perbandingan Kriteria
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>
-		<li class="active">Kelola Kriteria</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
+		<li class="active">Tabel Perbandingan Kriteria</li>
 	</ol>
 @stop
 @section('content')
@@ -125,10 +124,13 @@
 						<div class="col-md-12">
 							* Field diatas adalah nilai perbandingan antara kriteria pada baris dibandingkan dengan kriteria pada kolom
 						</div>
-						<div class="col-md-10">
+						<div class="col-md-9">
 						</div>
-						<div class="form-group col-md-1">
-							<button type="submit" class="btn btn-primary" name="submitNilaiTabel" value="submitNilaiTabel">Submit</button>
+						<div class="form-group col-md-2">
+							<div class="col-md-1"></div>
+							<div class="col-md-1">
+								<button type="submit" class="btn btn-primary" name="submitNilaiTabel" value="submitNilaiTabel" style="margin-left: 30px">Tambahkan</button>
+							</div>
 						</div>
 						<div class="form-group col-md-1">
 							<button type="reset" class="btn btn-default" name="resetNilaiTabel" value="resetNilaiTabel">Reset</button>

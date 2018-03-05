@@ -1,14 +1,13 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Ubah Kriteria
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Dashboard Admin</li>
-		<li>Kelola Kriteria</li>
-		<li class="active">Kelola Kriteria</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
+		<li><a href="{{{ URL::to('kelola_kriteria') }}}">Kelola Kriteria</a></li>
+		<li class="active">Ubah Kriteria</li>
 	</ol>
 @stop
 @section('content')
@@ -45,7 +44,7 @@
 								<small class="help-block"></small>
 							</div>
 						</div>
-							<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
+							<button type="submit" class="btn btn-primary" id="button-reg">Ubah data</button>
 							<a class="btn btn-default" id="button-back" href="{{{ URL::to('kelola_kriteria') }}}">Kembali</a>
 					</form>
 				</div>

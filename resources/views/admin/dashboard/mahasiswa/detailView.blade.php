@@ -1,13 +1,13 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Detail Mahasiswa
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Data Pendaftar</li>
-		<li class="active">Detail Pendaftar</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
+		<li><a href="{{{ URL::to('data_pendaftar') }}}">Data Pendaftar</a></li>
+		<li class="active">Detail Mahasiswa</li>
 	</ol>
 @stop
 @section('content')
@@ -58,14 +58,22 @@
 							<tbody>
 								@if($data_mhs[0]->mahasiswa->nilai_non_akademis != NULL)
 									@foreach($data_mhs[0]->mahasiswa->nilai_non_akademis as $prestasi)
-									<tr>
-										<td>{{ $prestasi->nama_prestasi }}</td>
-										<td>{{ $prestasi->skala_prestasi }}</td>
-										<td>{{ $prestasi->jenis_prestasi }}</td>
-										<td>{{ $prestasi->juara_prestasi }}</td>
-										<td>{{ $prestasi->tahun_prestasi }}</td>
-									</tr>
+										<tr>
+											<td>{{ $prestasi->nama_prestasi }}</td>
+											<td>{{ $prestasi->skala_prestasi }}</td>
+											<td>{{ $prestasi->jenis_prestasi }}</td>
+											<td>{{ $prestasi->juara_prestasi }}</td>
+											<td>{{ $prestasi->tahun_prestasi }}</td>
+										</tr>
 									@endforeach
+								@else
+									<tr>
+										<td> - </td>
+										<td> - </td>
+										<td> - </td>
+										<td> - </td>
+										<td> - </td>
+									</tr>
 								@endif
 							</tbody>
 						</table>
@@ -85,7 +93,7 @@
 								<tr>
 									<td>{{ $ranking->semester }}</td>
 									<td>{{ $ranking->peringkat }}</td>
-									<td>{{ $ranking->jumlah_siswa }}</td>									
+									<td>{{ $ranking->jumlah_siswa }}</td>
 								</tr>
 								@endforeach
 							</tbody>

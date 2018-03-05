@@ -13,10 +13,15 @@ class AdminController extends Controller
     {
       $this->middleware('auth');
     }
-    
+
     public function index(Request $request){
       $level = Auth::user()->level;
       switch ($level) {
+        case '0':
+          //dev
+          return $this->dashboardLevel1();
+          break;
+
         case '1':
           //Kepala UPT TIK
           return $this->dashboardLevel1();

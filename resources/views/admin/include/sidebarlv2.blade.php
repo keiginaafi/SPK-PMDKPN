@@ -5,13 +5,13 @@
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
         <li class="@if(url('/data_pendaftar') == request()->url()) active @else '' @endif treeview">
-          <a href="data_pendaftar">
+          <a href="{{{ URL::to('data_pendaftar') }}}">
             <i class="fa fa-th"></i>
             <span>Lihat Data Pendaftar</span>
           </a>
         </li>
         <li class="@if(url('/saran_penerimaan') == request()->url()) active @else '' @endif treeview">
-          <a href="saran_penerimaan">
+          <a href="{{{ URL::to('saran_penerimaan') }}}">
             <i class="fa fa-th"></i>
             <span>Saran Penerimaan</span>
           </a>

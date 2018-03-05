@@ -1,12 +1,11 @@
 @extends ('admin.layout.master')
 @section ('breadcrump')
   <h1>
-    dashboard
-    <small>Control Panel</small>
+    Halaman Utama
+    <small></small>
   </h1>
   <ol class="breadcrumb">
-    <li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-    <li class="active">Dashboard Admin</li>
+    <li><a href="{{route('admin')}}"><i class="fa fa-dashboard active"></i>Halaman Utama</a></li>    
   </ol>
 @stop
 @section('content')

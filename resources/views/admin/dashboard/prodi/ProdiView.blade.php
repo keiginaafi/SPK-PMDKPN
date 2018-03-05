@@ -1,11 +1,11 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Kelola Program Studi
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
 		<li class="active">Kelola Prodi</li>
 	</ol>
 @stop
@@ -56,11 +56,11 @@
 									<td>{{ $item_prodi->kuota_smk }}</td>
 									<td>
 										<a class="btn btn-primary btn-flat btn-sm" href="{{{ URL::to('kelola_prodi/'.$item_prodi->kode_prodi.'/edit') }}}">
-											<i class="fa fa-list"> Edit </i>
+											<i class="fa fa-list"> Ubah </i>
 										</a> |
 										<a class="btn btn-danger btn-flat btn-sm hapus" href="{{{ action('Prodi\ProdiController@hapusProdi', [$item_prodi->kode_prodi]) }}}"
 										data-confirm="Yakin ingin hapus kriteria {{ $item_prodi->nama_prodi }} ?" title="hapus">
-											<i class="fa fa-trash"> Delete </i>
+											<i class="fa fa-trash"> Hapus </i>
 										</a>
 									</td>
 								</tr>
@@ -126,13 +126,13 @@
 						</div>-->
 						<div class="form-group">
 							<div class="col-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
+								<button type="submit" class="btn btn-primary" id="button-reg">Tambahkan</button>
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Urungkan</button>
 				</div>
 			</div>
 		</div>

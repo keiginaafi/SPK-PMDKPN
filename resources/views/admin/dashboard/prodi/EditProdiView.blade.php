@@ -1,12 +1,12 @@
 @extends('admin.layout.master')
 @section('breadcrump')
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Ubah Program Studi
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
-		<li>Kelola Prodi</li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
+		<li><a href="{{{ URL::to('kelola_prodi') }}}">Kelola Prodi</a></li>
 		<li class="active">Edit Prodi</li>
 	</ol>
 @stop
@@ -68,7 +68,7 @@
 								<small class="help-block"></small>
 							</div>
 						</div>-->
-							<button type="submit" class="btn btn-primary" id="button-reg">Submit</button>
+							<button type="submit" class="btn btn-primary" id="button-reg">Ubah data</button>
 							<a class="btn btn-default" id="button-back" href="{{{ URL::to('kelola_prodi') }}}">Kembali</a>
 					</form>
 				</div>

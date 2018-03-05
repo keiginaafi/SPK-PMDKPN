@@ -49,15 +49,14 @@ Route::group(['middleware' => ['web', 'auth']], function(){
 	Route::get('/saran_penerimaan/cetak_saran', array('as' => 'moora.cetak', 'uses' => 'Moora\SaranPenerimaanController@cetakDataPenerimaan'));
 
   Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
-});
 
-Route::group(['middleware' => ['web', 'auth', 'level:1']], function()
-{
-  //route data pendaftar
+	//route data pendaftar
   Route::get('/data_pendaftar/olah_data', array('as' => 'olah_data.normalisasi', 'uses' => 'Mahasiswa\PengolahDataController@olahDataMhs'));
 
   //route Input Data
   Route::get('/input_data', array('as' => 'input', 'uses' => 'Mahasiswa\InputDataController@index'));
+
+	Route::get('/input_data/truncate', array('as' => 'input.truncate', 'uses' => 'Mahasiswa\InputDataController@truncateData'));
 
   Route::post('/input_data/tambah_prestasi', array('as' => 'input.prestasi', 'uses' => 'Mahasiswa\InputDataController@inputDataNonAkademis'));
 
@@ -96,7 +95,13 @@ Route::group(['middleware' => ['web', 'auth', 'level:1']], function()
   Route::post('/kelola_prodi/{id}/ubahProdi', array('as' => 'prodi.ubah', 'uses' => 'Prodi\ProdiController@ubahProdi'));
 
   Route::get('/kelola_prodi/{id}/hapusProdi', array('as' => 'prodi.hapus', 'uses' => 'Prodi\ProdiController@hapusProdi'));
+
 });
+
+/*Route::group(['middleware' => ['web', 'auth', 'level:1']], function()
+{
+
+});*/
 //route CRUD jurusan
 /*Route::group(['middleware' => ['web', 'auth', 'level:1']], function(){
 	//index

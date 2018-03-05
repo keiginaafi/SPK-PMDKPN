@@ -28,11 +28,11 @@
 	}
 </style>
 	<h1>
-		Dashboard
-		<small>Control Panel</small>
+		Halaman Saran Penerimaan
+		<small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="home"><i class="fa fa-dashboard"></i>Home</a></li>
+		<li><a href="{{route('admin')}}"><i class="fa fa-dashboard"></i>Halaman Utama</a></li>
 		<li class="active">Saran Penerimaan</li>
 	</ol>
 @stop
@@ -73,8 +73,8 @@
 							@endforeach
 						</select>
 					</div>
-					<table id="table_data" class="table table-bordered table-hover col-md-12" style="min-width: 100%; width: auto;">
-						<thead>
+					<table id="table_data" class="table table-bordered col-md-12" style="min-width: 100%; width: auto;">
+						<thead style="position: sticky; top: 0">
 							<tr>
 								<th>No. Pendaftar</th>
 								<th>Nama</th>
@@ -91,8 +91,6 @@
 								<th>Rank</th>
 							</tr>
 						</thead>
-						<tbody id="data_mhs" name="data_mhs">
-						</tbody>
 					</table>
 				</div>
 			</div>
@@ -106,101 +104,70 @@
 		<script src="{{ asset('js/jquery-3.2.1.js') }}"></script>
 		<script>
 
+			//ajax load data mhs
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
 				if(prodi != "NONE"){
-					$.ajaxSetup({
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-						}
-					});
-
-					$.ajax({
-						url: "saran_penerimaan/" + prodi,
-						type:"POST",
-						cache: false,
-						dataType: 'json',
-						data:{
-							id: prodi,
+					$('#table_data').DataTable({
+						processing: true,
+						serverSide: true,
+						ajax: {
+							url: 'saran_penerimaan/'+ prodi,
+							type: 'POST',
+							data: {
+								_token: $('meta[name="_token"]').attr('content'),
+								id: prodi,
+							}
 						},
-						success: function(data){
-							console.log(data);
-							$("#data_mhs tr").last().remove();
-							var success = data.sma;
-							var smk = data.smk;
-							var cadangan = data.cadangan;
-							var counter = 1;
-							$.each(data.saran, function(i, d){
-								if (counter <= success) {
-									var view = '<tr class="bg-success">';
-								} else if ((counter > success) && (counter <= (success + smk))) {
-									var view = '<tr class="bg-primary">';
-								} else if ((counter > (success + smk)) && (counter <= (success + smk + cadangan))) {
-									var view = '<tr class="bg-warning">';
-								} else {
-									var view = '<tr class="bg-danger">';
-								}
-								$.each(d, function(j, e){
-									view += '<td>' + e + '</td>';
-								});
-								view += '</tr>';
-								$("#data_mhs").append(view);
-								counter += 1;
-							});
-						},
-						error: function(data, ajaxOptions, thrownError){
-
-							alert(data.status);
-						}
-					});
+						columns: [
+							{ data: 'no_pendaftar'},
+							{ data: 'nama'},
+							{ data: 'jenis_kelamin'},
+							{ data: 'tipe_sekolah'},
+							{ data: 'jurusan_asal'},
+							{ data: 'pekerjaan_ayah'},
+							{ data: 'pendapatan_ayah'},
+							{ data: 'pekerjaan_ibu'},
+							{ data: 'pendapatan_ibu'},
+							{ data: 'jumlah_tanggungan'},
+							{ data: 'bidik_misi'},
+							{ data: 'nilai_akhir'},
+							{ data: 'ranking'}
+						]
+					})
 				}
 
 				$("#select_prodi").change(function(){
 					var prodi = $("#select_prodi").val();
 					if(prodi != "NONE"){
-						$.ajaxSetup({
-						  headers: {
-						    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-						  }
-						});
-
-						$.ajax({
-							url: "saran_penerimaan/" + prodi,
-							type:"POST",
-							cache: false,
-							dataType: 'json',
-							data:{
-								id: prodi,
+						$('#table_data').DataTable({
+							destroy: true,
+							processing: true,
+							serverSide: true,
+							ajax: {
+								url: 'saran_penerimaan/'+ prodi,
+								type: 'POST',
+								data: {
+									_token: $('meta[name="_token"]').attr('content'),
+									id: prodi,
+								}
 							},
-							success: function(data){
-								console.log(data);
-								$("#data_mhs tr").remove();
-								var success = data.sma;
-								var smk = data.smk;
-								var cadangan = data.cadangan;
-								var counter = 1;
-								$.each(data.saran, function(i, d){
-									if (counter <= success) {
-										var view = '<tr class="bg-success">';
-									} else if ((counter > success) && (counter <= (success + smk))) {
-										var view = '<tr class="bg-primary">';
-									} else if ((counter > (success + smk)) && (counter <= (success + smk + cadangan))) {
-										var view = '<tr class="bg-warning">';
-									} else {
-										var view = '<tr class="bg-danger">';
-									}
-									$.each(d, function(j, e){
-										view += '<td>' + e + '</td>';
-									});
-									view += '</tr>';
-									$("#data_mhs").append(view);
-									counter += 1;
-								});
-							},
-							error: function(data, ajaxOptions, thrownError){
-								alert(data.status);
-							}
-						});
+							columns: [
+								{ data: 'no_pendaftar'},
+								{ data: 'nama'},
+								{ data: 'jenis_kelamin'},
+								{ data: 'tipe_sekolah'},
+								{ data: 'jurusan_asal'},
+								{ data: 'pekerjaan_ayah'},
+								{ data: 'pendapatan_ayah'},
+								{ data: 'pekerjaan_ibu'},
+								{ data: 'pendapatan_ibu'},
+								{ data: 'jumlah_tanggungan'},
+								{ data: 'bidik_misi'},
+								{ data: 'nilai_akhir'},
+								{ data: 'ranking'}
+							]
+						})
 					}else{
 
 						alert('Anda belum memilih prodi');

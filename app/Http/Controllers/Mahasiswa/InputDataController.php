@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Mahasiswa;
 
-//ini_set('max_execution_time', '600');
-ini_set('memory_limit', '256M');
+ini_set('max_execution_time', '3600');
+ini_set('memory_limit', '512M');
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -51,6 +51,22 @@ class InputDataController extends Controller
       }
     }
 
+    protected function truncateData(){
+      try {
+        DB::statement("SET foreign_key_checks = 0");
+        DB::table('saran_penerimaan')->truncate();
+        DB::table('pilihan_mhs')->truncate();
+        DB::table('peringkat')->truncate();
+        DB::table('nilai_non_akademis')->truncate();
+        DB::table('nilai_akademis')->truncate();
+        DB::table('mahasiswa')->truncate();
+      } catch (\Illuminate\Database\QueryException $ex) {
+        return Response::json($ex->getMessage());
+      }
+
+      return Redirect::back()->with('successMessage', 'Data Mahasiswa telah dihapus.');
+    }
+
     protected function inputDataAkademis(Request $request){
       //$start = microtime(true);
       //validasi
@@ -61,7 +77,7 @@ class InputDataController extends Controller
         return Redirect::back()->withErrors($validator);
       }
       //simpan data
-      $path = $request->file('nilai_akademis')->store('Nilai Akademis');
+      //$path = $request->file('nilai_akademis')->store('Nilai Akademis');
       //import to database
       if($request->hasFile('nilai_akademis')){
         $path = $request->file('nilai_akademis')->getRealPath();
@@ -105,7 +121,10 @@ class InputDataController extends Controller
             }
 
             if(!empty($insert_mhs)){
+              //var_dump($insert_mhs);
     				  DB::table('mahasiswa')->insert($insert_mhs);
+              unset($insert_mhs);
+              unset($col);
     			  }
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan input data.<br>'.$ex->getMessage());
@@ -950,7 +969,10 @@ class InputDataController extends Controller
             }
 
             if(!empty($insert_nilai)){
+              //var_dump($insert_nilai);
     				  DB::table('nilai_akademis')->insert($insert_nilai);
+              unset($insert_nilai);
+              unset($col);
     			  }
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan input data.<br>'.$ex->getMessage());
@@ -961,51 +983,54 @@ class InputDataController extends Controller
             if(!empty($results) && $results->count() > 0){
               foreach ($results as $col) {
                 set_time_limit(0);
-                if($col->semester_1_peringkat){
+
                   $insert_peringkat[] = [
                     'no_pendaftar' => $col->nomor_pendaftaran,
                     'semester' => 1,
                     'peringkat' => $col->semester_1_peringkat,
                     'jumlah_siswa' => $col->semester_1_jumlah_siswa
                   ];
-                }
-                if($col->semester_2_peringkat){
+
+
                   $insert_peringkat[] = [
                     'no_pendaftar' => $col->nomor_pendaftaran,
                     'semester' => 2,
                     'peringkat' => $col->semester_2_peringkat,
                     'jumlah_siswa' => $col->semester_2_jumlah_siswa
                   ];
-                }
-                if($col->semester_3_peringkat){
+
+
                   $insert_peringkat[] = [
                     'no_pendaftar' => $col->nomor_pendaftaran,
                     'semester' => 3,
                     'peringkat' => $col->semester_3_peringkat,
                     'jumlah_siswa' => $col->semester_3_jumlah_siswa
                   ];
-                }
-                if($col->semester_4_peringkat){
+
+
                   $insert_peringkat[] = [
                     'no_pendaftar' => $col->nomor_pendaftaran,
                     'semester' => 4,
                     'peringkat' => $col->semester_4_peringkat,
                     'jumlah_siswa' => $col->semester_4_jumlah_siswa
                   ];
-                }
-                if($col->semester_5_peringkat){
+
+
                   $insert_peringkat[] = [
                     'no_pendaftar' => $col->nomor_pendaftaran,
                     'semester' => 5,
                     'peringkat' => $col->semester_5_peringkat,
                     'jumlah_siswa' => $col->semester_5_jumlah_siswa
                   ];
-                }
+
               }
             }
 
             if (!empty($insert_peringkat)) {
+              //var_dump($insert_peringkat);
               DB::table('peringkat')->insert($insert_peringkat);
+              unset($insert_peringkat);
+              unset($col);
             }
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan input data.<br>'.$ex->getMessage());
@@ -1022,11 +1047,13 @@ class InputDataController extends Controller
                   ->where('nama_prodi', $col->pilihan_prodi_1)
                   ->get();
 
-                  $insert_pilihan[] = [
-                    'no_pendaftar' => $col->nomor_pendaftaran,
-                    'pilihan_ke' => 1,
-                    'pilihan_prodi' => $id_prodi[0]->kode_prodi
-                  ];
+                  if (count($id_prodi) > 0) {
+                    $insert_pilihan[] = [
+                      'no_pendaftar' => $col->nomor_pendaftaran,
+                      'pilihan_ke' => 1,
+                      'pilihan_prodi' => $id_prodi[0]->kode_prodi
+                    ];
+                  }
                 }
                 if($col->pilihan_poltek_2 && $col->pilihan_poltek_2 != "0" && $col->pilihan_poltek_2 == "Politeknik Negeri Semarang"){
                   $id_prodi = DB::table('prodi')
@@ -1034,11 +1061,13 @@ class InputDataController extends Controller
                   ->where('nama_prodi', $col->pilihan_prodi_2)
                   ->get();
 
-                  $insert_pilihan[] = [
-                    'no_pendaftar' => $col->nomor_pendaftaran,
-                    'pilihan_ke' => 2,
-                    'pilihan_prodi' => $id_prodi[0]->kode_prodi
-                  ];
+                  if (count($id_prodi) > 0) {
+                    $insert_pilihan[] = [
+                      'no_pendaftar' => $col->nomor_pendaftaran,
+                      'pilihan_ke' => 2,
+                      'pilihan_prodi' => $id_prodi[0]->kode_prodi
+                    ];
+                  }
                 }
                 if($col->pilihan_poltek_3 && $col->pilihan_poltek_3 != "0" && $col->pilihan_poltek_3 == "Politeknik Negeri Semarang"){
                   $id_prodi = DB::table('prodi')
@@ -1046,17 +1075,22 @@ class InputDataController extends Controller
                   ->where('nama_prodi', $col->pilihan_prodi_3)
                   ->get();
 
-                  $insert_pilihan[] = [
-                    'no_pendaftar' => $col->nomor_pendaftaran,
-                    'pilihan_ke' => 3,
-                    'pilihan_prodi' => $id_prodi[0]->kode_prodi
-                  ];
+                  if (count($id_prodi) > 0) {
+                    $insert_pilihan[] = [
+                      'no_pendaftar' => $col->nomor_pendaftaran,
+                      'pilihan_ke' => 3,
+                      'pilihan_prodi' => $id_prodi[0]->kode_prodi
+                    ];
+                  }
                 }
               }
             }
 
             if (!empty($insert_pilihan)) {
+              //var_dump($insert_pilihan);
               DB::table('pilihan_mhs')->insert($insert_pilihan);
+              unset($insert_pilihan);
+              unset($col);
             }
           } catch (\Illuminate\Database\QueryException $ex) {
             return Redirect::back()->withErrors('Gagal melakukan input data.<br>'.$ex->getMessage());
@@ -1082,7 +1116,7 @@ class InputDataController extends Controller
         return Redirect::back()->withErrors($validator);
       }
       //simpan data
-      $path = $request->file('nilai_non_akademis')->store('Nilai Non Akademis');
+      //$path = $request->file('nilai_non_akademis')->store('Nilai Non Akademis');
       //import to database
       if($request->hasFile('nilai_non_akademis')){
         $path = $request->file('nilai_non_akademis')->getRealPath();
@@ -1099,6 +1133,7 @@ class InputDataController extends Controller
 
       			  if(!empty($insert)){
       				  DB::table('nilai_non_akademis')->insert($insert);
+                unset($insert);
       			  }
       		  }
           } catch (\Illuminate\Database\QueryException $ex) {
