@@ -735,7 +735,7 @@ class SaranPenerimaanController extends Controller
               ->where('kode_prodi', $prodi->pilihan_prodi)
               ->where('tipe_sekolah', 'like', 'SMA%')
               ->max(DB::raw("cast(ranking as int)"));
-              var_dump($max_rank);
+              //var_dump($max_rank);
 
               //cek hasil query kosong atau tidak
               if ($max_rank) {
