@@ -56,7 +56,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@if($data_mhs[0]->mahasiswa->nilai_non_akademis != NULL)
+								@if(count($data_mhs[0]->mahasiswa->nilai_non_akademis) != 0)
 									@foreach($data_mhs[0]->mahasiswa->nilai_non_akademis as $prestasi)
 										<tr>
 											<td>{{ $prestasi->nama_prestasi }}</td>

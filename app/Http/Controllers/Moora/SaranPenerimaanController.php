@@ -569,23 +569,40 @@ class SaranPenerimaanController extends Controller
         }
         arsort($rank_mhs);
 
-        $sheetHeader[] = array();
+        $sheetHeader = array();
         $sheetHeader[] = array('Nomor Pendaftar', 'Nama', 'Tipe Sekolah', 'Nilai Akademis', 'Nilai Prestasi',
-        'Akreditasi Sekolah', 'Rerata Peringkat', 'Nilai Akhir', 'Rank');
+        'Akreditasi Sekolah', 'Rerata Peringkat', 'Nilai Akhir', 'Rank', 'Program Studi Masuk');
         $rank = 1;
 
         foreach ($rank_mhs as $no_pendaftar => $nilai_akhir) {
           $mahasiswa = DB::table('mahasiswa')
-          ->select('nama', 'tipe_sekolah', 'nilai_akademis', 'nilai_non_akademis', 'akreditasi_sekolah',
-          'nilai_peringkat', 'nilai_akhir')
-          ->where('no_pendaftar', $no_pendaftar)
+          ->select('mahasiswa.nama', 'mahasiswa.tipe_sekolah', 'mahasiswa.nilai_akademis',
+          'mahasiswa.nilai_non_akademis', 'mahasiswa.akreditasi_sekolah', 'mahasiswa.nilai_peringkat',
+          'mahasiswa.nilai_akhir')
+          ->where('mahasiswa.no_pendaftar', $no_pendaftar)
           //->where('periode', date('Y'))
-          ->where('periode', '2017')
+          ->where('mahasiswa.periode', '2017')
           ->get();
+
+          $ada_prodi = DB::table('saran_penerimaan')
+          ->select('kode_prodi')
+          ->where('no_pendaftar', $no_pendaftar)
+          ->get();
+
+          if (count($ada_prodi) != 0) {
+            $nama_prodi = DB::table('prodi')
+            ->select('nama_prodi')
+            ->where('kode_prodi', $ada_prodi[0]->kode_prodi)
+            ->get();
+
+            $nama_prodi = $nama_prodi[0]->nama_prodi;
+          } else {
+            $nama_prodi = 0;
+          }
 
           $sheetHeader[] = array($no_pendaftar, $mahasiswa[0]->nama, $mahasiswa[0]->tipe_sekolah, $mahasiswa[0]->nilai_akademis,
           $mahasiswa[0]->nilai_non_akademis, $mahasiswa[0]->akreditasi_sekolah, $mahasiswa[0]->nilai_peringkat,
-          $mahasiswa[0]->nilai_akhir, $rank);
+          $mahasiswa[0]->nilai_akhir, $rank, $nama_prodi);
           $rank++;
         }
         $sheet->fromArray($sheetHeader, null, 'A1', true, false);
