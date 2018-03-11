@@ -712,7 +712,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    break;
+                    //break;
                   }
                 }
               } else {
@@ -732,7 +732,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                break;
+                //break;
               }
             }
           //cek prodi bisnis
@@ -784,7 +784,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    break;
+                    //break;
                   }
                 }
               } else {
@@ -804,7 +804,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                break;
+                //break;
               }
             }
           //prodi akuntansi
@@ -846,7 +846,7 @@ class SaranPenerimaanController extends Controller
                     return Redirect::back()->withErrors('The server encountered an unexpected condition');
                   }
                   //jika masuk ke prodi, maka break
-                  break;
+                  //break;
                 }
               }
             } else {
@@ -866,7 +866,7 @@ class SaranPenerimaanController extends Controller
                 return Redirect::back()->withErrors('The server encountered an unexpected condition');
               }
               //jika masuk ke prodi, maka break
-              break;
+              //break;
             }
           }
         }
@@ -967,7 +967,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    break;
+                    //break;
                   }
                 }
               } else {
@@ -987,7 +987,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                break;
+                //break;
               }
             }
           //cek prodi bisnis
@@ -1038,7 +1038,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    break;
+                    //break;
                   }
                 }
               } else {
@@ -1058,7 +1058,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                break;
+                //break;
               }
             }
           //prodi akuntansi
@@ -1099,7 +1099,7 @@ class SaranPenerimaanController extends Controller
                     return Redirect::back()->withErrors('The server encountered an unexpected condition');
                   }
                   //jika masuk ke prodi, maka break
-                  break;
+                  //break;
                 }
               }
             } else {
@@ -1119,7 +1119,7 @@ class SaranPenerimaanController extends Controller
                 return Redirect::back()->withErrors('The server encountered an unexpected condition');
               }
               //jika masuk ke prodi, maka break
-              break;
+              //break;
             }
           }
         }
