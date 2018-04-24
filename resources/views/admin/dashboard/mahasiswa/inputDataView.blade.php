@@ -49,6 +49,7 @@
 
 								<input type="file" class="form-control-file" id="nilaiAkademis" name="nilai_akademis" style="padding-top: 5px;"></input>
 								<p class="help-block" style="padding-top: 5px;">Pilih file nilai akademis yang akan diunggah. (.xls)</p>
+								<p class="help-block" style="padding-top: 5px;"><a href="templates\Template - Akademis.xls">Download Template Data Akademis</a></p>
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>
@@ -67,6 +68,7 @@
 
 								<input type="file" class="form-control-file" id="nilaiNonAkademis" name="nilai_non_akademis" style="padding-top: 5px;"></input>
 								<p class="help-block" style="padding-top: 5px;">Pilih file prestasi yang akan diunggah. (.xls)</p>
+								<p class="help-block" style="padding-top: 5px;"><a href="templates\Template - Prestasi.xls">Download Template Data Prestasi</a></p>
 							</div>
 							<div class="form-group" style="padding-top: 15px;">
 								<center>

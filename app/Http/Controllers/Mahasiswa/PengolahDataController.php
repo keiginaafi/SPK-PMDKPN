@@ -106,26 +106,45 @@ class PengolahDataController extends Controller
     nilai_akademis::chunk(1000, function($nilai){
       foreach ($nilai as $akademis) {
         set_time_limit(0);
-        //konversi nilai ke skala 100
-        if ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 4) {
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 25;
-          if(!$akademis->save()){
-      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-      		}
-        }elseif ($akademis->nilai_mapel >= 1 && $akademis->nilai_mapel <= 10) {
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel * 10;
-          if(!$akademis->save()){
-      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-      		}
-        }else {
-          $akademis->nilai_mapel_koreksi = $akademis->nilai_mapel;
-          if(!$akademis->save()){
-      			return Response::json(['Error' => 'The server encountered an unexpected condition']);
-      		}
-        }
+        if ($akademis->nilai_mapel_koreksi <= 0) {
+          $list_nilai = DB::table('nilai_akademis')
+          ->where('no_pendaftar', $akademis->no_pendaftar)
+          ->where('semester', $akademis->semester)
+          ->get();
+
+          //cek nilai pada variabel list nilai untuk menentukan multiplier
+          foreach ($list_nilai as $value) {
+            if ($value->nilai_mapel > 10) {
+              $multiplier = 1;
+              break;
+            } elseif ($value->nilai_mapel > 4) {
+              $multiplier = 10;
+              break;
+            } else {
+              $multiplier = 25;
+            }
+          }
+          unset($value);
+
+          //isi nilai_mapel_koreksi berdasarkan multiplier
+          foreach ($list_nilai as $isi_nilai) {
+            try {
+              DB::table('nilai_akademis')
+              ->where('no_pendaftar', $isi_nilai->no_pendaftar)
+              ->where('semester', $isi_nilai->semester)
+              ->where('mapel', $isi_nilai->mapel)
+              ->update(['nilai_mapel_koreksi' => ($isi_nilai->nilai_mapel * $multiplier)]);
+            } catch(\Illuminate\Database\QueryException $ex){
+              return Redirect::back()->withErrors('Gagal melakukan normalisasi data nilai akademis.');
+              //$ex->getMessage();
+            }
+          }
+          unset($isi_nilai);
+        }        
       }
       unset($akademis);
     });
+    $memory1 = (memory_get_usage()) / (1024 ** 2);
     /*foreach ($nilai as $value) {
       var_dump($value->no_pendaftar, $value->semester, $value->mapel, $value->nilai_mapel);
     }*/
@@ -175,13 +194,15 @@ class PengolahDataController extends Controller
           $mhs = mahasiswa::where('no_pendaftar', '=', $id->no_pendaftar)
           ->update(['nilai_akademis' => $sum]);
         } catch(\Illuminate\Database\QueryException $ex){
-          return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+          return Redirect::back()->withErrors('Gagal menyimpan nilai akademis mahasiswa.');
+          //$ex->getMessage();
           // Note any method of class PDOException can be called on $ex.
         }
         //var_dump($avg_smt_1);
       }
       unset($id);
     });
+    $memory2 = (memory_get_usage()) / (1024 ** 2);
 
     //cek data peringkat
     if(DB::table('peringkat')->count() > 0){
@@ -201,15 +222,16 @@ class PengolahDataController extends Controller
           ->where('semester', 1)
           ->get();
 
+          //var_dump(count($data_peringkat_smt_1));
           //bagi peringkat dengan jumlah siswa
-          if ($data_peringkat_smt_1[0]->jumlah_siswa == 0) {
-            $nilai_peringkat_smt_1 = 0;
-          } else {
+          if (count($data_peringkat_smt_1) > 0) {
             $nilai_peringkat_smt_1 = $data_peringkat_smt_1[0]->peringkat / $data_peringkat_smt_1[0]->jumlah_siswa;
+          } else {
+            $nilai_peringkat_smt_1 = 0;
           }
 
           //cek nilai untuk menambah pembagi
-          if($data_peringkat_smt_1[0]->peringkat != 0){
+          if($nilai_peringkat_smt_1 > 0){
             $pembagi += 1;
           }
 
@@ -221,14 +243,14 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          if ($data_peringkat_smt_2[0]->jumlah_siswa == 0) {
-            $nilai_peringkat_smt_2 = 0;
-          } else {
+          if (count($data_peringkat_smt_2) > 0) {
             $nilai_peringkat_smt_2 = $data_peringkat_smt_2[0]->peringkat / $data_peringkat_smt_2[0]->jumlah_siswa;
+          } else {
+            $nilai_peringkat_smt_2 = 0;
           }
 
           //cek nilai untuk menambah pembagi
-          if($data_peringkat_smt_2[0]->peringkat != 0){
+          if($nilai_peringkat_smt_2 > 0){
             $pembagi += 1;
           }
 
@@ -240,14 +262,14 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          if ($data_peringkat_smt_3[0]->jumlah_siswa == 0) {
-            $nilai_peringkat_smt_3 = 0;
-          } else {
+          if (count($data_peringkat_smt_3) > 0) {
             $nilai_peringkat_smt_3 = $data_peringkat_smt_3[0]->peringkat / $data_peringkat_smt_3[0]->jumlah_siswa;
+          } else {
+            $nilai_peringkat_smt_3 = 0;
           }
 
           //cek nilai untuk menambah pembagi
-          if($data_peringkat_smt_3[0]->peringkat != 0){
+          if($nilai_peringkat_smt_3 > 0){
             $pembagi += 1;
           }
 
@@ -259,14 +281,14 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          if ($data_peringkat_smt_4[0]->jumlah_siswa == 0) {
-            $nilai_peringkat_smt_4 = 0;
-          } else {
+          if (count($data_peringkat_smt_4) > 0) {
             $nilai_peringkat_smt_4 = $data_peringkat_smt_4[0]->peringkat / $data_peringkat_smt_4[0]->jumlah_siswa;
+          } else {
+            $nilai_peringkat_smt_4 = 0;
           }
 
           //cek nilai untuk menambah pembagi
-          if($data_peringkat_smt_4[0]->peringkat != 0){
+          if($nilai_peringkat_smt_4 > 0){
             $pembagi += 1;
           }
 
@@ -278,14 +300,14 @@ class PengolahDataController extends Controller
           ->get();
 
           //bagi peringkat dengan jumlah siswa
-          if ($data_peringkat_smt_5[0]->jumlah_siswa == 0) {
-            $nilai_peringkat_smt_5 = 0;
-          } else {
+          if (count($data_peringkat_smt_5) > 0) {
             $nilai_peringkat_smt_5 = $data_peringkat_smt_5[0]->peringkat / $data_peringkat_smt_5[0]->jumlah_siswa;
+          } else {
+            $nilai_peringkat_smt_5 = 0;
           }
 
           //cek nilai untuk menambah pembagi
-          if($data_peringkat_smt_5[0]->peringkat != 0){
+          if($nilai_peringkat_smt_5 > 0){
             $pembagi += 1;
           }
 
@@ -301,18 +323,20 @@ class PengolahDataController extends Controller
             mahasiswa::where('no_pendaftar', $value->no_pendaftar)
             ->update(['nilai_peringkat' => $nilai_peringkat_mhs]);
           } catch (\Illuminate\Database\QueryException $ex) {
-            return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+            return Redirect::back()->withErrors('Gagal menyimpan data peringkat mahasiswa.');
+            //$ex->getMessage();
           }
         }
         unset($value);
       });
+      $memory3 = (memory_get_usage()) / (1024 ** 2);
     }
 
     //cek data
     if(DB::table('nilai_non_akademis')->count() > 0){
       //reset nilai prestasi jika melakukan olah data lagi, agar nilai tidak terakumulasi
       mahasiswa::where('periode', '2017')//where('periode', date('Y'))
-      ->chunk(600, function($reset){
+      ->chunk(1000, function($reset){
         foreach ($reset as $value) {
           set_time_limit(0);
           $value->nilai_non_akademis = 0;
@@ -321,7 +345,7 @@ class PengolahDataController extends Controller
         unset($value);
       });
       //olah data prestasi
-      nilai_non_akademis::chunk(600, function($lomba){
+      nilai_non_akademis::chunk(1000, function($lomba){
         foreach ($lomba as $prestasi) {
           set_time_limit(0);
           $nilai_prestasi = 0;
@@ -366,12 +390,14 @@ class PengolahDataController extends Controller
             $mhs = mahasiswa::where('no_pendaftar', '=', $prestasi->no_pendaftar)
             ->update(['nilai_non_akademis' => $mahasiswa]);
           } catch(\Illuminate\Database\QueryException $ex){
-            return Redirect::back()->withErrors('Gagal melakukan normalisasi data.<br>'.$ex->getMessage());
+            return Redirect::back()->withErrors('Gagal menyimpan data prestasi mahasiswa.');
+            //$ex->getMessage();
             // Note any method of class PDOException can be called on $ex.
           }
         }
         unset($prestasi);
       });
+      $memory4 = (memory_get_usage()) / (1024 ** 2);
     } else {
       return Response::json([
         'fail' => 1,
@@ -379,12 +405,14 @@ class PengolahDataController extends Controller
         'message' => 'Data prestasi tidak ditemukan.'
       ]);
     }
+    $total_memory = $memory1 + $memory2 + $memory3 + $memory4;
 
     //return success
     $response = array(
       'fail' => 0,
       'input' => 'Success',
       'message' => 'Data Pendaftar telah dinormalisasi',
+      'memory' => $total_memory
     );
     return Response::json($response);
   }

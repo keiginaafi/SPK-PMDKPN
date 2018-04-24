@@ -47,34 +47,57 @@ class SaranPenerimaanController extends Controller
   public function getDataPenerimaan($id){
     $data_prodi = '';
     $data_saran = '';
-    try {
-      $data_prodi = DB::table('prodi')
-      ->select('kuota_sma', 'kuota_smk')
-      ->where('kode_prodi', $id)
-      ->get();
 
-      $data_saran = DB::table('saran_penerimaan')
-      ->join('mahasiswa', 'saran_penerimaan.no_pendaftar', '=', 'mahasiswa.no_pendaftar')
-      ->select('saran_penerimaan.no_pendaftar', 'mahasiswa.nama', 'mahasiswa.jenis_kelamin',
-      'mahasiswa.tipe_sekolah', 'mahasiswa.jurusan_asal', 'mahasiswa.pekerjaan_ayah',
-      'mahasiswa.pendapatan_ayah', 'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu',
-      'mahasiswa.jumlah_tanggungan', 'mahasiswa.bidik_misi',
-      'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
-      //->where('mahasiswa.periode', date('Y'))
-      ->where('mahasiswa.periode', '2017')
-      ->where('saran_penerimaan.kode_prodi', $id)
-      ->get();
+    if ($id == "tidakMasuk") {
+      try {
+        $no_diterima = saran_penerimaan::pluck('no_pendaftar')->all();
+        $tidak_masuk = mahasiswa::whereNotIn('no_pendaftar', $no_diterima)
+        ->select('no_pendaftar', 'nama', 'jenis_kelamin', 'tipe_sekolah',
+        'jurusan_asal', 'pekerjaan_ayah', 'pendapatan_ayah', 'pekerjaan_ibu',
+        'pendapatan_ibu', 'jumlah_tanggungan', 'bidik_misi', 'nilai_akhir')
+        //->where('mahasiswa.periode', date('Y'))
+        ->where('mahasiswa.periode', '2017')
+        ->get();
+      } catch (\Illuminate\Database\QueryException $ex) {
+        return Response::json($ex->getMessage());
+      }
 
-      $data_saran = $data_saran->sortBy('ranking', SORT_NATURAL, true);
-    } catch (\Illuminate\Database\QueryException $ex) {
-      return Response::json($ex->getMessage());
+      $tidak_masuk->transform(function($data){
+        return array_dot($data);
+      });
+
+      return Datatables::of($tidak_masuk)->make(true);
+    } else {
+      try {
+        $data_prodi = DB::table('prodi')
+        ->select('kuota_sma', 'kuota_smk')
+        ->where('kode_prodi', $id)
+        ->get();
+
+        $data_saran = DB::table('saran_penerimaan')
+        ->join('mahasiswa', 'saran_penerimaan.no_pendaftar', '=', 'mahasiswa.no_pendaftar')
+        ->select('saran_penerimaan.no_pendaftar', 'mahasiswa.nama', 'mahasiswa.jenis_kelamin',
+        'mahasiswa.tipe_sekolah', 'mahasiswa.jurusan_asal', 'mahasiswa.pekerjaan_ayah',
+        'mahasiswa.pendapatan_ayah', 'mahasiswa.pekerjaan_ibu', 'mahasiswa.pendapatan_ibu',
+        'mahasiswa.jumlah_tanggungan', 'mahasiswa.bidik_misi',
+        'mahasiswa.nilai_akhir', 'saran_penerimaan.ranking')
+        //->where('mahasiswa.periode', date('Y'))
+        ->where('mahasiswa.periode', '2017')
+        ->where('saran_penerimaan.kode_prodi', $id)
+        ->get();
+
+        $data_saran = $data_saran->sortBy('ranking', SORT_NATURAL, true);
+      } catch (\Illuminate\Database\QueryException $ex) {
+        return Response::json($ex->getMessage());
+      }
+
+      $data_saran->transform(function($data){
+        return array_dot($data);
+      });
+
+      return Datatables::of($data_saran)->make(true);
     }
 
-    $data_saran->transform(function($data){
-      return array_dot($data);
-    });
-
-    return Datatables::of($data_saran)->make(true);
     /*$response = array(
       'sma' => $data_prodi[0]->kuota_sma,
       'smk' => $data_prodi[0]->kuota_smk,
@@ -477,12 +500,14 @@ class SaranPenerimaanController extends Controller
       });
     })->store('xlsx', $path);
 
+    $memory = (memory_get_usage()) / (1024 ** 2);
     $response = array(
       'fail' => 0,
       'input' => 'Success',
       'message' => 'Saran Penerimaan telah dihasilkan',
       'mooraUrl' => $dl_path,
-      'AHPurl' => $nilai_cr['dl_path']
+      'AHPurl' => $nilai_cr['dl_path'],
+      'memory' => $memory
     );
     return Response::json($response);
   }
@@ -712,7 +737,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    //break;
+                    break;
                   }
                 }
               } else {
@@ -732,7 +757,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                //break;
+                break;
               }
             }
           //cek prodi bisnis
@@ -784,7 +809,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    //break;
+                    break;
                   }
                 }
               } else {
@@ -804,7 +829,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                //break;
+                break;
               }
             }
           //prodi akuntansi
@@ -846,7 +871,7 @@ class SaranPenerimaanController extends Controller
                     return Redirect::back()->withErrors('The server encountered an unexpected condition');
                   }
                   //jika masuk ke prodi, maka break
-                  //break;
+                  break;
                 }
               }
             } else {
@@ -866,7 +891,7 @@ class SaranPenerimaanController extends Controller
                 return Redirect::back()->withErrors('The server encountered an unexpected condition');
               }
               //jika masuk ke prodi, maka break
-              //break;
+              break;
             }
           }
         }
@@ -967,7 +992,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    //break;
+                    break;
                   }
                 }
               } else {
@@ -987,7 +1012,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                //break;
+                break;
               }
             }
           //cek prodi bisnis
@@ -1038,7 +1063,7 @@ class SaranPenerimaanController extends Controller
                       return Redirect::back()->withErrors('The server encountered an unexpected condition');
                     }
                     //jika masuk ke prodi, maka break
-                    //break;
+                    break;
                   }
                 }
               } else {
@@ -1058,7 +1083,7 @@ class SaranPenerimaanController extends Controller
                   return Redirect::back()->withErrors('The server encountered an unexpected condition');
                 }
                 //jika masuk ke prodi, maka break
-                //break;
+                break;
               }
             }
           //prodi akuntansi
@@ -1099,7 +1124,7 @@ class SaranPenerimaanController extends Controller
                     return Redirect::back()->withErrors('The server encountered an unexpected condition');
                   }
                   //jika masuk ke prodi, maka break
-                  //break;
+                  break;
                 }
               }
             } else {
@@ -1119,7 +1144,7 @@ class SaranPenerimaanController extends Controller
                 return Redirect::back()->withErrors('The server encountered an unexpected condition');
               }
               //jika masuk ke prodi, maka break
-              //break;
+              break;
             }
           }
         }

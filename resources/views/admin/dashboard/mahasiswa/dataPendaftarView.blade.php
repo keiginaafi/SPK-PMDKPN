@@ -200,6 +200,7 @@
 									var message = '<div class="alert alert-success alert-dismissable">';
 									message += '<p>' + data.input + '</p>';
 									message += '<p>' + data.message + '</p>';
+									message += '<p>' + data.memory + '</p>';
 									message += '</div>';
 									$('#message').append(message);
 								}

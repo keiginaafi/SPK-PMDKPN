@@ -35,7 +35,7 @@ class BuatTabelMahasiswa extends Migration
             $table->string('jumlah_tanggungan', 12);
             $table->string('bidik_misi', 3);
             $table->decimal('nilai_akademis', 7, 4)->default('0');
-            $table->decimal('nilai_non_akademis', 5, 2)->default('0');
+            $table->decimal('nilai_non_akademis', 6, 2)->default('0');
             $table->decimal('nilai_peringkat', 9, 6)->default('0');
             $table->decimal('nilai_akhir', 9, 6)->default('0');
             $table->string('periode', 4);

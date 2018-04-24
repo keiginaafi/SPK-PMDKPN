@@ -43,12 +43,16 @@ Route::group(['middleware' => ['web', 'auth']], function(){
 
   //route saran penerimaan
   Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController@index'));
+  //Route::get('/saran_penerimaan', array('as' => 'moora', 'uses' => 'Moora\SaranPenerimaanController2@index'));
 
   Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController@saranPenerimaan'));
+  //Route::get('/saran_penerimaan/hasilkan_saran', array('as' => 'moora.saran', 'uses' => 'Moora\SaranPenerimaanController2@saranPenerimaan'));
 
 	Route::get('/saran_penerimaan/cetak_saran', array('as' => 'moora.cetak', 'uses' => 'Moora\SaranPenerimaanController@cetakDataPenerimaan'));
+	//Route::get('/saran_penerimaan/cetak_saran', array('as' => 'moora.cetak', 'uses' => 'Moora\SaranPenerimaanController2@cetakDataPenerimaan'));
 
   Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController@getDataPenerimaan'));
+  //Route::post('/saran_penerimaan/{id}', array('as' => 'moora.get_data', 'uses' => 'Moora\SaranPenerimaanController2@getDataPenerimaan'));
 
 	//route data pendaftar
   Route::get('/data_pendaftar/olah_data', array('as' => 'olah_data.normalisasi', 'uses' => 'Mahasiswa\PengolahDataController@olahDataMhs'));

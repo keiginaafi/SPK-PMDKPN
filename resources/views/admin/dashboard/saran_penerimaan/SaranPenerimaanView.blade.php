@@ -71,6 +71,7 @@
 							@foreach ($prodi as $item_prodi)
 								<option value="{{ $item_prodi->kode_prodi }}">{{ $item_prodi->nama_prodi }}</option>
 							@endforeach
+							<option value="tidakMasuk">Tidak Lolos Seleksi</option>
 						</select>
 					</div>
 					<table id="table_data" class="table table-bordered col-md-12" style="min-width: 100%; width: auto;">
@@ -107,7 +108,34 @@
 			//ajax load data mhs
 			$(document).ready(function(){
 				var prodi = $("#select_prodi").val();
-				if(prodi != "NONE"){
+				if(prodi == "tidakMasuk"){
+					$('#table_data').DataTable({
+						processing: true,
+						serverSide: true,
+						ajax: {
+							url: 'saran_penerimaan/'+ prodi,
+							type: 'POST',
+							data: {
+								_token: $('meta[name="_token"]').attr('content'),
+								id: prodi,
+							}
+						},
+						columns: [
+							{ data: 'no_pendaftar'},
+							{ data: 'nama'},
+							{ data: 'jenis_kelamin'},
+							{ data: 'tipe_sekolah'},
+							{ data: 'jurusan_asal'},
+							{ data: 'pekerjaan_ayah'},
+							{ data: 'pendapatan_ayah'},
+							{ data: 'pekerjaan_ibu'},
+							{ data: 'pendapatan_ibu'},
+							{ data: 'jumlah_tanggungan'},
+							{ data: 'bidik_misi'},
+							{ data: 'nilai_akhir'}
+						]
+					})
+				} else if (prodi != "NONE") {
 					$('#table_data').DataTable({
 						processing: true,
 						serverSide: true,
@@ -139,7 +167,34 @@
 
 				$("#select_prodi").change(function(){
 					var prodi = $("#select_prodi").val();
-					if(prodi != "NONE"){
+					if (prodi == "tidakMasuk") {
+						$('#table_data').DataTable({
+							processing: true,
+							serverSide: true,
+							ajax: {
+								url: 'saran_penerimaan/'+ prodi,
+								type: 'POST',
+								data: {
+									_token: $('meta[name="_token"]').attr('content'),
+									id: prodi,
+								}
+							},
+							columns: [
+								{ data: 'no_pendaftar'},
+								{ data: 'nama'},
+								{ data: 'jenis_kelamin'},
+								{ data: 'tipe_sekolah'},
+								{ data: 'jurusan_asal'},
+								{ data: 'pekerjaan_ayah'},
+								{ data: 'pendapatan_ayah'},
+								{ data: 'pekerjaan_ibu'},
+								{ data: 'pendapatan_ibu'},
+								{ data: 'jumlah_tanggungan'},
+								{ data: 'bidik_misi'},
+								{ data: 'nilai_akhir'}
+							]
+						})
+					}	else if(prodi != "NONE"){
 						$('#table_data').DataTable({
 							destroy: true,
 							processing: true,
@@ -201,6 +256,7 @@
 									var message = '<div class="alert alert-success alert-dismissable">';
 									message += '<p>' + data.input + '</p>';
 									message += '<p>' + data.message + '</p>';
+									message += '<p> Memory usage : ' + data.memory + '</p>';
 									message += "<p><a href='" + data.AHPurl + "'> Download Perhitungan Bobot </a></p>";
 									message += "<p><a href='" + data.mooraUrl + "'> Download Perhitungan Moora </a></p>";
 									message += '</div>';
